@@ -6,6 +6,7 @@ import java.awt.*;
  * TODO Add description
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Flo
  */
 public class GameBoard {
 

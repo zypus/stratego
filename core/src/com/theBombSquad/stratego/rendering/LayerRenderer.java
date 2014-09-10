@@ -8,6 +8,7 @@ import java.util.ArrayList;
  * TODO Add description
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Flo
  */
 @AllArgsConstructor
 public class LayerRenderer implements Renderer {

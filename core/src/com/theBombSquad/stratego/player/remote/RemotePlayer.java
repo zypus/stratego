@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
  * // TODO description
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Flo
  */
 @RequiredArgsConstructor
 public class RemotePlayer extends Player {

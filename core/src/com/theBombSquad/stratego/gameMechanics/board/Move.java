@@ -9,6 +9,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
  * TODO Add description
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Flo
  */
 @Getter
 @RequiredArgsConstructor

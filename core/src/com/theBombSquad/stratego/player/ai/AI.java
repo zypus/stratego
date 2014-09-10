@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
  * Abstract AI class which gives access to several utility stuff.
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Flo
  */
 @RequiredArgsConstructor
 public abstract class AI extends Player {

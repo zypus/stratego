@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
  * TODO Add description
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Flo
  */
 @RequiredArgsConstructor
 public class HumanPlayer extends Player {
