@@ -86,7 +86,7 @@ public class GameView {
 
 	public List<Unit> getAllDefeatedUnits() {
 
-		List<Unit> allList = new ArrayList<>();
+		List<Unit> allList = new ArrayList<Unit>();
 		allList.addAll(game.getDefeatedUnitsPlayer1());
 		allList.addAll(game.getDefeatedUnitsPlayer2());
 
