@@ -20,6 +20,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 @RequiredArgsConstructor
 public class GameView {
 
+	
 	private final Game game;
 	private final PlayerID playerID;
 
