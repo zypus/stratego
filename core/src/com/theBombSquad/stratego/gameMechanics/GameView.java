@@ -77,7 +77,7 @@ public class GameView {
 
 	/**
 	 * Validates the setup.
-	 * @param setup The setup.
+	 * @param setup The army setup in player space.
 	 * @return Whether the setup is valid or not.
 	 */
 	public boolean validateSetup(Unit[][] setup) {
@@ -87,58 +87,111 @@ public class GameView {
 		return game.validateSetup(setup);
 	}
 
+	/**
+	 * Sets the setup.
+	 * @param setup The army setup in player space.
+	 */
 	public void setSetup(Unit[][] setup) {
 
-		game.setSetup((playerID.equals(PlayerID.PLAYER_1)) ? setup : rotateBoard(setup), playerID);
+		// Translates the setup from player space to game space.
+		Unit[][] preparedSetup = (playerID.equals(PlayerID.PLAYER_1)) ? setup : rotateBoard(setup);
+		// Forwards the setup to the game and sets the correct player reference.
+		game.setSetup(preparedSetup, playerID);
 	}
 
+	/**
+	 * Gets the current turn number.
+	 * @return The number of the current turn.
+	 */
 	public int getCurrentTurn() {
 
 		return game.getCurrentTurn();
 	}
 
+	/**
+	 * Gets the most recent game state.
+	 * @return The most recent game state.
+	 */
 	public GameBoard getCurrentState() {
 
 		return getState(getCurrentTurn());
 	}
 
+	/**
+	 * Gets the state of the game at the specified turn.
+	 * @param turn The turn number.
+	 * @return The state of the game at turn.
+	 */
 	public GameBoard getState(int turn) {
 
 		GameBoard gameBoard;
 		if (playerID.equals(PlayerID.PLAYER_1)) {
+			// Obscure all units on the board which should be unknown to the player assigned to this view.
 			gameBoard = obscureBoard(game.getState(turn), turn);
 		} else {
+			// Obscure (see previous comment) and translate the board to the player 2 space.
 			gameBoard = obscureAndRotateBoard(game.getState(turn), turn);
 		}
 		return gameBoard;
 	}
 
+	/**
+	 * Gets the unit at the specified location.
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return The unit at the location.
+	 */
 	public Unit getUnit(int x, int y) {
 
+		// Translate the coordinates from player space to game space.
+		// TODO replace the Pair<Integer, Integer> by something more expressive.
 		Pair<Integer, Integer> coords = conditionalCoordinateRotation(x, y);
 		Unit unit = game.getCurrentState().getUnit(coords.getKey(), coords.getValue());
+		// Unit needs to be obscured if the assigned player shouldn't be able to see that unit.
 		return obscureUnitIfNecessary(unit, getCurrentTurn());
 	}
 
+	/**
+	 * Checks if the location contains air / free space.
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains air or not.
+	 */
 	public boolean isAir(int x, int y) {
 
 		return getUnit(x,y) == Unit.AIR;
 	}
 
+	/**
+	 * Checks if the location contains a lake.
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains a lake or not.
+	 */
 	public boolean isLake(int x, int y) {
 
 		return getUnit(x,y) == Unit.LAKE;
 	}
 
+	/**
+	 * Checks if the location contains a unit that is unknown to the assigned player.
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains a unknown unit or not.
+	 */
 	public boolean isUnknown(int x, int y) {
 
 		return getUnit(x,y) == Unit.UNKNOWN;
 	}
 
+	/**
+	 * Get all moves played so far.
+	 * @return All played moves.
+	 */
 	public List<Move> getMoves() {
 
 		List<Move> moves = game.getMoves();
-		// if the player is player 2 then rotate all not cashed moves and add them to the cashed list
+		// if the player is player 2 then translate all uncashed moves and add them to the cashed list
 		if (playerID.equals(PlayerID.PLAYER_2)) {
 			for (int t = cashedRotatedMoves.size(); t < moves.size(); t++) {
 				Move move = moves.get(t);
@@ -151,38 +204,70 @@ public class GameView {
 		return (playerID.equals(PlayerID.PLAYER_1)) ? moves : cashedRotatedMoves;
 	}
 
+	/**
+	 * Gets the move from the specified turn.
+	 * @param turn The turn number.
+	 * @return The move of the turn.
+	 */
 	public Move getMove(int turn) {
 
 		// TODO check if the turns start at 0
+		// TODO check if the turn number is out of bounds.
 		return getMoves().get(turn);
 	}
 
+	/**
+	 * Gets the most recent move.
+	 * @return The most recent move.
+	 */
 	public Move getLastMove() {
 
 		return getMove(game.getCurrentTurn()-1);
 	}
 
+	/**
+	 * Gets all defeated units.
+	 * @return All defeated units.
+	 */
 	public List<Unit> getAllDefeatedUnits() {
 
+		// Simple concatenates the list of the defeated units of player 1 and 2
 		List<Unit> allList = new ArrayList<Unit>();
 		allList.addAll(game.getDefeatedUnitsPlayer1());
 		allList.addAll(game.getDefeatedUnitsPlayer2());
 
+		// Makes sure that the player cannot modify the list.
 		return Collections.unmodifiableList(allList);
 	}
 
+	/**
+	 * Gets all defeated units of the assigned player.
+	 * @return All defeated units of the assigned player.
+	 */
 	public List<Unit> getOwnDefeatedUnits() {
 
-		return playerID.equals(PlayerID.PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
+		List<Unit> units = playerID.equals(PlayerID.PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
+		return Collections.unmodifiableList(units);
 	}
 
+	/**
+	 * Gets all defeated units of the opponent of the assigned player.
+	 * @return All defeated units of the opponent of the assigned player.
+	 */
 	public List<Unit> getOpponentsDefeatedUnits() {
 
-		return playerID.equals(PlayerID.PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
+		List<Unit> units = playerID.equals(PlayerID.PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
+		return Collections.unmodifiableList(units);
 	}
 
 	// HELPER METHODS
 
+	/**
+	 * Obscures the board for the assigned player.
+	 * @param gameBoard The board.
+	 * @param turn The turn number.
+	 * @return The board where relevant units are obscured.
+	 */
 	private GameBoard obscureBoard(GameBoard gameBoard, int turn) {
 
 		GameBoard copiedGameBoard = gameBoard.duplicate();
@@ -194,6 +279,12 @@ public class GameView {
 		return copiedGameBoard;
 	}
 
+	/**
+	 * Obscures and translates the board to game space for the assigned player.
+	 * @param gameBoard The board.
+	 * @param turn The turn number.
+	 * @return The obscured and translated board.
+	 */
 	private GameBoard obscureAndRotateBoard(GameBoard gameBoard, int turn) {
 
 		GameBoard copiedGameBoard = gameBoard.duplicate();
@@ -205,6 +296,12 @@ public class GameView {
 		return copiedGameBoard;
 	}
 
+	/**
+	 * Obscured the unit if the player shouldn't know the unit.
+	 * @param unit The unit.
+	 * @param turn The turn number.
+	 * @return The unit itself or an obscured unit.
+	 */
 	private Unit obscureUnitIfNecessary(Unit unit, int turn) {
 		if (!unit.getOwner().equals(PlayerID.NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
 			return Unit.UNKNOWN;
@@ -213,11 +310,19 @@ public class GameView {
 		}
 	}
 
+	/**
+	 * Translates coordinates in player space to game space.
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Coordinates in game space.
+	 */
 	private Pair<Integer, Integer> conditionalCoordinateRotation(int x, int y) {
 		Pair<Integer, Integer> coord = new Pair<Integer, Integer>(-1,-1);
 		if (playerID.equals(PlayerID.PLAYER_1)) {
+			// Player 1 coordinates are equal to game space coordinates.
 			coord = new Pair<Integer, Integer>(x,y);
 		} else if (playerID.equals(PlayerID.PLAYER_2)) {
+			// Player 2 coordinates need to be rotated by 180° to be in game space.
 			coord = new Pair<Integer, Integer>(GRID_WIDTH - x, GRID_HEIGHT - y);
 		} else {
 			System.out.println("Invalid player ID");
@@ -225,6 +330,11 @@ public class GameView {
 		return coord;
 	}
 
+	/**
+	 * Rotates a moves coordinates by 180°.
+	 * @param move The move.
+	 * @return Rotated move.
+	 */
 	private Move rotateMove(Move move) {
 		return new Move(GRID_WIDTH - move.getFromX(),
 									GRID_HEIGHT - move.getFromY(),
@@ -232,6 +342,11 @@ public class GameView {
 									GRID_HEIGHT - move.getToY());
 	}
 
+	/**
+	 * Rotates a moves coordinates by 180° and copies all field of the move.
+	 * @param move The move.
+	 * @return Rotated move.
+	 */
 	private Move rotateAndCopyMove(Move move) {
 		Move rotatedMove = rotateMove(move);
 		rotatedMove.setTurn(move.getTurn());
@@ -241,6 +356,11 @@ public class GameView {
 		return rotatedMove;
 	}
 
+	/**
+	 * Rotates the board by 180°.
+	 * @param board The board.
+	 * @return The rotated board.
+	 */
 	private Unit[][] rotateBoard(Unit[][] board) {
 		int width = board.length;
 		int height = board[0].length;
