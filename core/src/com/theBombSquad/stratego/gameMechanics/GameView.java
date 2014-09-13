@@ -3,9 +3,9 @@ package com.theBombSquad.stratego.gameMechanics;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -144,9 +144,8 @@ public class GameView {
 	public Unit getUnit(int x, int y) {
 
 		// Translate the coordinates from player space to game space.
-		// TODO replace the Pair<Integer, Integer> by something more expressive.
-		Pair<Integer, Integer> coords = conditionalCoordinateRotation(x, y);
-		Unit unit = game.getCurrentState().getUnit(coords.getKey(), coords.getValue());
+		Point coords = conditionalCoordinateRotation(x, y);
+		Unit unit = game.getCurrentState().getUnit(coords.x, coords.y);
 		// Unit needs to be obscured if the assigned player shouldn't be able to see that unit.
 		return obscureUnitIfNecessary(unit, getCurrentTurn());
 	}
@@ -316,14 +315,14 @@ public class GameView {
 	 * @param y Y Coordinate in player space.
 	 * @return Coordinates in game space.
 	 */
-	private Pair<Integer, Integer> conditionalCoordinateRotation(int x, int y) {
-		Pair<Integer, Integer> coord = new Pair<Integer, Integer>(-1,-1);
+	private Point conditionalCoordinateRotation(int x, int y) {
+		Point coord = new Point(-1,-1);
 		if (playerID.equals(PlayerID.PLAYER_1)) {
 			// Player 1 coordinates are equal to game space coordinates.
-			coord = new Pair<Integer, Integer>(x,y);
+			coord = new Point(x,y);
 		} else if (playerID.equals(PlayerID.PLAYER_2)) {
 			// Player 2 coordinates need to be rotated by 180° to be in game space.
-			coord = new Pair<Integer, Integer>(GRID_WIDTH - x, GRID_HEIGHT - y);
+			coord = new Point(GRID_WIDTH - x, GRID_HEIGHT - y);
 		} else {
 			System.out.println("Invalid player ID");
 		}
