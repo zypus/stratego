@@ -6,7 +6,7 @@ import lombok.Getter;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 @Getter

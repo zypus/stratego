@@ -20,7 +20,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
  * Each user of the view can assume he is PLAYER_1:
  * The view takes care of all necessary translations between the player space and the game space.
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  *
  * @version 1.0
@@ -319,7 +319,7 @@ public class GameView {
 			// Player 1 coordinates are equal to game space coordinates.
 			coord = new Point(x,y);
 		} else if (playerID.equals(PlayerID.PLAYER_2)) {
-			// Player 2 coordinates need to be rotated by 180° to be in game space.
+			// Player 2 coordinates need to be rotated by 180 degree to be in game space.
 			coord = new Point(GRID_WIDTH - x, GRID_HEIGHT - y);
 		} else {
 			System.out.println("Invalid player ID");
@@ -328,7 +328,7 @@ public class GameView {
 	}
 
 	/**
-	 * Rotates a moves coordinates by 180°.
+	 * Rotates a moves coordinates by 180 degree.
 	 * @param move The move.
 	 * @return Rotated move.
 	 */
@@ -340,7 +340,7 @@ public class GameView {
 	}
 
 	/**
-	 * Rotates a moves coordinates by 180° and copies all field of the move.
+	 * Rotates a moves coordinates by 180 degree and copies all field of the move.
 	 * @param move The move.
 	 * @return Rotated move.
 	 */
@@ -354,7 +354,7 @@ public class GameView {
 	}
 
 	/**
-	 * Rotates the board by 180°.
+	 * Rotates the board by 180 degree.
 	 * @param board The board.
 	 * @return The rotated board.
 	 */

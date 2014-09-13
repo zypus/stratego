@@ -6,7 +6,7 @@ import com.theBombSquad.stratego.player.Player;
 /**
  * Abstract AI class which gives access to several utility stuff.
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public abstract class AI extends Player {
