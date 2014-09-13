@@ -17,10 +17,8 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 
 /**
  * The gameView acts as the communication interface between players/renderers and the game.
- * The view makes sure that all operations are translated correctly,
- * therefore each player can assume he is player 1.
- *
- * Also host some convenience methods.
+ * Each user of the view can assume he is player 1:
+ * The view takes care of all necessary translations between the player space and the game space.
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
@@ -31,7 +29,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
  *
  * @log
  * - skeleton 					10.09.2014
- * - content & documentation 	13.09.2014
+ * - implementation & documentation 	13.09.2014
  */
 @RequiredArgsConstructor
 public class GameView {
