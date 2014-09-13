@@ -17,7 +17,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 
 /**
  * The gameView acts as the communication interface between players/renderers and the game.
- * Each user of the view can assume he is player 1:
+ * Each user of the view can assume he is PLAYER_1:
  * The view takes care of all necessary translations between the player space and the game space.
  *
  * @author Fabian Fränz <f.fraenz@t-online.de>
@@ -59,7 +59,7 @@ public class GameView {
 	 * Performs the move.
 	 * @param move The move in player space.
 	 *
-	 *             // TODO add pre condition declaration
+	 * TODO Add pre condition declaration
 	 */
 	public void performMove(Move move) {
 
@@ -208,8 +208,8 @@ public class GameView {
 	 */
 	public Move getMove(int turn) {
 
-		// TODO check if the turns start at 0
-		// TODO check if the turn number is out of bounds.
+		// TODO Check if the turns start at 0
+		// TODO Check if the turn number is out of bounds.
 		return getMoves().get(turn);
 	}
 
