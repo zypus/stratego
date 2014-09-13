@@ -31,16 +31,18 @@ public class Game {
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 	}
 
-	public void validateMove(Move move) {
+	public boolean validateMove(Move move) {
 
+		return false;
 	}
 
 	public void performMove(Move move) {
 
 	}
 
-	public void validateSetup(Unit[][] setup) {
+	public boolean validateSetup(Unit[][] setup) {
 
+		return false;
 	}
 
 	public void setSetup(Unit[][] setup, PlayerID playerID) {
