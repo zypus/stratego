@@ -21,22 +21,22 @@ public class Encounter {
 	public Encounter(Unit attackingUnit, Unit defendingUnit) {
 		if (defendingUnit.getType() == defendingUnit.getType().BOMB) {
 			if (attackingUnit.getType() == attackingUnit.getType().SAPPER) {
-				result.equals(CombatResult.VICTORIOUS_ATTACK);
+				result=CombatResult.VICTORIOUS_ATTACK;
 			} else {
-				mutualDefeat();
+				result=CombatResult.MUTUAL_DEFEAT;
 			}
 		} else if (defendingUnit.getType() == defendingUnit.getType().MARSHAL
 				&& attackingUnit.getType() == attackingUnit.getType().SPY) {
-			result.equals(CombatResult.VICTORIOUS_ATTACK);
+			result=CombatResult.VICTORIOUS_ATTACK;
 		} else {
 			int defendingRank = defendingUnit.getType().getRank();
 			int attackingRank = attackingUnit.getType().getRank();
 			if (attackingRank > defendingRank) {
-				result.equals(CombatResult.VICTORIOUS_ATTACK);
+				result=CombatResult.VICTORIOUS_ATTACK;
 			} else if (attackingRank == defendingRank) {
-				mutualDefeat();
+				result=CombatResult.MUTUAL_DEFEAT;
 			} else {
-				result.equals(CombatResult.VICTORIOUS_DEFENSE);
+				result=CombatResult.VICTORIOUS_DEFENSE;
 			}
 		}
 	}
