@@ -18,14 +18,37 @@ public class Encounter {
 
 	private CombatResult result;
 
+	public Encounter(Unit attackingUnit, Unit defendingUnit) {
+		if (defendingUnit.getType() == defendingUnit.getType().BOMB) {
+			if (attackingUnit.getType() == attackingUnit.getType().SAPPER) {
+				result=CombatResult.VICTORIOUS_ATTACK;
+			} else {
+				result=CombatResult.MUTUAL_DEFEAT;
+			}
+		} else if (defendingUnit.getType() == defendingUnit.getType().MARSHAL
+				&& attackingUnit.getType() == attackingUnit.getType().SPY) {
+			result=CombatResult.VICTORIOUS_ATTACK;
+		} else {
+			int defendingRank = defendingUnit.getType().getRank();
+			int attackingRank = attackingUnit.getType().getRank();
+			if (attackingRank > defendingRank) {
+				result=CombatResult.VICTORIOUS_ATTACK;
+			} else if (attackingRank == defendingRank) {
+				result=CombatResult.MUTUAL_DEFEAT;
+			} else {
+				result=CombatResult.VICTORIOUS_DEFENSE;
+			}
+		}
+	}
+
 	public Unit getVictoriousUnit() {
 		switch (result) {
-			case VICTORIOUS_ATTACK:
-				return attackingUnit;
-			case VICTORIOUS_DEFENSE:
-				return defendingUnit;
-			case MUTUAL_DEFEAT:
-				return null;
+		case VICTORIOUS_ATTACK:
+			return attackingUnit;
+		case VICTORIOUS_DEFENSE:
+			return defendingUnit;
+		case MUTUAL_DEFEAT:
+			return null;
 		}
 		// should never be reached
 		return null;
@@ -37,21 +60,21 @@ public class Encounter {
 
 	public Unit[] getDefeatedUnits() {
 		switch (result) {
-			case VICTORIOUS_ATTACK:
-				return new Unit[] { defendingUnit };
-			case VICTORIOUS_DEFENSE:
-				return new Unit[] { attackingUnit };
-			case MUTUAL_DEFEAT:
-				return new Unit[] { attackingUnit, defendingUnit };
+		case VICTORIOUS_ATTACK:
+			return new Unit[] { defendingUnit };
+		case VICTORIOUS_DEFENSE:
+			return new Unit[] { attackingUnit };
+		case MUTUAL_DEFEAT:
+			return new Unit[] { attackingUnit, defendingUnit };
 		}
 		// should never be reached
 		return null;
 	}
 
+	
+
 	public static enum CombatResult {
-		VICTORIOUS_ATTACK,
-		VICTORIOUS_DEFENSE,
-		MUTUAL_DEFEAT
+		VICTORIOUS_ATTACK, VICTORIOUS_DEFENSE, MUTUAL_DEFEAT
 	}
 
 }
