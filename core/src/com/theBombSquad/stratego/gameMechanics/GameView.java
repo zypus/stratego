@@ -3,6 +3,7 @@ package com.theBombSquad.stratego.gameMechanics;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.awt.*;
@@ -35,7 +36,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 public class GameView {
 
 	private final Game game;												/** Reference to the game. */
-	private final PlayerID playerID;										/** PlayerID which defines this views perspective */
+	@Getter private final PlayerID playerID;										/** PlayerID which defines this views perspective */
 	private final List<Move> cashedRotatedMoves = new ArrayList<Move>();	/** List of moves which acts as a cache for rotated move for
 	 																			the PLAYER_2 to avoid unnecessary recalculations of move
 	 																			rotations at the cost of additional memory costs. */
