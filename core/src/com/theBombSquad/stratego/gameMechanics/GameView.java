@@ -5,6 +5,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -33,10 +34,11 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
  * - implementation & documentation 	13.09.2014
  */
 @RequiredArgsConstructor
+@Log
 public class GameView {
 
 	private final Game game;												/** Reference to the game. */
-	@Getter private final PlayerID playerID;										/** PlayerID which defines this views perspective */
+	@Getter private final PlayerID playerID;								/** PlayerID which defines this views perspective */
 	private final List<Move> cashedRotatedMoves = new ArrayList<Move>();	/** List of moves which acts as a cache for rotated move for
 	 																			the PLAYER_2 to avoid unnecessary recalculations of move
 	 																			rotations at the cost of additional memory costs. */
@@ -48,6 +50,11 @@ public class GameView {
 	 */
 	public boolean validateMove(Move move) {
 
+		// Return early if the view doesn't belong to a player
+		if (playerID.equals(PlayerID.NEMO)) {
+			log.severe("Non player tried to validate move.");
+			return false;
+		}
 		// Translates the move from player space to game space.
 		Move preparedMove = (playerID.equals(PlayerID.PLAYER_1)) ? move : rotateMove(move);
 		// Assigns the move to the appropriate player.
@@ -64,6 +71,11 @@ public class GameView {
 	 */
 	public void performMove(Move move) {
 
+		// Return early if the view doesn't belong to a player
+		if (playerID.equals(PlayerID.NEMO)) {
+			log.severe("Non player tried to perform move.");
+			return;
+		}
 		// Translates the move from player space to game space.
 		Move preparedMove = (playerID.equals(PlayerID.PLAYER_1)) ? move : rotateMove(move);
 		// Checks if the playerId was already set due to a call to validateMove.
@@ -92,6 +104,11 @@ public class GameView {
 	 */
 	public void setSetup(Unit[][] setup) {
 
+		// Return early if the view doesn't belong to a player
+		if (playerID.equals(PlayerID.NEMO)) {
+			log.severe("Non player tried to set setup.");
+			return;
+		}
 		// Translates the setup from player space to game space.
 		Unit[][] preparedSetup = (playerID.equals(PlayerID.PLAYER_1)) ? setup : rotateBoard(setup);
 		// Forwards the setup to the game and sets the correct player reference.
@@ -124,7 +141,11 @@ public class GameView {
 	public GameBoard getState(int turn) {
 
 		GameBoard gameBoard;
-		if (playerID.equals(PlayerID.PLAYER_1)) {
+		// If the game view owner is not a player return an unobscured game board copy.
+		if (playerID.equals(PlayerID.NEMO)) {
+			gameBoard = game.getState(turn).duplicate();
+		}
+		else if (playerID.equals(PlayerID.PLAYER_1)) {
 			// Obscure all units on the board which should be unknown to the player assigned to this view.
 			gameBoard = obscureBoard(game.getState(turn), turn);
 		} else {
@@ -199,7 +220,7 @@ public class GameView {
 				cashedRotatedMoves.add(rotatedMove);
 			}
 		}
-		return (playerID.equals(PlayerID.PLAYER_1)) ? moves : cashedRotatedMoves;
+		return (playerID.equals(PlayerID.PLAYER_2)) ? cashedRotatedMoves : moves;
 	}
 
 	/**
@@ -244,6 +265,11 @@ public class GameView {
 	 */
 	public List<Unit> getOwnDefeatedUnits() {
 
+		// Return early if the view doesn't belong to a player
+		if (playerID.equals(PlayerID.NEMO)) {
+			log.severe("Non player tried to get 'his' defeated units.");
+			return null;
+		}
 		List<Unit> units = playerID.equals(PlayerID.PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
 		return Collections.unmodifiableList(units);
 	}
@@ -254,6 +280,11 @@ public class GameView {
 	 */
 	public List<Unit> getOpponentsDefeatedUnits() {
 
+		// Return early if the view doesn't belong to a player
+		if (playerID.equals(PlayerID.NEMO)) {
+			log.severe("Non player tried to get 'his opponents' defeated units.");
+			return null;
+		}
 		List<Unit> units = playerID.equals(PlayerID.PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
 		return Collections.unmodifiableList(units);
 	}
