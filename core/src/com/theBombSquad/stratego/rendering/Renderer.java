@@ -25,5 +25,9 @@ public abstract class Renderer {
 	public abstract void init();
 	
 	public abstract void render();
+	
+	protected float getScale(){
+		return renderData.getScale();
+	}
 
 }

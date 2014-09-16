@@ -1,32 +1,26 @@
 
 atlas.png
+size: 54,18
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-tech
+tileBlack
   rotate: false
-  xy: 1, 19
-  size: 64, 108
-  orig: 64, 108
+  xy: 2, 2
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
-portal
+tileWater
   rotate: false
-  xy: 67, 79
-  size: 68, 48
-  orig: 68, 48
+  xy: 20, 2
+  size: 16, 16
+  orig: 16, 16
   offset: 0, 0
   index: -1
-chest
+tileWhite
   rotate: false
-  xy: 67, 39
-  size: 16, 38
-  orig: 16, 38
-  offset: 0, 0
-  index: -1
-sign
-  rotate: false
-  xy: 1, 1
+  xy: 38, 2
   size: 16, 16
   orig: 16, 16
   offset: 0, 0

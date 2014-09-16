@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.theBombSquad.stratego.gameMechanics.Game;
+import com.theBombSquad.stratego.gameMechanics.GameView;
+import com.theBombSquad.stratego.rendering.AtlasPacker;
 import com.theBombSquad.stratego.rendering.BoardRenderer;
 import com.theBombSquad.stratego.rendering.LayerRenderer;
 import com.theBombSquad.stratego.rendering.RenderData;
@@ -24,12 +27,15 @@ public class Stratego extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
 	
-	Renderer mainRenderer;
+	private Renderer mainRenderer;
+	
+	private float scale;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
+		computeScale();
 		testRendering();
 	}
 
@@ -43,11 +49,16 @@ public class Stratego extends ApplicationAdapter {
 		batch.end();
 	}
 	
+	private void computeScale(){
+		this.scale = (float)Gdx.graphics.getHeight()/(float)StrategoConstants.ASSUMED_WINDOW_HEIGHT;
+	}
 	
 	private void testRendering(){
 		ArrayList<Renderer> list = new ArrayList<Renderer>();
-		list.add(new BoardRenderer());
-		RenderData renderData = new RenderData(1f, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas")));
+		AtlasPacker.pack();
+		GameView view = new GameView(new Game(), StrategoConstants.PlayerID.PLAYER_1);
+		RenderData renderData = new RenderData(scale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas")));
+		list.add(new BoardRenderer(view));
 		mainRenderer = new LayerRenderer(list, renderData);
 	}
 	
