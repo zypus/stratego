@@ -1,5 +1,6 @@
 package com.theBombSquad.stratego.rendering.humanRenderer;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.theBombSquad.stratego.rendering.Renderer;
 
 /**
@@ -10,7 +11,7 @@ import com.theBombSquad.stratego.rendering.Renderer;
  */
 public class HumanSetupRenderer extends Renderer {
 
-	@Override public void render() {
+	@Override public void render(SpriteBatch batch) {
 
 	}
 

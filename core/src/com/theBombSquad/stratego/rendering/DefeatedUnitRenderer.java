@@ -1,5 +1,7 @@
 package com.theBombSquad.stratego.rendering;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 /**
  * TODO Add description
  *
@@ -9,7 +11,7 @@ package com.theBombSquad.stratego.rendering;
 public class DefeatedUnitRenderer extends Renderer {
 
 	@Override
-	public void render() {
+	public void render(SpriteBatch batch) {
 
 	}
 

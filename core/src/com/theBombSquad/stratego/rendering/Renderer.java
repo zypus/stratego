@@ -3,6 +3,7 @@ package com.theBombSquad.stratego.rendering;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 /**
@@ -24,7 +25,7 @@ public abstract class Renderer {
 	
 	public abstract void init();
 	
-	public abstract void render();
+	public abstract void render(SpriteBatch batch);
 	
 	protected float getScale(){
 		return renderData.getScale();

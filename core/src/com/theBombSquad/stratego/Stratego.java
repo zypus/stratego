@@ -41,11 +41,10 @@ public class Stratego extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(12f/255f, 12f/255f, 12f/255f, 5f/255f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		batch.draw(img, 0, 0);
-		mainRenderer.render();
+		mainRenderer.render(batch);
 		batch.end();
 	}
 	
@@ -56,7 +55,7 @@ public class Stratego extends ApplicationAdapter {
 	private void testRendering(){
 		ArrayList<Renderer> list = new ArrayList<Renderer>();
 		AtlasPacker.pack();
-		GameView view = new GameView(new Game(), StrategoConstants.PlayerID.PLAYER_1);
+		GameView view = new GameView(new Game(null, null), StrategoConstants.PlayerID.PLAYER_1);
 		RenderData renderData = new RenderData(scale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas")));
 		list.add(new BoardRenderer(view));
 		mainRenderer = new LayerRenderer(list, renderData);

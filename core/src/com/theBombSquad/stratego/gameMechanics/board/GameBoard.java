@@ -21,7 +21,7 @@ public class GameBoard {
 		}
 		for (Rectangle lake : lakes) {
 			for (int y = lake.y; y < lake.y + lake.height; y++) {
-				for (int x = lake.x; x < lake.width; x++) {
+				for (int x = lake.x; x < lake.x+lake.width; x++) {
 					board[y][x] = Unit.LAKE;
 				}
 			}

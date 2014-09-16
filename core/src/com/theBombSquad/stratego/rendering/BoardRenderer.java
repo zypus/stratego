@@ -1,5 +1,7 @@
 package com.theBombSquad.stratego.rendering;
 
+import java.awt.Rectangle;
+
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,6 +10,7 @@ import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
+import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
@@ -25,10 +28,9 @@ public class BoardRenderer extends Renderer {
 	
 	private GameView view;
 	
-	private SpriteBatch batch = null;
-	private TextureRegion white = null;
-	private TextureRegion black = null;
-	private TextureRegion water = null;
+	private TextureRegion white;
+	private TextureRegion black;
+	private TextureRegion water;
 	
 	public BoardRenderer(GameView view){
 		this.view = view;
@@ -36,34 +38,40 @@ public class BoardRenderer extends Renderer {
 	
 	@Override
 	public void init() {
-		this.batch = new SpriteBatch();
 		white = renderData.getAtlas().findRegion("tileWhite");
 		black = renderData.getAtlas().findRegion("tileBlack");
 		water = renderData.getAtlas().findRegion("tileWater");
 	}
 	
 	@Override
-	public void render() {
-		GameBoard board = view.getCurrentState();
+	public void render(SpriteBatch batch) {
+		GameBoard board = new GameBoard(10, 10, new Rectangle(2, 4, 2, 2), new Rectangle(6, 4, 2, 2));
 		float gridX = GRID_POSITION_X*getScale();
 		float gridY = GRID_POSITION_Y*getScale();
 		float size = POINT_TILE_SIZE*getScale();
-		batch.begin();
+		//Draw Core Board (Without lakes)
 		boolean tileFlag = true;
-		for(int cy=0; cy<StrategoConstants.GRID_HEIGHT; cy++){
-			for(int cx=0; cx<StrategoConstants.GRID_WIDTH; cx++){
+		for(int cy=0; cy<GRID_HEIGHT; cy++){
+			for(int cx=0; cx<GRID_WIDTH; cx++){
 				TextureRegion tile = (tileFlag) ? white : black; 
 				tileFlag = !tileFlag;
-				drawTile(tile, gridX, gridY, size, cy, cx);
+				drawTile(tile, batch, cx, cy, size, gridX, gridY);
 			}
 			tileFlag = !tileFlag;
 		}
-		board.getUnit(0, 0);
-		batch.end();
+		//Draw Lakes
+		for(int cy=0; cy<GRID_HEIGHT; cy++){
+			for(int cx=0; cx<GRID_WIDTH; cx++){
+				if(board.getUnit(cx, cy) == Unit.LAKE){
+					drawTile(water, batch, cx, cy, size, gridX, gridY);
+				}
+			}
+		}
 	}
-
-	private void drawTile(TextureRegion tile, float gridX, float gridY, float size, int cy, int cx) {
-		batch.draw(tile, gridX + cx*POINT_TILE_SIZE*getScale(), gridY + cy*POINT_TILE_SIZE*getScale(), size, size);
+	
+	/** Draws specified tile onto grid, starting in upper left corner */
+	private void drawTile(TextureRegion tile, SpriteBatch batch, int x, int y, float size, float relGridX, float relGridY) {
+		batch.draw(tile, relGridX + x*POINT_TILE_SIZE*getScale(), relGridY + (GRID_HEIGHT-y-1)*POINT_TILE_SIZE*getScale(), size, size);
 	}
 	
 	

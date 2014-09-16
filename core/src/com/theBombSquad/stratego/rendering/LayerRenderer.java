@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 /**
@@ -26,9 +28,9 @@ public class LayerRenderer extends Renderer {
 		}
 	}
 	
-	public void render() {
+	public void render(SpriteBatch batch) {
 		for (Renderer layer : layers) {
-			layer.render();
+			layer.render(batch);
 		}
 	}
 
