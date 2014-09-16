@@ -23,7 +23,7 @@ import java.util.List;
 public class Game {
 
 	private List<GameBoard> states;
-	private GameBoard current; //to be initialized
+	private static GameBoard current; //to be initialized
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
@@ -337,5 +337,7 @@ public class Game {
 
 		return states.get(turn - 1);
 	}
-
+	public static GameBoard getCurrent(){
+		return current;
+	}
 }
