@@ -162,6 +162,7 @@ public class Game {
 		/**
 		 performs move depending on the type of unit, considers also encounter
 		 */
+		moves.add(move);
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
