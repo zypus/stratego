@@ -51,9 +51,12 @@ public class Game {
 		int toY = move.getToY();
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
-
+		// if we attack unit of ours then false
+		if(move.getPlayerID()==current.getUnit(toX, toY).getOwner()){
+			return false;
+		}
 		// if move from to is the same spot
-		if (distanceX == 0 && distanceY == 0) {
+		else if (distanceX == 0 && distanceY == 0) {
 			return false;
 		}
 		// check if it is vertical or horizontal move

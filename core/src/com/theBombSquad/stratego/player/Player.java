@@ -60,6 +60,8 @@ public abstract class Player {
 	 * Implementation is responsible to finish their work once the thread gets interrupted.
 	 * -- if ( Thread.currentThread().isInterrupted() ) --
 	 */
+	
+	 
 	protected abstract void move();
 	protected abstract void setup();
 	protected abstract void idle();
