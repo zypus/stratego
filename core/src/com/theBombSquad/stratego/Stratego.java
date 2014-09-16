@@ -31,7 +31,7 @@ public class Stratego extends ApplicationAdapter {
 	@Override
 	public void create () {
 		// TODO setup everything
-		windowScale = Gdx.graphics.getWidth() / ASSUMED_WINDOW_WIDTH;
+		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
 	}
 
 	@Override
