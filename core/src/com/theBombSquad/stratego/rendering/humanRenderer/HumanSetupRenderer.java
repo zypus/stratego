@@ -8,9 +8,15 @@ import com.theBombSquad.stratego.rendering.Renderer;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-public class HumanSetupRenderer implements Renderer {
+public class HumanSetupRenderer extends Renderer {
 
 	@Override public void render() {
 
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
 	}
 }

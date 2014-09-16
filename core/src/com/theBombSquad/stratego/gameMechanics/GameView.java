@@ -89,7 +89,7 @@ public class GameView {
 		List<Unit> allList = new ArrayList<Unit>();
 		allList.addAll(game.getDefeatedUnitsPlayer1());
 		allList.addAll(game.getDefeatedUnitsPlayer2());
-
+		
 		return Collections.unmodifiableList(allList);
 	}
 

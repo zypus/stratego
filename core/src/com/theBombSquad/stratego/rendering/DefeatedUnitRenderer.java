@@ -6,10 +6,16 @@ package com.theBombSquad.stratego.rendering;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-public class DefeatedUnitRenderer implements Renderer {
+public class DefeatedUnitRenderer extends Renderer {
 
 	@Override
 	public void render() {
 
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
 	}
 }
