@@ -12,6 +12,7 @@ import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.rendering.AtlasPacker;
 import com.theBombSquad.stratego.rendering.BoardRenderer;
+import com.theBombSquad.stratego.rendering.DefeatedUnitRenderer;
 import com.theBombSquad.stratego.rendering.LayerRenderer;
 import com.theBombSquad.stratego.rendering.RenderData;
 import com.theBombSquad.stratego.rendering.Renderer;
@@ -58,6 +59,7 @@ public class Stratego extends ApplicationAdapter {
 		GameView view = new GameView(new Game(null, null), StrategoConstants.PlayerID.PLAYER_1);
 		RenderData renderData = new RenderData(scale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas")));
 		list.add(new BoardRenderer(view));
+		list.add(new DefeatedUnitRenderer());
 		mainRenderer = new LayerRenderer(list, renderData);
 	}
 	
