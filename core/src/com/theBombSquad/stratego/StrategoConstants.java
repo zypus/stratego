@@ -14,7 +14,8 @@ public class StrategoConstants {
 	public static final int GRID_WIDTH = 10;
 	public static final int GRID_HEIGHT = 10;
 	public static final int GRID_POSITION_X = (int)(1.5 * POINT_TILE_SIZE);
-	public static final int GRID_POSITION_Y = (int)(0.5 * POINT_TILE_SIZE);
+	public static final int GRID_POSITION_Y = (int)(1.0 * POINT_TILE_SIZE);
+	public static double scale = 1;
 
 	public static final int UNREVEALED = -42;
 	public static final int FIRST_TURN = 0;

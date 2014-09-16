@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * TODO Add description
  *
- * @author Fabian Fr√§nz <f.fraenz@t-online.de>
+ * @author Fabian Fr‰nz <f.fraenz@t-online.de>
  * @author Flo
  * @author Mateusz Garbacz
  */
@@ -23,7 +23,7 @@ import java.util.List;
 public class Game {
 
 	private List<GameBoard> states;
-	private GameBoard current; //to be initialized
+	private static GameBoard current; //to be initialized
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
@@ -51,9 +51,12 @@ public class Game {
 		int toY = move.getToY();
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
-
+		// if we attack unit of ours then false
+		if(move.getPlayerID()==current.getUnit(toX, toY).getOwner()){
+			return false;
+		}
 		// if move from to is the same spot
-		if (distanceX == 0 && distanceY == 0) {
+		else if (distanceX == 0 && distanceY == 0) {
 			return false;
 		}
 		// check if it is vertical or horizontal move
@@ -159,6 +162,7 @@ public class Game {
 		/**
 		 performs move depending on the type of unit, considers also encounter
 		 */
+		moves.add(move);
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
@@ -337,5 +341,8 @@ public class Game {
 
 		return states.get(turn - 1);
 	}
-
+	public static GameBoard getCurrent(){
+		return current;
+	}
+	
 }

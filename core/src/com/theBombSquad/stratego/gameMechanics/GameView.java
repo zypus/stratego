@@ -24,7 +24,8 @@ public class GameView {
 	private final Game game;
 	private final PlayerID playerID;
 
-	public void validateMove(Move move) {
+	public boolean validateMove(Move move) {
+		return false;
 
 	}
 

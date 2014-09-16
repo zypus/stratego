@@ -1,6 +1,8 @@
 package com.theBombSquad.stratego.player.humanoid;
 
 import com.badlogic.gdx.InputAdapter;
+import com.theBombSquad.stratego.StrategoConstants;
+
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -15,6 +17,10 @@ public class PlayerBoardInput extends InputAdapter {
 	private final HumanPlayer player;
 
 	@Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		double scale = StrategoConstants.scale;
+		int x = (int)((screenX - StrategoConstants.GRID_POSITION_X*StrategoConstants.POINT_TILE_SIZE*scale)/StrategoConstants.POINT_TILE_SIZE*scale);
+		int y = (int)((screenY - StrategoConstants.GRID_POSITION_Y*StrategoConstants.POINT_TILE_SIZE*scale)/StrategoConstants.POINT_TILE_SIZE*scale);		
+		
 		return super.touchDown(screenX, screenY, pointer, button);
 	}
 
