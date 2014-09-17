@@ -35,7 +35,7 @@ public class GameView {
 
 	}
 
-	public void setSetup(Unit[][] setup) {
+	public void setSetup(GameBoard setup) {
 
 	}
 

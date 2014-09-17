@@ -15,11 +15,11 @@ public class HumanPlayer extends Player {
 		super(gameView);
 	}
 
-	@Override protected void move() {
+	@Override protected com.theBombSquad.stratego.gameMechanics.board.Move move() {
 
 	}
 
-	@Override protected void setup() {
+	@Override protected com.theBombSquad.stratego.gameMechanics.board.GameBoard setup() {
 
 	}
 
