@@ -12,7 +12,7 @@ public class GameBoard {
 
 	private Unit[][] board; // board[y][x]
 
-	private GameBoard(int width, int height, Rectangle ... lakes) {
+	public GameBoard(int width, int height, Rectangle ... lakes) {
 		board = new Unit[width][height];
 		for (int y = 0; y < board.length; y++) {
 			for (int x = 0; x < board[0].length; x++) {
