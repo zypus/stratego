@@ -20,7 +20,11 @@ public class PlayerBoardInput extends InputAdapter {
 		double scale = StrategoConstants.scale;
 		int x = (int)((screenX - StrategoConstants.GRID_POSITION_X*StrategoConstants.POINT_TILE_SIZE*scale)/StrategoConstants.POINT_TILE_SIZE*scale);
 		int y = (int)((screenY - StrategoConstants.GRID_POSITION_Y*StrategoConstants.POINT_TILE_SIZE*scale)/StrategoConstants.POINT_TILE_SIZE*scale);		
-		
+		if(player.getSetUpPhase()){
+			player.receiveSetUpInput(x,y);
+		}else{
+			player.receiveInput(x, y);
+		}
 		return super.touchDown(screenX, screenY, pointer, button);
 	}
 

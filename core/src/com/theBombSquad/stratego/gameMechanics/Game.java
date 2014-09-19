@@ -6,6 +6,7 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import lombok.Getter;
 
@@ -283,19 +284,25 @@ public class Game {
 
 		if (playerID == PlayerID.PLAYER_1) {
 			player1FinishedSetup = true;
+			if(player1 instanceof HumanPlayer ){
+				((HumanPlayer) player1).setSetUpPhase(false);
+			}			
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
 					current.setUnit(i, j, setup[i][j]);
 					;
 				}
 			}
-			if (player2FinishedSetup) {
+			if (player2FinishedSetup) {				
 				nextTurn();
 			}
 		} else {
 			// MIGHT BE WRONG !!
 			// I DIDNT FLIP THE SETUP BEFORE PUTTING INTO ARRAY
 			player2FinishedSetup = true;
+			if(player2 instanceof HumanPlayer ){
+				((HumanPlayer) player2).setSetUpPhase(false);
+			}		
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
 					current.setUnit(i, j, setup[i][j]);
@@ -327,6 +334,7 @@ public class Game {
 		player2.startSetup();
 	}
 
+	
 	public int getCurrentTurn() {
 
 		return states.size();
