@@ -12,7 +12,7 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class DefeatedUnitRenderer extends Renderer {

@@ -10,7 +10,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class Unit {

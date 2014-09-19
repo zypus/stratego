@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class LayerRenderer extends Renderer {

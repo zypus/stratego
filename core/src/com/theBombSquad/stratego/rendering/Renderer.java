@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
  * Abstract Class used for all Renderers, do not set the atlas outside of Layer Renderer as
  * it will load & inject the atlas into each renderer including itself
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public abstract class Renderer {

@@ -5,62 +5,88 @@ import java.util.ArrayList;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
-import com.theBombSquad.stratego.rendering.AtlasPacker;
-import com.theBombSquad.stratego.rendering.BoardRenderer;
-import com.theBombSquad.stratego.rendering.DefeatedUnitRenderer;
-import com.theBombSquad.stratego.rendering.LayerRenderer;
-import com.theBombSquad.stratego.rendering.RenderData;
-import com.theBombSquad.stratego.rendering.Renderer;
+import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
+
+import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 
 /**
- * TODO Add description
+ * Entry point for the stratego game. Setups everything and establishes remote connections if necessary.
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
+ *
+ * @version 1.0
+ * @created 10.09.14
+ *
+ * @date 16.09.14
+ *
+ * @log
+ * - Skeleton	10.09.14
+ * - TODOs 16.09.14
  */
 
 public class Stratego extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
-	private Renderer mainRenderer;
-	
-	private float scale;
+
+	private float windowScale;
+	private Game game;
 
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		computeScale();
-		testRendering();
+		// TODO setup everything
+		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
+		setupGame();
+		// TODO start the setup phase of the game
+		startGame();
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(12f/255f, 12f/255f, 12f/255f, 5f/255f);
+
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		mainRenderer.render(batch);
-		batch.end();
+		// TODO call the appropriate renderer
 	}
-	
-	private void computeScale(){
-		this.scale = (float)Gdx.graphics.getHeight()/(float)StrategoConstants.ASSUMED_WINDOW_HEIGHT;
+
+	private void setupMainMenu() {
+		// TODO create and show the main menu
+		// TODO listen for main menu completion
 	}
-	
-	private void testRendering(){
-		ArrayList<Renderer> list = new ArrayList<Renderer>();
-		AtlasPacker.pack();
-		GameView view = new GameView(new Game(null, null), StrategoConstants.PlayerID.PLAYER_1);
-		RenderData renderData = new RenderData(scale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas")));
-		list.add(new BoardRenderer(view));
-		list.add(new DefeatedUnitRenderer());
-		mainRenderer = new LayerRenderer(list, renderData);
+
+	private void setupGame() {
+		// TODO create the game instance
+		game = new Game();
+		// creates the two game views, one for each player perspective
+		GameView playerOneView = new GameView(game, StrategoConstants.PlayerID.PLAYER_1);
+		GameView playerTwoView = new GameView(game, StrategoConstants.PlayerID.PLAYER_2);
+		// create some observer view
+		GameView observerView = new GameView(game, StrategoConstants.PlayerID.NEMO);
+
+		// TODO create the players or get the players?
+		// for now instantiate two random players
+		Player player1 = new RandomAI(playerOneView);
+		Player player2 = new RandomAI(playerTwoView);
+
+		// tell the game about the players
+		game.setPlayer1(player1);
+		game.setPlayer2(player2);
+
+		// TODO setup renderers
+		setupRenderer(playerOneView, playerTwoView, observerView);
 	}
-	
+
+	private void setupRenderer(GameView gameView1, GameView gameView, GameView observerView) {
+		// TODO setup the render system
+	}
+
+	private void startGame() {
+		game.startSetupPhase();
+	}
+
+	private void listenForRemoteGameCreation() {
+		// TODO wait for an remote game creation on a yet to be defined socket
+		// TODO perform the necessary steps to connect and keep the game in sync
+	}
 }

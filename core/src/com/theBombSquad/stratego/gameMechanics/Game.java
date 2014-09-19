@@ -6,16 +6,20 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
-
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.theBombSquad.stratego.StrategoConstants.DEFAULT_LAKES;
+import static com.theBombSquad.stratego.StrategoConstants.GRID_HEIGHT;
+import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
+
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  * @author Mateusz Garbacz
  */
@@ -27,18 +31,19 @@ public class Game {
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
-	private Player player1;
-	private Player player2;
+	@Setter private Player player1;
+	@Setter private Player player2;
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 
-	public Game(Player player1, Player player2) {
+	public Game() {
 		states = new ArrayList<GameBoard>();
+		// add in the initial board
+		states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
+		current = states.get(0);
 		moves = new ArrayList<Move>();
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
-		this.player1 = player1;
-		this.player2 = player2;
 	}
 
 	public boolean validateMove(Move move) {
@@ -64,7 +69,7 @@ public class Game {
 		// first we check if one of distances is equal to one
 		// if place from which the move comes is either air, lake, bomb or flag
 		// then it is not valid
-		
+
 		else if (distanceX == 1 || distanceY == 1) {
 			if (current.getUnit(fromX, fromY).getType() == current.getUnit(
 					fromX, fromY).getType().AIR
@@ -76,7 +81,7 @@ public class Game {
 							.getUnit(fromX, fromY).getType().FLAG) {
 				return false;
 			}
-			
+
 		}
 		// check end position if it is not lake
 		else if (current.getUnit(toX, toY).getType() == current.getUnit(
@@ -152,7 +157,6 @@ public class Game {
 		 when a spy moves by a few fields it is discovered,
 		 dunno where to implement it :P
 		 */
-
 	}
 
 	public void performMove(Move move) {
@@ -318,7 +322,7 @@ public class Game {
 		}
 	}
 
-	private void setup() {
+	public void startSetupPhase() {
 		player1.startSetup();
 		player2.startSetup();
 	}
