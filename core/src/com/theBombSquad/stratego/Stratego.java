@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
+import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 
 import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 
@@ -27,11 +29,15 @@ import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 public class Stratego extends ApplicationAdapter {
 
 	private float windowScale;
+	private Game game;
 
 	@Override
 	public void create () {
 		// TODO setup everything
 		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
+		setupGame();
+		// TODO start the setup phase of the game
+		startGame();
 	}
 
 	@Override
@@ -48,19 +54,33 @@ public class Stratego extends ApplicationAdapter {
 	}
 
 	private void setupGame() {
-		// TODO create the players or get the players?
-
 		// TODO create the game instance
-		Game game = new Game();
+		game = new Game();
 		// creates the two game views, one for each player perspective
 		GameView playerOneView = new GameView(game, StrategoConstants.PlayerID.PLAYER_1);
 		GameView playerTwoView = new GameView(game, StrategoConstants.PlayerID.PLAYER_2);
+		// create some observer view
+		GameView observerView = new GameView(game, StrategoConstants.PlayerID.NEMO);
+
+		// TODO create the players or get the players?
+		// for now instantiate two random players
+		Player player1 = new RandomAI(playerOneView);
+		Player player2 = new RandomAI(playerTwoView);
+
+		// tell the game about the players
+		game.setPlayer1(player1);
+		game.setPlayer2(player2);
+
 		// TODO setup renderers
-		// TODO start the setup phase of the game
+		setupRenderer(playerOneView, playerTwoView, observerView);
 	}
 
-	private void setupRenderer(GameView gameView1, GameView gameView2) {
+	private void setupRenderer(GameView gameView1, GameView gameView, GameView observerView) {
 		// TODO setup the render system
+	}
+
+	private void startGame() {
+		game.startSetupPhase();
 	}
 
 	private void listenForRemoteGameCreation() {
