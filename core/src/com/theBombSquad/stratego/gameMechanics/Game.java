@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  * @author Mateusz Garbacz
  */
@@ -151,7 +151,6 @@ public class Game {
 		 when a spy moves by a few fields it is discovered,
 		 dunno where to implement it :P
 		 */
-
 	}
 
 	public void performMove(Move move) {

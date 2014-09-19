@@ -6,7 +6,7 @@ import com.theBombSquad.stratego.player.Player;
 /**
  * // TODO description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class RemotePlayer extends Player {

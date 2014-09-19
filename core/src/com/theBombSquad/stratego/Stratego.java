@@ -13,7 +13,7 @@ import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 /**
  * Entry point for the stratego game. Setups everything and establishes remote connections if necessary.
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  *
  * @version 1.0

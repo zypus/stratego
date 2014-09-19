@@ -6,7 +6,7 @@ import com.theBombSquad.stratego.gameMechanics.GameView;
  * Abstract player class which performs each player action (setup,move,idle).
  * Each action is run on a separate thread and subsequent action interrupt the previous action.
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public abstract class Player {

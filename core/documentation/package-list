@@ -1,0 +1,10 @@
+com.theBombSquad.stratego
+com.theBombSquad.stratego.desktop
+com.theBombSquad.stratego.gameMechanics
+com.theBombSquad.stratego.gameMechanics.board
+com.theBombSquad.stratego.player
+com.theBombSquad.stratego.player.ai
+com.theBombSquad.stratego.player.humanoid
+com.theBombSquad.stratego.player.remote
+com.theBombSquad.stratego.rendering
+com.theBombSquad.stratego.rendering.humanRenderer
