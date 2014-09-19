@@ -391,12 +391,12 @@ public class GameView {
 	 * @return The rotated board.
 	 */
 	private Unit[][] rotateBoard(Unit[][] board) {
-		int width = board.length;
-		int height = board[0].length;
-		Unit[][] rotatedBoard = new Unit[width][height];
-		for (int y = 0; y < width; y++) {
-			for (int x = 0; x < height; x++) {
-				rotatedBoard[width-y][width-x] = board[x][y];
+		int height = board.length;
+		int width = board[0].length;
+		Unit[][] rotatedBoard = new Unit[height][width];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				rotatedBoard[height-y-1][width-x-1] = board[y][x];
 			}
 		}
 		return rotatedBoard;

@@ -6,12 +6,15 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
-
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.theBombSquad.stratego.StrategoConstants.DEFAULT_LAKES;
+import static com.theBombSquad.stratego.StrategoConstants.GRID_HEIGHT;
+import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
 
 /**
  * TODO Add description
@@ -35,6 +38,9 @@ public class Game {
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
+		// add in the initial board
+		states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
+		current = states.get(0);
 		moves = new ArrayList<Move>();
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
