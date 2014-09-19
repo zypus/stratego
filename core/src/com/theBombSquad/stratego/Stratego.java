@@ -49,8 +49,9 @@ public class Stratego extends ApplicationAdapter {
 
 	private void setupGame() {
 		// TODO create the players or get the players?
+
 		// TODO create the game instance
-		Game game = null;
+		Game game = new Game();
 		// creates the two game views, one for each player perspective
 		GameView playerOneView = new GameView(game, StrategoConstants.PlayerID.PLAYER_1);
 		GameView playerTwoView = new GameView(game, StrategoConstants.PlayerID.PLAYER_2);

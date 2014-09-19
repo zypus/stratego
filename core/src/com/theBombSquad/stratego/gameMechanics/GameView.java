@@ -3,6 +3,7 @@ package com.theBombSquad.stratego.gameMechanics;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 public class GameView {
 
 	private final Game game;
-	private final PlayerID playerID;
+	@Getter private final PlayerID playerID;
 
 	public void validateMove(Move move) {
 
