@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  * @author Mateusz Garbacz
  */
@@ -64,7 +64,7 @@ public class Game {
 		// first we check if one of distances is equal to one
 		// if place from which the move comes is either air, lake, bomb or flag
 		// then it is not valid
-		
+
 		else if (distanceX == 1 || distanceY == 1) {
 			if (current.getUnit(fromX, fromY).getType() == current.getUnit(
 					fromX, fromY).getType().AIR
@@ -76,7 +76,7 @@ public class Game {
 							.getUnit(fromX, fromY).getType().FLAG) {
 				return false;
 			}
-			
+
 		}
 		// check end position if it is not lake
 		else if (current.getUnit(toX, toY).getType() == current.getUnit(
@@ -152,7 +152,6 @@ public class Game {
 		 when a spy moves by a few fields it is discovered,
 		 dunno where to implement it :P
 		 */
-
 	}
 
 	public void performMove(Move move) {
