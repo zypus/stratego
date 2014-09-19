@@ -53,5 +53,10 @@ public class GameBoard {
 		}
 		return clonedBoard;
 	}
+	
+	/** Returns Whether X & Y are within borders */
+	public boolean isInBounds(int x, int y){
+		return x>=0 && x<this.getWidth() && y>=0 && y<this.getHeight();
+	}
 
 }

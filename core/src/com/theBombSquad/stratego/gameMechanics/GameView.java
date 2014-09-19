@@ -202,6 +202,11 @@ public class GameView {
 
 		return getUnit(x,y) == Unit.UNKNOWN;
 	}
+	
+	public boolean isEnemy(int x, int y){
+		PlayerID unitOwner = getUnit(x, y).getOwner();
+		return !unitOwner.equals(playerID) && !unitOwner.equals(PlayerID.NEMO);
+	}
 
 	/**
 	 * Get all moves played so far.
@@ -332,7 +337,7 @@ public class GameView {
 	 * @return The unit itself or an obscured unit.
 	 */
 	private Unit obscureUnitIfNecessary(Unit unit, int turn) {
-		if (!unit.getOwner().equals(PlayerID.NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
+		if (!playerID.equals(PlayerID.NEMO) && !unit.getOwner().equals(PlayerID.NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
 			return Unit.UNKNOWN;
 		} else {
 			return unit;
@@ -347,7 +352,7 @@ public class GameView {
 	 */
 	private Point conditionalCoordinateRotation(int x, int y) {
 		Point coord = new Point(-1,-1);
-		if (playerID.equals(PlayerID.PLAYER_1)) {
+		if (playerID.equals(PlayerID.PLAYER_1) || playerID.equals(PlayerID.NEMO)) {
 			// Player 1 coordinates are equal to game space coordinates.
 			coord = new Point(x,y);
 		} else if (playerID.equals(PlayerID.PLAYER_2)) {

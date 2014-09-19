@@ -285,8 +285,7 @@ public class Game {
 			player1FinishedSetup = true;
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(i, j, setup[i][j]);
-					;
+					current.setUnit(j, i+6, setup[i][j]);
 				}
 			}
 			if (player2FinishedSetup) {
@@ -298,7 +297,7 @@ public class Game {
 			player2FinishedSetup = true;
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(i, j, setup[i][j]);
+					current.setUnit(j, i, setup[i][j]);
 				}
 			}
 			if (player1FinishedSetup) {

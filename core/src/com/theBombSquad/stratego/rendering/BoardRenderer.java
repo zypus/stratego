@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.utils.Array;
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game;
@@ -32,6 +34,12 @@ public class BoardRenderer extends Renderer {
 	private TextureRegion black;
 	private TextureRegion water;
 	
+	/** Textures of Units that have been defeated, in the order they will be drawn from top to bottom */
+	private TextureRegion[] rUnits;
+	/** Textures of Units's backs that have been defeated, in the order they will be drawn from top to bottom */
+	private TextureRegion[] unitBacks;
+	
+	
 	public BoardRenderer(GameView view){
 		this.view = view;
 	}
@@ -41,11 +49,27 @@ public class BoardRenderer extends Renderer {
 		white = renderData.getAtlas().findRegion("tileWhite");
 		black = renderData.getAtlas().findRegion("tileBlack");
 		water = renderData.getAtlas().findRegion("tileWater");
+		initUnitImages();
+	}
+	
+	/** Initializes the Texture Regions that represent the Units */
+	private void initUnitImages(){
+		rUnits = new TextureRegion[12];
+		Array<AtlasRegion> units = super.renderData.getAtlas().findRegions("unit");
+		for(int c=0; c<rUnits.length; c++){
+			rUnits[c] = units.get(c);
+			
+		}
+		unitBacks = new TextureRegion[2];
+		Array<AtlasRegion> backs = super.renderData.getAtlas().findRegions("back");
+		for(int c=0; c<unitBacks.length; c++){
+			unitBacks[c] = backs.get(c);
+		}
 	}
 	
 	@Override
 	public void render(SpriteBatch batch) {
-		GameBoard board = new GameBoard(10, 10, new Rectangle(2, 4, 2, 2), new Rectangle(6, 4, 2, 2));
+		GameBoard board = view.getCurrentState();
 		float gridX = GRID_POSITION_X*getScale();
 		float gridY = GRID_POSITION_Y*getScale();
 		float size = POINT_TILE_SIZE*getScale();
@@ -64,6 +88,17 @@ public class BoardRenderer extends Renderer {
 			for(int cx=0; cx<GRID_WIDTH; cx++){
 				if(board.getUnit(cx, cy) == Unit.LAKE){
 					drawTile(water, batch, cx, cy, size, gridX, gridY);
+				}
+			}
+		}
+		//Draw Units
+		for(int cy=0; cy<GRID_HEIGHT; cy++){
+			for(int cx=0; cx<GRID_WIDTH; cx++){
+				if(board.getUnit(cx, cy) != Unit.LAKE && board.getUnit(cx, cy) != Unit.AIR){
+					drawTile(unitBacks[view.getUnit(cx, cy).getOwner()==PlayerID.PLAYER_1?0:1], batch, cx, cy, size, gridX, gridY);
+					if(view.getUnit(cx, cy).getType().getRank() != Unit.UNKNOWN.getType().getRank()){
+						drawTile(rUnits[view.getUnit(cx, cy).getType().getRank()], batch, cx, cy, size, gridX, gridY);
+					}
 				}
 			}
 		}

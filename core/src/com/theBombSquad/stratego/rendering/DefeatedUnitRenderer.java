@@ -22,7 +22,6 @@ public class DefeatedUnitRenderer extends Renderer {
 	
 	/** Textures of Units that have been defeated, in the order they will be drawn from top to bottom */
 	private TextureRegion[] defeatedUnits;
-	
 	/** Textures of Units's backs that have been defeated, in the order they will be drawn from top to bottom */
 	private TextureRegion[] defeatedBacks;
 	

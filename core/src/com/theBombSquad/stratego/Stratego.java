@@ -5,10 +5,17 @@ import java.util.ArrayList;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
+import com.theBombSquad.stratego.rendering.BoardRenderer;
+import com.theBombSquad.stratego.rendering.DefeatedUnitRenderer;
+import com.theBombSquad.stratego.rendering.LayerRenderer;
+import com.theBombSquad.stratego.rendering.RenderData;
+import com.theBombSquad.stratego.rendering.Renderer;
 
 import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 
@@ -32,22 +39,28 @@ public class Stratego extends ApplicationAdapter {
 
 	private float windowScale;
 	private Game game;
+	
+	private SpriteBatch batch;
+	
+	private Renderer layerRenderer;
 
 	@Override
 	public void create () {
 		// TODO setup everything
 		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
 		setupGame();
+		this.batch = new SpriteBatch();
 		// TODO start the setup phase of the game
 		startGame();
 	}
 
 	@Override
 	public void render () {
-
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		// TODO call the appropriate renderer
+		batch.begin();
+		layerRenderer.render(batch);
+		batch.end();
 	}
 
 	private void setupMainMenu() {
@@ -78,11 +91,17 @@ public class Stratego extends ApplicationAdapter {
 	}
 
 	private void setupRenderer(GameView gameView1, GameView gameView, GameView observerView) {
-		// TODO setup the render system
+		Renderer board = new BoardRenderer(observerView);
+		Renderer death = new DefeatedUnitRenderer();
+		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();
+		rendererList.add(board);
+		rendererList.add(death);
+		this.layerRenderer = new LayerRenderer(rendererList, new RenderData(windowScale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas"))));
 	}
 
 	private void startGame() {
 		game.startSetupPhase();
+		
 	}
 
 	private void listenForRemoteGameCreation() {
