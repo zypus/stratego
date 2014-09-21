@@ -33,7 +33,7 @@ public class RemoteServingPlayer
 		SocketHints socketHints = new SocketHints();
 		// Socket will time our in 4 seconds
 		socketHints.connectTimeout = SERVE_TIMEOUT;
-		//create the socket and connect to the server entered in the text box ( x.x.x.x format ) on port 9021
+		//create the socket and connect to the server entered in the text box ( x.x.x.x format ) on port PORT
 		Socket socket = Gdx.net.newClientSocket(Net.Protocol.TCP, IPAddress, PORT, socketHints);
 		try {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
