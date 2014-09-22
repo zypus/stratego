@@ -10,7 +10,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class Unit {
@@ -34,6 +34,14 @@ public class Unit {
 		this.type = type;
 		this.owner = owner;
 		this.id = idCounter++;
+	}
+
+	public boolean isAir() {
+		return type.equals(UnitType.AIR);
+	}
+
+	public boolean isLake() {
+		return type.equals(UnitType.LAKE);
 	}
 
 	public static enum UnitType {

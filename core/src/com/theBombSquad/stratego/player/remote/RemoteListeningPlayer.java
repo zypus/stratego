@@ -8,6 +8,7 @@ import com.badlogic.gdx.net.Socket;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
 import lombok.extern.java.Log;
 
@@ -78,12 +79,12 @@ public class RemoteListeningPlayer
 		}
 	}
 
-	@Override protected GameBoard setup() {
+	@Override protected Setup setup() {
 
 		Object receivedObject = receiveObject();
 
 		if (receivedObject instanceof GameBoard) {
-			GameBoard setup = (GameBoard) receivedObject;
+			Setup setup = (Setup) receivedObject;
 			gameView.setSetup(setup);
 			return setup;
 		} else {

@@ -1,65 +1,346 @@
 package com.theBombSquad.stratego.gameMechanics;
 
+import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import com.theBombSquad.stratego.player.Player;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import static com.theBombSquad.stratego.StrategoConstants.DEFAULT_LAKES;
+import static com.theBombSquad.stratego.StrategoConstants.GRID_HEIGHT;
+import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
 
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
+ * @author Mateusz Garbacz
  */
 @Getter
 public class Game {
 
 	private List<GameBoard> states;
+	private GameBoard current; //to be initialized
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
+	@Setter private Player player1;
+	@Setter private Player player2;
+	private boolean player1FinishedSetup = false;
+	private boolean player2FinishedSetup = false;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
+		// add in the initial board
+		states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
+		current = states.get(0);
 		moves = new ArrayList<Move>();
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 	}
 
-	public void validateMove(Move move) {
+	public boolean validateMove(Move move) {
+		/**
+		checks if a move is valid
+		 */
+		int fromX = move.getFromX();
+		int fromY = move.getFromY();
+		int toX = move.getToX();
+		int toY = move.getToY();
+		int distanceX = Math.abs(fromX - toX);
+		int distanceY = Math.abs(fromY - toY);
 
+		// if move from to is the same spot
+		if (distanceX == 0 && distanceY == 0) {
+			return false;
+		}
+		// check if it is vertical or horizontal move
+		else if (distanceX != 0 && distanceY != 0) {
+			return false;
+		}
+
+		// first we check if one of distances is equal to one
+		// if place from which the move comes is either air, lake, bomb or flag
+		// then it is not valid
+
+		else if (distanceX == 1 || distanceY == 1) {
+			if (current.getUnit(fromX, fromY).getType() == current.getUnit(
+					fromX, fromY).getType().AIR
+					|| current.getUnit(fromX, fromY).getType() == current
+							.getUnit(fromX, fromY).getType().LAKE
+					|| current.getUnit(fromX, fromY).getType() == current
+							.getUnit(fromX, fromY).getType().BOMB
+					|| current.getUnit(fromX, fromY).getType() == current
+							.getUnit(fromX, fromY).getType().FLAG) {
+				return false;
+			}
+
+		}
+		// check end position if it is not lake
+		else if (current.getUnit(toX, toY).getType() == current.getUnit(
+				toX, toY).getType().LAKE) {
+			return false;
+		}
+
+		// if none of distances is 1 then one of them must be longer than one
+		else {
+			// check how long is the step, only scout can go more than one cell
+			if (distanceX > 1) {
+				if (current.getUnit(fromX, fromY).getType() == current.getUnit(
+						fromX, fromY).getType().SCOUT) {
+					// if it is a scout and it goes right we check all the steps
+					// between
+					if (toX - fromX > 0) {
+						for (int i =fromX + 1; i <= toX - 1; i++) {
+							if (current.getUnit(i, fromY).getType() != current
+									.getUnit(fromX, fromY).getType().AIR) {
+								return false;
+							}
+						}
+						discoverSpy();
+						return true;
+					} else {
+						for (int i = toX + 1; i <= fromX - 1; i++) {
+							if (current.getUnit(i, fromY).getType() != current
+									.getUnit(fromX, fromY).getType().AIR) {
+								return false;
+							}
+						}
+						discoverSpy();
+						return true;
+					}
+
+				} else {
+					return false;
+				}
+			} else if (distanceY > 1) {
+				if (current.getUnit(fromX, fromY).getType() == current.getUnit(
+						fromX, fromY).getType().SCOUT) {
+					if (toY - fromY > 0) {
+						for (int i = fromY + 1; i <= toY - 1; i++) {
+							if (current.getUnit(fromX, i).getType() != current
+									.getUnit(fromX, i).getType().AIR) {
+								return false;
+							}
+						}
+						discoverSpy();
+						return true;
+					} else {
+						for (int i = toY + 1; i <= fromY - 1; i++) {
+							if (current.getUnit(fromX, i).getType() != current
+									.getUnit(fromX, i).getType().AIR) {
+								return false;
+							}
+						}
+						discoverSpy();
+						return true;
+					}
+				}
+
+				else {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void discoverSpy() {
+		/**
+		 when a spy moves by a few fields it is discovered,
+		 dunno where to implement it :P
+		 */
 	}
 
 	public void performMove(Move move) {
+		/**
+		 performs move depending on the type of unit, considers also encounter
+		 */
+		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
+				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
+			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
+			// if moved to air just set the air to unit
+			if (current.getUnit(move.getFromX(), move.getFromY()).getType() == current
+					.getUnit(move.getFromX(), move.getFromY()).getType().AIR) {
+				current.setUnit(move.getToX(), move.getToY(), movedUnit);
+			} else {
+				// checks who is the winner
+				Encounter encounter = new Encounter(movedUnit, current.getUnit(
+						move.getToX(), move.getToY()));
+				Unit winner = encounter.getVictoriousUnit();
+				// if there is no winner then sets the field to air
+				if (winner == null) {
+					current.setUnit(move.getToX(), move.getToY(), new Unit(
+							current.getUnit(1, 1).getType().AIR, PlayerID.NEMO));
+				}
+				// else sets the winner to the spot
+				else {
+					current.setUnit(move.getToX(), move.getToY(), winner);
+				}
+				Unit[] loosers = encounter.getDefeatedUnits();
+				for (int i = 0; i < loosers.length; i++) {
+					if (loosers[i].getOwner() == PlayerID.PLAYER_1) {
+						defeatedUnitsPlayer1.add(loosers[i]);
+					} else {
+						defeatedUnitsPlayer2.add(loosers[i]);
+					}
+				}
 
+			}
+			// sets the unit that is moved to air
+			current.setUnit(move.getFromX(), move.getFromY(), new Unit(current
+					.getUnit(1, 1).getType().AIR, PlayerID.NEMO));
+			states.add(current.duplicate());
+		}
+
+		// only gets if wrong player makes move
+		else {
+			System.out.println("WRONG PLAYER!");
+		}
 	}
 
-	public void validateSetup(Unit[][] setup) {
+	public boolean validateSetup(Setup setup) {
+		/**
+		 * check if the setup is correct, check if every field is not empty and
+		 * how many of each unit there is
+		 */
+		boolean hasFlag = false;
+		// array of elements by rank
+		int[] unitsByRank = new int[11];
+		for (int i = 0; i < setup.getWidth(); i++) {
+			for (int j = 0; j < setup.getHeight(); j++) {
+				// for every element checks if it is not empty
+				if (setup.getUnit(i,j) == null
+						|| setup.getUnit(i, j).isAir()
+						|| setup.getUnit(i, j).isLake()) {
+					return false;
+				} else if (setup.getUnit(i, j).getType() == Unit.UnitType.FLAG) {
+					// checks if there is already one flag found
+					if (hasFlag = false) {
+						hasFlag = true;
+					} else {
+						return false;
+					}
+				} else {
+					// it counts units of each rank
+					unitsByRank[setup.getUnit(i,j).getType().getRank()]++;
+				}
+			}
+		}
+		// checks the quantity of each unit
+		if (unitsByRank[0] != 7) {
+			return false;
+		}
+		if (unitsByRank[1] != 1) {
+			return false;
+		}
+		if (unitsByRank[2] != 8) {
+			return false;
+		}
+		if (unitsByRank[3] != 5) {
+			return false;
+		}
+		if (unitsByRank[4] != 4) {
+			return false;
+		}
+		if (unitsByRank[5] != 4) {
+			return false;
+		}
+		if (unitsByRank[6] != 4) {
+			return false;
+		}
+		if (unitsByRank[7] != 3) {
+			return false;
+		}
+		if (unitsByRank[8] != 2) {
+			return false;
+		}
+		if (unitsByRank[9] != 1) {
+			return false;
+		}
+		if (unitsByRank[10] != 1) {
+			return false;
+		}
+		if (!hasFlag) {
+			return false;
+		}
 
+		return true;
 	}
 
-	public void setSetup(Unit[][] setup, PlayerID playerID) {
+	public void setSetup(Setup setup, PlayerID playerID) {
+		/**
+			puts setup to the main grid depending on a player
+			player 1 on the bottom player 2 on the top
+		 */
 
+		if (playerID == PlayerID.PLAYER_1) {
+			for (int i = 0; i < setup.getWidth(); i++) {
+				for (int j = 0; j < setup.getHeight(); j++) {
+					current.setUnit(i, j+6, setup.getUnit(i,j));
+					;
+				}
+			}
+			if (player2FinishedSetup) {
+				nextTurn();
+			}
+			player1FinishedSetup = true;
+		} else {
+			// MIGHT BE WRONG !!
+			// I DIDNT FLIP THE SETUP BEFORE PUTTING INTO ARRAY
+			for (int i = 0; i < setup.getWidth(); i++) {
+				for (int j = 0; j < setup.getHeight(); j++) {
+					current.setUnit(i, j, setup.getUnit(i,j));
+				}
+			}
+			if (player1FinishedSetup) {
+				nextTurn();
+			}
+			player2FinishedSetup = true;
+
+		}
+	}
+
+	private void nextTurn() {
+		/**
+			when called, first determine which players turn is it, then
+			call one of them to start move, second to idle
+		 */
+		if (states.size() % 2 == 1) {
+			player1.startMove();
+			player2.startIdle();
+		} else {
+			player2.startMove();
+			player1.startIdle();
+		}
+	}
+
+	public void startSetupPhase() {
+		player1.startSetup();
+		player2.startSetup();
 	}
 
 	public int getCurrentTurn() {
 
-		return 0;
+		return states.size();
 	}
 
 	public GameBoard getCurrentState() {
 
-		return null;
+		return current;
 	}
 
 	public GameBoard getState(int turn) {
 
-		return null;
+		return states.get(turn - 1);
 	}
 
 }

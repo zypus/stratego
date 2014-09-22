@@ -1,14 +1,14 @@
 package com.theBombSquad.stratego.player;
 
 import com.theBombSquad.stratego.gameMechanics.GameView;
-import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 
 /**
  * Abstract player class which performs each player action (setup,move,idle).
  * Each action is run on a separate thread and subsequent action interrupt the previous action.
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public abstract class Player {
@@ -63,7 +63,7 @@ public abstract class Player {
 	 * -- if ( Thread.currentThread().isInterrupted() ) --
 	 */
 	protected abstract Move move();
-	protected abstract GameBoard setup();
+	protected abstract Setup setup();
 	protected abstract void idle();
 
 	/**
@@ -81,7 +81,7 @@ public abstract class Player {
 	 *
 	 * @return The requested setup.
 	 */
-	public GameBoard setup_directAccessOverwrite() {
+	public Setup setup_directAccessOverwrite() {
 		return setup();
 	}
 

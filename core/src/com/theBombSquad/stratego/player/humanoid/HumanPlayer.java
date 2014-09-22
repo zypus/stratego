@@ -1,12 +1,14 @@
 package com.theBombSquad.stratego.player.humanoid;
 
 import com.theBombSquad.stratego.gameMechanics.GameView;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
 
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class HumanPlayer extends Player {
@@ -15,12 +17,14 @@ public class HumanPlayer extends Player {
 		super(gameView);
 	}
 
-	@Override protected com.theBombSquad.stratego.gameMechanics.board.Move move() {
+	@Override protected Move move() {
 
+		return null;
 	}
 
-	@Override protected com.theBombSquad.stratego.gameMechanics.board.GameBoard setup() {
+	@Override protected Setup setup() {
 
+		return null;
 	}
 
 	@Override protected void idle() {

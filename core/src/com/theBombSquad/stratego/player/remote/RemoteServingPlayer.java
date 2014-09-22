@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
-import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -22,19 +22,25 @@ import static com.theBombSquad.stratego.StrategoConstants.SERVE_TIMEOUT;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-@RequiredArgsConstructor
+@Log
 public class RemoteServingPlayer
 		extends Player {
 
 	private final Player localPlayer;
-	private final String IPAddress;
+	private final String ipAddress;
+
+	public RemoteServingPlayer(Player localPlayer, String ipAddress) {
+		super(null);
+		this.localPlayer = localPlayer;
+		this.ipAddress = ipAddress;
+	}
 
 	private void sendObject(Serializable object) {
 		SocketHints socketHints = new SocketHints();
 		// Socket will time our in 4 seconds
 		socketHints.connectTimeout = SERVE_TIMEOUT;
 		//create the socket and connect to the server entered in the text box ( x.x.x.x format ) on port PORT
-		Socket socket = Gdx.net.newClientSocket(Net.Protocol.TCP, IPAddress, PORT, socketHints);
+		Socket socket = Gdx.net.newClientSocket(Net.Protocol.TCP, ipAddress, PORT, socketHints);
 		try {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 			output.writeObject(object);
@@ -52,9 +58,9 @@ public class RemoteServingPlayer
 		return move;
 	}
 
-	@Override protected GameBoard setup() {
+	@Override protected Setup setup() {
 
-		GameBoard setup = localPlayer.setup_directAccessOverwrite();
+		Setup setup = localPlayer.setup_directAccessOverwrite();
 
 		sendObject(setup);
 

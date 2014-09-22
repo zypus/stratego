@@ -5,7 +5,7 @@ import com.theBombSquad.stratego.rendering.Renderer;
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class HumanSetupRenderer implements Renderer {
