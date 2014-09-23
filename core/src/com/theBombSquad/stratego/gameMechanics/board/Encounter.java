@@ -19,6 +19,8 @@ public class Encounter {
 	private CombatResult result;
 
 	public Encounter(Unit attackingUnit, Unit defendingUnit) {
+		this.attackingUnit=attackingUnit;
+		this.defendingUnit=defendingUnit;
 		if (defendingUnit.getType() == defendingUnit.getType().BOMB) {
 			if (attackingUnit.getType() == attackingUnit.getType().SAPPER) {
 				result=CombatResult.VICTORIOUS_ATTACK;
