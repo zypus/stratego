@@ -8,6 +8,7 @@ import com.theBombSquad.stratego.player.Player;
 
 import lombok.RequiredArgsConstructor;
 
+import java.lang.Character.UnicodeScript;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -130,7 +131,7 @@ public class GameView {
 			for(int j = 0; j<4;j++){
 				if(units.get(marker).getType().getQuantity()>counter){
 					counter++;
-					board.setUnit(i,j,units.get(marker));
+					board.setUnit(i,j,new Unit(units.get(marker).getType(),playerID));
 				}
 				else{
 					marker++;
