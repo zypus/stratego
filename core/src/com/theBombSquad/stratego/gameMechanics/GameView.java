@@ -3,6 +3,8 @@ package com.theBombSquad.stratego.gameMechanics;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -324,7 +326,7 @@ public class GameView {
 		GameBoard copiedGameBoard = gameBoard.duplicate();
 		for (int y = 0; y < copiedGameBoard.getHeight(); y++) {
 			for (int x = 0; x < copiedGameBoard.getWidth(); x++) {
-				copiedGameBoard.setUnit(gameBoard.getWidth()-x, gameBoard.getHeight()-y, obscureUnitIfNecessary(gameBoard.getUnit(x, y), turn));
+				copiedGameBoard.setUnit(gameBoard.getWidth()-x-1, gameBoard.getHeight()-y-1, obscureUnitIfNecessary(gameBoard.getUnit(x, y), turn));
 			}
 		}
 		return copiedGameBoard;
@@ -357,7 +359,7 @@ public class GameView {
 			coord = new Point(x,y);
 		} else if (playerID.equals(PlayerID.PLAYER_2)) {
 			// Player 2 coordinates need to be rotated by 180 degree to be in game space.
-			coord = new Point(GRID_WIDTH - x, GRID_HEIGHT - y);
+			coord = new Point(GRID_WIDTH - x - 1, GRID_HEIGHT - y - 1);
 		} else {
 			System.out.println("Invalid player ID");
 		}
@@ -370,10 +372,10 @@ public class GameView {
 	 * @return Rotated move.
 	 */
 	private Move rotateMove(Move move) {
-		return new Move(GRID_WIDTH - move.getFromX(),
-									GRID_HEIGHT - move.getFromY(),
-									GRID_WIDTH - move.getToX(),
-									GRID_HEIGHT - move.getToY());
+		return new Move(GRID_WIDTH - move.getFromX() - 1,
+									GRID_HEIGHT - move.getFromY() - 1,
+									GRID_WIDTH - move.getToX() - 1,
+									GRID_HEIGHT - move.getToY() - 1);
 	}
 
 	/**
@@ -405,6 +407,38 @@ public class GameView {
 			}
 		}
 		return rotatedBoard;
+	}
+	
+	/** sets all the units on the top of the board so we can start making the setup */
+	public void startSetup() {
+		GameBoard board=game.getCurrentState();
+		ArrayList<Unit> units= new ArrayList<Unit>();
+		units.add(new Unit(UnitType.FLAG,playerID));
+		units.add(new Unit(UnitType.BOMB,playerID));
+		units.add(new Unit(UnitType.SPY,playerID));
+		units.add(new Unit(UnitType.SCOUT,playerID));
+		units.add(new Unit(UnitType.SAPPER,playerID));
+		units.add(new Unit(UnitType.SERGEANT,playerID));
+		units.add(new Unit(UnitType.LIEUTENANT,playerID));
+		units.add(new Unit(UnitType.CAPTAIN,playerID));
+		units.add(new Unit(UnitType.MAJOR,playerID));
+		units.add(new Unit(UnitType.COLONEL,playerID));
+		units.add(new Unit(UnitType.GENERAL,playerID));
+		units.add(new Unit(UnitType.MARSHAL,playerID));
+		int counter=0; int marker=0;
+		for(int i = 0; i<board.getWidth();i++){
+			for (int j = 0; j < 4; j++) {
+				if (units.get(marker).getType().getQuantity() > counter) {
+					counter++;
+					board.setUnit(i, j, new Unit(units.get(marker).getType(),
+							playerID));
+				} else {
+					marker++;
+					counter = 0;
+					j--;
+				}
+			}
+		}
 	}
 
 }

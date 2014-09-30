@@ -138,7 +138,6 @@ public class HumanPlayer extends Player {
 
 	public void resetSetup() {
 		gameView.startSetup();
-
 	}
 
 }

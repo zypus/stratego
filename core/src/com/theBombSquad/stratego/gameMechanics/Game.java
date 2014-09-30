@@ -37,6 +37,7 @@ public class Game {
 	@Setter private Player player2;
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
+	private boolean finishedSetup = false;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -169,6 +170,7 @@ public class Game {
 		 performs move depending on the type of unit, considers also encounter
 		 */
 		moves.add(move);
+		
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
@@ -202,6 +204,7 @@ public class Game {
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			states.add(current.duplicate());
+			nextTurn();
 		}
 
 		// only gets if wrong player makes move
@@ -284,7 +287,6 @@ public class Game {
 			puts setup to the main grid depending on a player
 			player 1 on the bottom player 2 on the top
 		 */
-
 		if (playerID == PlayerID.PLAYER_1) {
 			player1FinishedSetup = true;
 			if(player1 instanceof HumanPlayer ){
@@ -294,9 +296,6 @@ public class Game {
 				for (int j = 0; j < setup[0].length; j++) {
 					current.setUnit(j, i+6, setup[i][j]);
 				}
-			}
-			if (player2FinishedSetup) {				
-				nextTurn();
 			}
 		} else {
 			// MIGHT BE WRONG !!
@@ -310,10 +309,10 @@ public class Game {
 					current.setUnit(j, i, setup[i][j]);
 				}
 			}
-			if (player1FinishedSetup) {
-				nextTurn();
-			}
-
+		}
+		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+			finishedSetup = true;
+			nextTurn();
 		}
 	}
 

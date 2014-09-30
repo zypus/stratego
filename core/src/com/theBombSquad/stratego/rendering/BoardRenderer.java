@@ -94,10 +94,12 @@ public class BoardRenderer extends Renderer {
 		//Draw Units
 		for(int cy=0; cy<board.getHeight(); cy++){
 			for(int cx=0; cx<board.getWidth(); cx++){
-				if(board.getUnit(cx, cy).getType().getRank() != -1){
+				int unitRank = view.getUnit(cx, cy).getType().getRank();
+				if(unitRank != -1){
 					drawTile(unitBacks[view.getUnit(cx, cy).getOwner()==PlayerID.PLAYER_1?0:1], batch, cx, cy, size, gridX, gridY);
-					if(view.getUnit(cx, cy).getType().getRank() != Unit.UNKNOWN.getType().getRank()){
-						drawTile(rUnits[view.getUnit(cx, cy).getType().getRank()], batch, cx, cy, size, gridX, gridY);
+					if(unitRank != Unit.UNKNOWN.getType().getRank()){
+						System.out.println(cx+" "+cy+"  "+view.getUnit(cx, cy).getType().getRank());
+						drawTile(rUnits[unitRank], batch, cx, cy, size, gridX, gridY);
 					}
 				}
 			}

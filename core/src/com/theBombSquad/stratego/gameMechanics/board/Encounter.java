@@ -44,6 +44,7 @@ public class Encounter {
 	}
 
 	public Unit getVictoriousUnit() {
+		//TODO: replace null with ari
 		switch (result) {
 		case VICTORIOUS_ATTACK:
 			return attackingUnit;
