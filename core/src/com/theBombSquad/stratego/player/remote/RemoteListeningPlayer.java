@@ -94,6 +94,7 @@ public class RemoteListeningPlayer
 		if (receivedObject instanceof Setup) {
 			Setup setup = (Setup) receivedObject;
 			gameView.setSetup(setup);
+			log.info("Setup successfully received from "+gameView.getPlayerID().toString()+".");
 			return setup;
 		} else {
 			log.severe("Unrecognized object received. Objects class is: " + receivedObject.getClass());
