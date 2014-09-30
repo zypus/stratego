@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.gameMechanics.board;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * TODO Add description
@@ -8,9 +9,12 @@ import java.awt.*;
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
-public class GameBoard {
+public class GameBoard implements Serializable {
 
 	private Unit[][] board; // board[y][x]
+
+	protected GameBoard() {
+	}
 
 	public GameBoard(int width, int height, Rectangle ... lakes) {
 		board = new Unit[height][width];

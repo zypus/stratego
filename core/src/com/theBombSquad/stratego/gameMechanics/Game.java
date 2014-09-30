@@ -289,9 +289,6 @@ public class Game {
 					;
 				}
 			}
-			if (player2FinishedSetup) {
-				nextTurn();
-			}
 			player1FinishedSetup = true;
 		} else {
 			// MIGHT BE WRONG !!
@@ -301,11 +298,11 @@ public class Game {
 					current.setUnit(i, j, setup.getUnit(i,j));
 				}
 			}
-			if (player1FinishedSetup) {
-				nextTurn();
-			}
-			player2FinishedSetup = true;
 
+			player2FinishedSetup = true;
+		}
+		if (player1FinishedSetup && player2FinishedSetup) {
+			nextTurn();
 		}
 	}
 

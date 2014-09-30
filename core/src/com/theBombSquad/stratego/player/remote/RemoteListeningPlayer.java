@@ -6,7 +6,6 @@ import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
 import com.badlogic.gdx.net.Socket;
 import com.theBombSquad.stratego.gameMechanics.GameView;
-import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
@@ -16,7 +15,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import static com.theBombSquad.stratego.StrategoConstants.LISTEN_TIMEOUT;
-import static com.theBombSquad.stratego.StrategoConstants.PORT;
+import static com.theBombSquad.stratego.StrategoConstants.PORT_PLAYER1;
+import static com.theBombSquad.stratego.StrategoConstants.PORT_PLAYER2;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 
 /**
  * TODO Add description
@@ -44,7 +45,7 @@ public class RemoteListeningPlayer
 		// Create the socket server using TCP protocol and listening on 9021
 		// Only one app can listen to a port at a time, keep in mind many ports are reserved
 		// especially in the lower numbers ( like 21, 80, etc )
-		return Gdx.net.newServerSocket(Net.Protocol.TCP, PORT, serverSocketHint);
+		return Gdx.net.newServerSocket(Net.Protocol.TCP, (gameView.getPlayerID().equals(PlayerID.PLAYER_1)) ? PORT_PLAYER1 : PORT_PLAYER2, serverSocketHint);
 	}
 
 	private Object receiveObject() {
@@ -67,7 +68,11 @@ public class RemoteListeningPlayer
 
 	@Override protected Move move() {
 
-		Object receivedObject = receiveObject();
+
+		Object receivedObject = null;
+		while (receivedObject == null) {
+			receivedObject = receiveObject();
+		}
 
 		if (receivedObject instanceof Move) {
 			Move move = (Move) receivedObject;
@@ -81,9 +86,12 @@ public class RemoteListeningPlayer
 
 	@Override protected Setup setup() {
 
-		Object receivedObject = receiveObject();
+		Object receivedObject = null;
+		while (receivedObject == null) {
+			receivedObject = receiveObject();
+		}
 
-		if (receivedObject instanceof GameBoard) {
+		if (receivedObject instanceof Setup) {
 			Setup setup = (Setup) receivedObject;
 			gameView.setSetup(setup);
 			return setup;

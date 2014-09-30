@@ -3,6 +3,8 @@ package com.theBombSquad.stratego.gameMechanics.board;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 import static com.theBombSquad.stratego.StrategoConstants.FIRST_TURN;
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
@@ -13,7 +15,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
-public class Unit {
+public class Unit implements Serializable {
 
 	private static int idCounter = 1;
 
@@ -29,6 +31,12 @@ public class Unit {
 	protected int revealedInTurn = UNREVEALED;
 	@Getter
 	private final int id;
+
+	protected Unit() {
+		type = UnitType.AIR;
+		owner = PlayerID.NEMO;
+		id = -1;
+	}
 
 	public Unit(UnitType type, PlayerID owner) {
 		this.type = type;

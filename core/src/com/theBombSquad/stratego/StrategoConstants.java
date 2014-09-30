@@ -30,8 +30,10 @@ public class StrategoConstants {
 	}
 
 	/** Remote constants */
-	public static final int PORT = 9021;			// 21 stands usually for an FTP port TODO find a good port number
+	public static final int PORT_PLAYER1 = 9021;			// 21 stands usually for an FTP port TODO find a good port number
+	public static final int PORT_PLAYER2 = 9022;
 	public static final int SERVE_TIMEOUT = 4000; 	// in milliseconds
 	public static final int LISTEN_TIMEOUT = 0;     // in milliseconds
+	public static final int RETRY_DELAY = 2000;     // in milliseconds
 
 }

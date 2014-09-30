@@ -11,7 +11,12 @@ import java.io.Serializable;
  */
 public class Setup extends GameBoard implements Serializable {
 
+	protected Setup() {
+		super();
+	}
+
 	public Setup(int width, int height, Rectangle... lakes) {
 		super(width, height, lakes);
 	}
+
 }

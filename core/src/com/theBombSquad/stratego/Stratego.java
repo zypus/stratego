@@ -9,6 +9,23 @@ import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 import com.theBombSquad.stratego.player.remote.RemoteListeningPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 
@@ -50,9 +67,95 @@ public class Stratego extends ApplicationAdapter {
 		// TODO call the appropriate renderer
 	}
 
-	private void setupMainMenu() {
+	protected JOptionPane getOptionPane(JComponent parent) {
+		JOptionPane pane = null;
+		if (!(parent instanceof JOptionPane)) {
+			pane = getOptionPane((JComponent) parent.getParent());
+		} else {
+			pane = (JOptionPane) parent;
+		}
+		return pane;
+	}
+
+	private GameSetting showMainMenu() {
 		// TODO create and show the main menu
 		// TODO listen for main menu completion
+		List<Object> messageList = new ArrayList<Object>();
+
+		final JButton startButton = new JButton("Start");
+		startButton.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				JOptionPane pane = getOptionPane((JComponent) e.getSource());
+				pane.setValue(startButton);
+			}
+		});
+		JTextField ipAdress = new JTextField("127.0.0.1");
+		ipAdress.getDocument().addDocumentListener(new DocumentListener() {
+
+			private Pattern
+					pattern =
+					Pattern.compile(
+							"\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\.\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\.\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\.\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b");
+
+			private void update(DocumentEvent e) {
+				try {
+					String text = (e.getDocument().getLength() > 0) ? e.getDocument().getText(0, e.getDocument().getLength()) : "";
+					Matcher matcher = pattern.matcher(text);
+					startButton.setEnabled(matcher.matches());
+				} catch (BadLocationException e1) {
+					e1.printStackTrace();
+				}
+			}
+
+			@Override public void insertUpdate(DocumentEvent e) {
+				update(e);
+			}
+
+			@Override public void removeUpdate(DocumentEvent e) {
+				update(e);
+			}
+
+			@Override public void changedUpdate(DocumentEvent e) {
+				update(e);
+			}
+		});
+		JRadioButton host = new JRadioButton("Host");
+		JRadioButton client = new JRadioButton("Join");
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(host);
+		buttonGroup.add(client);
+		host.setSelected(true);
+		messageList.add(host);
+		messageList.add(client);
+		messageList.add("");
+		messageList.add("Enter the IP Address you want to connect to:");
+		messageList.add(ipAdress);
+		messageList.add("");
+		messageList.add("Found following IP addresses:");
+		Enumeration e = null;
+		try {
+			e = NetworkInterface.getNetworkInterfaces();
+			while (e.hasMoreElements()) {
+				NetworkInterface n = (NetworkInterface) e.nextElement();
+				Enumeration ee = n.getInetAddresses();
+				while (ee.hasMoreElements()) {
+					InetAddress i = (InetAddress) ee.nextElement();
+					messageList.add(i.getHostAddress());
+				}
+			}
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		}
+
+		Object[] message = messageList.toArray();
+
+		JOptionPane pane = new JOptionPane(message,
+										   JOptionPane.QUESTION_MESSAGE,
+										   JOptionPane.YES_NO_OPTION, null, new Object[] { startButton });
+		final JDialog dialog = pane.createDialog(null, "Game Setup");
+		dialog.setVisible(true);
+
+		return new GameSetting(host.isSelected(), ipAdress.getText());
 	}
 
 	private void setupGame() {
@@ -68,13 +171,14 @@ public class Stratego extends ApplicationAdapter {
 		// for now instantiate two random players
 		Player player1;
 		Player player2;
-		boolean server = true;
-		if (server) {
-			player1 = new RemoteServingPlayer(new RandomAI(playerOneView), "127.0.0.1");
+		String[] selectionValues = { "Host", "Join" };
+		GameSetting gameSetting = showMainMenu();
+		if (gameSetting.isServing()) {
+			player1 = new RemoteServingPlayer(new RandomAI(playerOneView), playerOneView, gameSetting.getIp());
 			player2 = new RemoteListeningPlayer(playerTwoView);
 		} else {
 			player1 = new RemoteListeningPlayer(playerOneView);
-			player2 = new RemoteServingPlayer(new RandomAI(playerTwoView), "127.0.0.1");
+			player2 = new RemoteServingPlayer(new RandomAI(playerTwoView), playerTwoView, gameSetting.getIp());
 		}
 //		Player player1 = new RandomAI(playerOneView);
 //		Player player2 = new RandomAI(playerTwoView);
@@ -98,5 +202,13 @@ public class Stratego extends ApplicationAdapter {
 	private void listenForRemoteGameCreation() {
 		// TODO wait for an remote game creation on a yet to be defined socket
 		// TODO perform the necessary steps to connect and keep the game in sync
+	}
+
+	@AllArgsConstructor
+	@Data
+	public class GameSetting {
+
+		private boolean serving;
+		private String ip;
 	}
 }
