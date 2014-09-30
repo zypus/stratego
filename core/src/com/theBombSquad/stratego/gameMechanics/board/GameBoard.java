@@ -21,7 +21,7 @@ public class GameBoard {
 		}
 		for (Rectangle lake : lakes) {
 			for (int y = lake.y; y < lake.y + lake.height; y++) {
-				for (int x = lake.x; x < lake.width; x++) {
+				for (int x = lake.x; x < lake.x+lake.width; x++) {
 					board[y][x] = Unit.LAKE;
 				}
 			}
@@ -52,6 +52,11 @@ public class GameBoard {
 			}
 		}
 		return clonedBoard;
+	}
+	
+	/** Returns Whether X & Y are within borders */
+	public boolean isInBounds(int x, int y){
+		return x>=0 && x<this.getWidth() && y>=0 && y<this.getHeight();
 	}
 
 }

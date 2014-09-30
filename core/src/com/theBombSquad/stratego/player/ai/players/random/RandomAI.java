@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.ai.players.random;
 
 import com.theBombSquad.stratego.gameMechanics.GameView;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 
@@ -21,8 +22,11 @@ public class RandomAI extends AI {
 	}
 
 	@Override protected void move() {
-		// if this method is not calling gameview.performMove() the game will not advance
-		// TODO do random moves
+		Move move;
+		List<Move> possibleMoves = super.createAllLegalMoves(gameView.getCurrentState());
+		Collections.shuffle(possibleMoves);
+		move = possibleMoves.get(0);
+		gameView.performMove(move);
 	}
 
 	@Override protected void setup() {

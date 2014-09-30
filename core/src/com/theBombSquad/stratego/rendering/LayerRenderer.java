@@ -1,8 +1,13 @@
 package com.theBombSquad.stratego.rendering;
 
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 /**
  * TODO Add description
@@ -10,15 +15,26 @@ import java.util.ArrayList;
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
-@AllArgsConstructor
-public class LayerRenderer implements Renderer {
+public class LayerRenderer extends Renderer {
 
 	private ArrayList<Renderer> layers;
-
-	@Override
-	public void render() {
+	
+	public LayerRenderer(ArrayList<Renderer> layers, RenderData renderData){
+		this.layers = layers;
+		injectRenderData(renderData);
 		for (Renderer layer : layers) {
-			layer.render();
+			layer.injectRenderData(renderData);
+			layer.init();
 		}
 	}
+	
+	public void render(SpriteBatch batch) {
+		for (Renderer layer : layers) {
+			layer.render(batch);
+		}
+	}
+
+	@Override
+	public void init() {}
+	
 }

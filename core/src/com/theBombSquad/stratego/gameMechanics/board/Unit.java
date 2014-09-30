@@ -39,9 +39,9 @@ public class Unit {
 	public static enum UnitType {
 		AIR(-1,-1),
 		LAKE(-1,-1),
-		UNKNOWN(-1,-1),
+		UNKNOWN(-2,-1),
 		FLAG(0,1),
-		BOMB(0,6),
+		BOMB(11,6),
 		SPY(1,1),
 		SCOUT(2,8),
 		SAPPER(3,5),
