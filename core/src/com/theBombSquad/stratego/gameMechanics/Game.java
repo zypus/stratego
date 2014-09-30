@@ -178,8 +178,7 @@ public class Game {
 				Unit winner = encounter.getVictoriousUnit();
 				// if there is no winner then sets the field to air
 				if (winner == null) {
-					current.setUnit(move.getToX(), move.getToY(), new Unit(
-							current.getUnit(1, 1).getType().AIR, PlayerID.NEMO));
+					current.setUnit(move.getToX(), move.getToY(), Unit.AIR);
 				}
 				// else sets the winner to the spot
 				else {
@@ -196,8 +195,7 @@ public class Game {
 
 			}
 			// sets the unit that is moved to air
-			current.setUnit(move.getFromX(), move.getFromY(), new Unit(current
-					.getUnit(1, 1).getType().AIR, PlayerID.NEMO));
+			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			states.add(current.duplicate());
 		}
 
