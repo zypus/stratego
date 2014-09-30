@@ -27,9 +27,11 @@ public class RandomAI extends AI {
 		for(int c=0; c<possibleMoves.size(); c++){
 			Move mover = possibleMoves.get(c);
 			if(gameView.isEnemy(mover.getToX(), mover.getToY())){
-				if(!gameView.willWin(mover.getFromX(), mover.getFromY(), mover.getToX(), mover.getToY())){
-					possibleMoves.remove(c);
-					c--;
+				if(!gameView.isUnknown(mover.getToX(), mover.getToY())){
+					if(!gameView.willWin(mover.getFromX(), mover.getFromY(), mover.getToX(), mover.getToY())){
+						possibleMoves.remove(c);
+						c--;
+					}
 				}
 			}
 		}
