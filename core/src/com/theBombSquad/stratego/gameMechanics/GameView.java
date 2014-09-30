@@ -206,8 +206,30 @@ public class GameView {
 	}
 	
 	public boolean isEnemy(int x, int y){
-		PlayerID unitOwner = getUnit(x, y).getOwner();
-		return !unitOwner.equals(playerID) && !unitOwner.equals(PlayerID.NEMO);
+		PlayerID opponent = PlayerID.PLAYER_1;
+		if(this.playerID.equals(opponent)){
+			opponent = PlayerID.PLAYER_2;
+		}
+		Unit unit = getUnit(x, y);
+		PlayerID unitOwner = unit.getOwner();
+		return unitOwner.equals(opponent) || unit.getType().getRank()==Unit.UNKNOWN.getType().getRank();
+	}
+	
+	public boolean willWin(int ownX, int ownY, int targetX, int targetY){
+		if(isEnemy(targetX, targetY)){
+			Unit own = getUnit(ownX, ownY);
+			if(own.getOwner().equals(playerID)){
+				Unit foe = getUnit(targetX, targetY);
+				if(foe.getType().getRank()!=Unit.UNKNOWN.getType().getRank()){
+					int ownRank = own.getType().getRank();
+					int foeRank = foe.getType().getRank();
+					if(ownRank>foeRank || (foeRank==Unit.UnitType.MARSHAL.getRank() && ownRank==Unit.UnitType.SPY.getRank())){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

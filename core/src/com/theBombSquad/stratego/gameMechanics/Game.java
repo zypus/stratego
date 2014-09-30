@@ -190,6 +190,8 @@ public class Game {
 				// else sets the winner to the spot
 				else {
 					current.setUnit(move.getToX(), move.getToY(), winner);
+					//Reveals the victorious unit
+					winner.setRevealedInTurn(states.size());
 				}
 				Unit[] loosers = encounter.getDefeatedUnits();
 				for (int i = 0; i < loosers.length; i++) {
