@@ -20,6 +20,8 @@ public class StrategoConstants {
 
 	public static final Rectangle[] DEFAULT_LAKES = new Rectangle[] { new Rectangle(2, 4, 2, 2), new Rectangle(6, 4, 2, 2) };
 
+	public static double scale = 1;
+
 	public static final int UNREVEALED = -42;
 	public static final int FIRST_TURN = 0;
 

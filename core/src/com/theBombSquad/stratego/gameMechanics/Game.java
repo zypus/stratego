@@ -6,6 +6,8 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +29,7 @@ import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
 public class Game {
 
 	private List<GameBoard> states;
-	private GameBoard current; //to be initialized
+	private static GameBoard current; //to be initialized
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
@@ -56,9 +58,12 @@ public class Game {
 		int toY = move.getToY();
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
-
+		// if we attack unit of ours then false
+		if(move.getPlayerID()==current.getUnit(toX, toY).getOwner()){
+			return false;
+		}
 		// if move from to is the same spot
-		if (distanceX == 0 && distanceY == 0) {
+		else if (distanceX == 0 && distanceY == 0) {
 			return false;
 		}
 		// check if it is vertical or horizontal move
@@ -163,6 +168,7 @@ public class Game {
 		/**
 		 performs move depending on the type of unit, considers also encounter
 		 */
+		moves.add(move);
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
@@ -177,8 +183,7 @@ public class Game {
 				Unit winner = encounter.getVictoriousUnit();
 				// if there is no winner then sets the field to air
 				if (winner == null) {
-					current.setUnit(move.getToX(), move.getToY(), new Unit(
-							current.getUnit(1, 1).getType().AIR, PlayerID.NEMO));
+					current.setUnit(move.getToX(), move.getToY(), Unit.AIR);
 				}
 				// else sets the winner to the spot
 				else {
@@ -195,8 +200,7 @@ public class Game {
 
 			}
 			// sets the unit that is moved to air
-			current.setUnit(move.getFromX(), move.getFromY(), new Unit(current
-					.getUnit(1, 1).getType().AIR, PlayerID.NEMO));
+			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			states.add(current.duplicate());
 		}
 
@@ -283,18 +287,24 @@ public class Game {
 
 		if (playerID == PlayerID.PLAYER_1) {
 			player1FinishedSetup = true;
+			if(player1 instanceof HumanPlayer ){
+				((HumanPlayer) player1).setSetUpPhase(false);
+			}			
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
 					current.setUnit(j, i+6, setup[i][j]);
 				}
 			}
-			if (player2FinishedSetup) {
+			if (player2FinishedSetup) {				
 				nextTurn();
 			}
 		} else {
 			// MIGHT BE WRONG !!
 			// I DIDNT FLIP THE SETUP BEFORE PUTTING INTO ARRAY
 			player2FinishedSetup = true;
+			if(player2 instanceof HumanPlayer ){
+				((HumanPlayer) player2).setSetUpPhase(false);
+			}		
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
 					current.setUnit(j, i, setup[i][j]);
@@ -326,6 +336,7 @@ public class Game {
 		player2.startSetup();
 	}
 
+	
 	public int getCurrentTurn() {
 
 		return states.size();
@@ -340,5 +351,8 @@ public class Game {
 
 		return states.get(turn - 1);
 	}
-
+	public static GameBoard getCurrent(){
+		return current;
+	}
+	
 }
