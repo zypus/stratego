@@ -84,17 +84,17 @@ public class BoardRenderer extends Renderer {
 			tileFlag = !tileFlag;
 		}
 		//Draw Lakes
-		for(int cy=0; cy<GRID_HEIGHT; cy++){
-			for(int cx=0; cx<GRID_WIDTH; cx++){
+		for(int cy=0; cy<board.getHeight(); cy++){
+			for(int cx=0; cx<board.getWidth(); cx++){
 				if(board.getUnit(cx, cy) == Unit.LAKE){
 					drawTile(water, batch, cx, cy, size, gridX, gridY);
 				}
 			}
 		}
 		//Draw Units
-		for(int cy=0; cy<GRID_HEIGHT; cy++){
-			for(int cx=0; cx<GRID_WIDTH; cx++){
-				if(board.getUnit(cx, cy) != Unit.LAKE && board.getUnit(cx, cy) != Unit.AIR){
+		for(int cy=0; cy<board.getHeight(); cy++){
+			for(int cx=0; cx<board.getWidth(); cx++){
+				if(board.getUnit(cx, cy).getType().getRank() != -1){
 					drawTile(unitBacks[view.getUnit(cx, cy).getOwner()==PlayerID.PLAYER_1?0:1], batch, cx, cy, size, gridX, gridY);
 					if(view.getUnit(cx, cy).getType().getRank() != Unit.UNKNOWN.getType().getRank()){
 						drawTile(rUnits[view.getUnit(cx, cy).getType().getRank()], batch, cx, cy, size, gridX, gridY);
