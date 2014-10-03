@@ -11,6 +11,7 @@ import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
 
 /**
  * TODO Add description
- *
+ * 
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  * @author Mateusz Garbacz
@@ -29,12 +30,14 @@ import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
 public class Game {
 
 	private List<GameBoard> states;
-	private static GameBoard current; //to be initialized
+	private static GameBoard current; // to be initialized
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
-	@Setter private Player player1;
-	@Setter private Player player2;
+	@Setter
+	private Player player1;
+	@Setter
+	private Player player2;
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
@@ -48,10 +51,10 @@ public class Game {
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 	}
-	
+
 	public boolean validateMove(Move move) {
 		/**
-		checks if a move is valid
+		 * checks if a move is valid
 		 */
 		int fromX = move.getFromX();
 		int fromY = move.getFromY();
@@ -60,7 +63,7 @@ public class Game {
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
 		// if we attack unit of ours then false
-		if(move.getPlayerID()==current.getUnit(toX, toY).getOwner()){
+		if (move.getPlayerID() == current.getUnit(toX, toY).getOwner()) {
 			return false;
 		}
 		// if move from to is the same spot
@@ -90,8 +93,8 @@ public class Game {
 
 		}
 		// check end position if it is not lake
-		else if (current.getUnit(toX, toY).getType() == current.getUnit(
-				toX, toY).getType().LAKE) {
+		else if (current.getUnit(toX, toY).getType() == current.getUnit(toX,
+				toY).getType().LAKE) {
 			return false;
 		}
 
@@ -104,7 +107,7 @@ public class Game {
 					// if it is a scout and it goes right we check all the steps
 					// between
 					if (toX - fromX > 0) {
-						for (int i =fromX + 1; i <= toX - 1; i++) {
+						for (int i = fromX + 1; i <= toX - 1; i++) {
 							if (current.getUnit(i, fromY).getType() != current
 									.getUnit(fromX, fromY).getType().AIR) {
 								return false;
@@ -160,17 +163,17 @@ public class Game {
 
 	private void discoverSpy() {
 		/**
-		 when a spy moves by a few fields it is discovered,
-		 dunno where to implement it :P
+		 * when a spy moves by a few fields it is discovered, dunno where to
+		 * implement it :P
 		 */
 	}
 
 	public void performMove(Move move) {
 		/**
-		 performs move depending on the type of unit, considers also encounter
+		 * performs move depending on the type of unit, considers also encounter
 		 */
 		moves.add(move);
-		
+
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
@@ -190,7 +193,7 @@ public class Game {
 				// else sets the winner to the spot
 				else {
 					current.setUnit(move.getToX(), move.getToY(), winner);
-					//Reveals the victorious unit
+					// Reveals the victorious unit
 					winner.setRevealedInTurn(states.size());
 				}
 				Unit[] loosers = encounter.getDefeatedUnits();
@@ -286,33 +289,33 @@ public class Game {
 
 	public void setSetup(Unit[][] setup, PlayerID playerID) {
 		/**
-			puts setup to the main grid depending on a player
-			player 1 on the bottom player 2 on the top
+		 * puts setup to the main grid depending on a player player 1 on the
+		 * bottom player 2 on the top
 		 */
 		if (playerID == PlayerID.PLAYER_1) {
 			player1FinishedSetup = true;
-			if(player1 instanceof HumanPlayer ){
+			if (player1 instanceof HumanPlayer) {
 				((HumanPlayer) player1).setSetUpPhase(false);
-			}			
+			}
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(j, i+6, setup[i][j]);
+					current.setUnit(j, i + 6, setup[i][j]);
 				}
 			}
 		} else {
 			// MIGHT BE WRONG !!
 			// I DIDNT FLIP THE SETUP BEFORE PUTTING INTO ARRAY
 			player2FinishedSetup = true;
-			if(player2 instanceof HumanPlayer ){
+			if (player2 instanceof HumanPlayer) {
 				((HumanPlayer) player2).setSetUpPhase(false);
-			}		
+			}
 			for (int i = 0; i < setup.length; i++) {
 				for (int j = 0; j < setup[0].length; j++) {
 					current.setUnit(j, i, setup[i][j]);
 				}
 			}
 		}
-		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+		if (player1FinishedSetup && player2FinishedSetup && !finishedSetup) {
 			finishedSetup = true;
 			nextTurn();
 		}
@@ -320,45 +323,90 @@ public class Game {
 
 	private void nextTurn() {
 		/**
-			when called, first determine which players turn is it, then
-			call one of them to start move, second to idle
+		 * when called, first determine which players turn is it, then call one
+		 * of them to start move, second to idle
 		 */
-		if(!gameOver()){
-		
-		if (states.size() % 2 == 1) {
-			if(hasLost(player1)){
-				//TODO: Add Something to clarify Game end
-				return;
-			}
-			else{
-				player1.startMove();
-				player2.startIdle();
+		if (!gameOver()) {
+
+			if (states.size() % 2 == 1) {
+				if (hasLost(player1)) {
+					// TODO: Add Something to clarify Game end
+					return;
+				} else {
+					player1.startMove();
+					player2.startIdle();
+				}
+			} else {
+				if (hasLost(player2)) {
+					// TODO: Add Something to clarify Game end
+					return;
+				} else {
+					player2.startMove();
+					player1.startIdle();
+				}
 			}
 		} else {
-			if(hasLost(player2)){
-				//TODO: Add Something to clarify Game end
-				return;
-			}
-			else{
-				player2.startMove();
-				player1.startIdle();
-			}
-		}}
-		else{
-			//stop the game!
-	
+			// stop the game!
+
 		}
 	}
 
-	public boolean gameOver(){
-		defeatedUnitsPlayer1
+	public boolean gameOver() {
+		if (defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType()
+				.getRank() == 0) {
+			return true;
+		}
+		if (defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType()
+				.getRank() == 0) {
+			return true;
+		}
+		ArrayList<Point> UnitsP1 = new ArrayList<Point>();
+		ArrayList<Point> UnitsP2 = new ArrayList<Point>();
+		for (int j = 0; j < current.getHeight(); j++) {
+			for (int i = 0; i < current.getWidth(); i++) {
+				if (current.getUnit(i, j).getType().getRank() != -1) {
+					if (current.getUnit(i, j).getType().getRank() != 0
+							&& current.getUnit(i, j).getType().getRank() != 11) {
+						if (current.getUnit(i, j).getOwner() == PlayerID.PLAYER_1) {
+							UnitsP1.add(new Point(i, j));
+						}
+						else {
+							UnitsP2.add(new Point(i, j));
+						}
+					}
+				}
+			}
+		}
+
+		if (!checkIfHasMoves(UnitsP1)) {
+			return true;
+		}
+		if (!checkIfHasMoves(UnitsP2)) {
+			return true;
+		}
+		return false;
 	}
+
+	public boolean checkIfHasMoves(ArrayList<Point> units) {
+		for(int i =0; i<units.size();i++){
+			int x=(int)units.get(i).getX();
+			int y=(int)units.get(i).getY();
+			Move move1 = new Move(x,y,x+1,y);
+			Move move2 = new Move(x,y,x,y+1);
+			Move move3 = new Move(x,y,x,y-1);
+			Move move4 = new Move(x,y,x-1,y);
+			if(!validateMove(move1)&&!validateMove(move2)&&!validateMove(move3)&&!validateMove(move4)){
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void startSetupPhase() {
 		player1.startSetup();
 		player2.startSetup();
 	}
 
-	
 	public int getCurrentTurn() {
 
 		return states.size();
@@ -368,47 +416,60 @@ public class Game {
 
 		return current;
 	}
-	
-	/** Calculates and returns whether the Player has lost the game (immovable, flag destroyed, etc.) */
-	public boolean hasLost(Player player){
+
+	/**
+	 * Calculates and returns whether the Player has lost the game (immovable,
+	 * flag destroyed, etc.)
+	 */
+	public boolean hasLost(Player player) {
 		boolean hasLost = false;
-		if(hasNoFlag(player)){
+		if (hasNoFlag(player)) {
 			hasLost = true;
 		}
 		return hasLost;
 	}
-	
-	private boolean hasNoFlag(Player player){
-		//TODO: Replace this method by saving whether a flag has been killed last turn
-		//TODO: Fix Bug
-		if(player.getGameView().getMoves()!=null && player.getGameView().getMoves().size()>0 && player.getGameView().getLastMove().getEncounter()!=null){
-			Unit[] lastTurnsFallen = player.getGameView().getLastMove().getEncounter().getDefeatedUnits();
-			for(int c=0; c<lastTurnsFallen.length; c++){
-				if(lastTurnsFallen[c].getType().getRank() == Unit.UnitType.FLAG.getRank()){
+
+	private boolean hasNoFlag(Player player) {
+		// TODO: Replace this method by saving whether a flag has been killed
+		// last turn
+		// TODO: Fix Bug
+		if (player.getGameView().getMoves() != null
+				&& player.getGameView().getMoves().size() > 0
+				&& player.getGameView().getLastMove().getEncounter() != null) {
+			Unit[] lastTurnsFallen = player.getGameView().getLastMove()
+					.getEncounter().getDefeatedUnits();
+			for (int c = 0; c < lastTurnsFallen.length; c++) {
+				if (lastTurnsFallen[c].getType().getRank() == Unit.UnitType.FLAG
+						.getRank()) {
 					return true;
 				}
 			}
 		}
 		return false;
-//		boolean hasFlag = false;
-//		for(int cy=0; cy<player.getGameView().getCurrentState().getHeight(); cy++){
-//			for(int cx=0; cx<player.getGameView().getCurrentState().getWidth(); cx++){
-//				if(player.getGameView().getUnit(cx, cy).getOwner().equals(player.getGameView().getPlayerID())){
-//					if(player.getGameView().getUnit(cx, cy).getType().getRank() == Unit.UnitType.FLAG.getRank()){
-//						hasFlag = true;
-//					}
-//				}
-//			}
-//		}
-//		return !hasFlag;
+		// boolean hasFlag = false;
+		// for(int cy=0; cy<player.getGameView().getCurrentState().getHeight();
+		// cy++){
+		// for(int cx=0; cx<player.getGameView().getCurrentState().getWidth();
+		// cx++){
+		// if(player.getGameView().getUnit(cx,
+		// cy).getOwner().equals(player.getGameView().getPlayerID())){
+		// if(player.getGameView().getUnit(cx, cy).getType().getRank() ==
+		// Unit.UnitType.FLAG.getRank()){
+		// hasFlag = true;
+		// }
+		// }
+		// }
+		// }
+		// return !hasFlag;
 	}
 
 	public GameBoard getState(int turn) {
 
 		return states.get(turn - 1);
 	}
-	public static GameBoard getCurrent(){
+
+	public static GameBoard getCurrent() {
 		return current;
 	}
-	
+
 }

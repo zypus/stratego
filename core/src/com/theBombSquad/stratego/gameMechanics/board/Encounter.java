@@ -25,7 +25,7 @@ public class Encounter {
 			if (attackingUnit.getType() == attackingUnit.getType().SAPPER) {
 				result=CombatResult.VICTORIOUS_ATTACK;
 			} else {
-				result=CombatResult.MUTUAL_DEFEAT;
+				result=CombatResult.VICTORIOUS_DEFENSE;
 			}
 		} else if (defendingUnit.getType() == defendingUnit.getType().MARSHAL
 				&& attackingUnit.getType() == attackingUnit.getType().SPY) {
