@@ -30,7 +30,7 @@ public abstract class AI extends Player {
 				if(unit.getOwner() == gameView.getPlayerID()){
 					if(!unit.getType().equals(Unit.UnitType.BOMB) && !unit.getType().equals(Unit.UnitType.FLAG)){
 						if(unit.getType().equals(Unit.UnitType.SCOUT)){
-							//TODO: Add Scout Movability Later
+							addScoutMoves(list,cx, cy);
 						}
 						else{
 							for(int xx=-1; xx<=1; xx+=2){
@@ -51,6 +51,59 @@ public abstract class AI extends Player {
 		return list;
 	}
 	
+	private void addScoutMoves(List<Move> list, int cx, int cy) {
+		// TODO Auto-generated method stub
+		boolean up=true;
+		boolean left=true;
+		boolean right=true;
+		boolean down=true;
+		int counter=1; 
+		while(up){
+			Move move=new Move(cx,cy,cx+counter,cy);
+			if(gameView.validateMove(move)){
+				list.add(new Move(cx,cy,cx+counter,cy));
+				counter++;
+			}
+			else{
+				counter=1;
+				up=false;
+			}
+		}
+		while(down){
+			Move move=new Move(cx,cy,cx-counter,cy);
+			if(gameView.validateMove(move)){
+				list.add(new Move(cx,cy,cx-counter,cy));
+				counter++;
+			}
+			else{
+				counter=1;
+				down=false;
+			}
+		}
+		while(left){
+			Move move=new Move(cx,cy,cx,cy-counter);
+			if(gameView.validateMove(move)){
+				list.add(new Move(cx,cy,cx,cy-counter));
+				counter++;
+			}
+			else{
+				counter=1;
+				left=false;
+			}
+		}
+		while(right){
+			Move move=new Move(cx,cy,cx,cy+counter);
+			if(gameView.validateMove(move)){
+				list.add(new Move(cx,cy,cx,cy+counter));
+				counter++;
+			}
+			else{
+				counter=1;
+				right=false;
+			}
+		}
+	}
+
 	protected boolean walkable(GameBoard board, int x, int y){
 		return board.isInBounds(x, y) && (gameView.isEnemy(x, y) || gameView.isAir(x, y));
 	}
