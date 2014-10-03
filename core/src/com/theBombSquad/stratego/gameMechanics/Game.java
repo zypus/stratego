@@ -48,7 +48,7 @@ public class Game {
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 	}
-
+	
 	public boolean validateMove(Move move) {
 		/**
 		checks if a move is valid
@@ -74,7 +74,7 @@ public class Game {
 
 		// first we check if one of distances is equal to one
 		// if place from which the move comes is either air, lake, bomb or flag
-		// then it is not valid
+		// then it is not validqweqweq
 
 		else if (distanceX == 1 || distanceY == 1) {
 			if (current.getUnit(fromX, fromY).getType() == current.getUnit(
@@ -323,6 +323,8 @@ public class Game {
 			when called, first determine which players turn is it, then
 			call one of them to start move, second to idle
 		 */
+		if(!gameOver()){
+		
 		if (states.size() % 2 == 1) {
 			if(hasLost(player1)){
 				//TODO: Add Something to clarify Game end
@@ -341,9 +343,16 @@ public class Game {
 				player2.startMove();
 				player1.startIdle();
 			}
+		}}
+		else{
+			//stop the game!
+	
 		}
 	}
 
+	public boolean gameOver(){
+		defeatedUnitsPlayer1
+	}
 	public void startSetupPhase() {
 		player1.startSetup();
 		player2.startSetup();
