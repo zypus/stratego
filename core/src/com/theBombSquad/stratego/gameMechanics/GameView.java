@@ -286,7 +286,6 @@ public class GameView {
 	 * @return All defeated units of the opponent of the assigned player.
 	 */
 	public List<Unit> getOpponentsDefeatedUnits() {
-
 		// Return early if the view doesn't belong to a player
 		if (playerID.equals(PlayerID.NEMO)) {
 			log.severe("Non player tried to get 'his opponents' defeated units.");

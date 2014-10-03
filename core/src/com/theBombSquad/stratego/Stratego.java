@@ -86,7 +86,7 @@ public class Stratego extends ApplicationAdapter {
 		Player player2 = new RandomAI(playerTwoView);
 
 		// tell the game about the players
-		game.setPlayer1(new HumanPlayer(playerOneView, windowScale));
+		game.setPlayer1(new HumanPlayer(playerOneView));
 		game.setPlayer2(player2);
 
 		// TODO setup renderers

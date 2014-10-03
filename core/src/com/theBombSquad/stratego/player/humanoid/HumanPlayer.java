@@ -1,5 +1,7 @@
 package com.theBombSquad.stratego.player.humanoid;
 
+import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,9 +22,9 @@ import com.theBombSquad.stratego.player.Player;
  */
 public class HumanPlayer extends Player {
 
-	public HumanPlayer(GameView gameView, double scale) {
+	public HumanPlayer(GameView gameView) {
 		super(gameView);
-		PlayerBoardInput input = new PlayerBoardInput(this, scale);
+		PlayerBoardInput input = new PlayerBoardInput(this, (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH);
 		Gdx.input.setInputProcessor(input);
 	}
 
@@ -83,7 +85,7 @@ public class HumanPlayer extends Player {
 	protected void setup() {
 		//TODO: Remove this
 		randomSetup();
-		setSetUpPhase(false);
+		//setSetUpPhase(false);
 	}
 
 	@Override
