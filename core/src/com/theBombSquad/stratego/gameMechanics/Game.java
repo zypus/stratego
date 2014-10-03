@@ -41,6 +41,8 @@ public class Game {
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
+	private ArrayList<Move> lastMovesP1SameUnit;
+	private ArrayList<Move> lastMovesP2SameUnit;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -50,6 +52,9 @@ public class Game {
 		moves = new ArrayList<Move>();
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
+		lastMovesP1SameUnit=new ArrayList<Move>();
+		lastMovesP2SameUnit=new ArrayList<Move>();
+
 	}
 
 	public boolean validateMove(Move move) {
@@ -158,6 +163,50 @@ public class Game {
 				}
 			}
 		}
+		//checks if goes one way and comes back all the time
+		if(states.size()% 2==1){
+			if(lastMovesP1SameUnit.size()==0){
+				lastMovesP1SameUnit.add(move);
+			}
+			else {
+				Move lastmove = lastMovesP1SameUnit.get(lastMovesP1SameUnit.size()-1);
+				int x=move.getFromX();
+				int y=move.getFromY();
+				int x2=move.getToX();
+				int y2=move.getToY();
+				if(lastmove.getFromX()==x2&&lastmove.getFromY()==y2&&lastmove.getToX()==x&&lastmove.getToY()==y){
+					if(lastMovesP1SameUnit.size()==5){
+						return false;
+					}
+					else{
+						lastMovesP1SameUnit.add(move);
+					}
+				}
+			}
+			
+		}
+		else{
+			if(lastMovesP2SameUnit.size()==0){
+				lastMovesP2SameUnit.add(move);
+			}
+			else {
+				Move lastmove = lastMovesP2SameUnit.get(lastMovesP2SameUnit.size()-1);
+				int x=move.getFromX();
+				int y=move.getFromY();
+				int x2=move.getToX();
+				int y2=move.getToY();
+				if(lastmove.getFromX()==x2&&lastmove.getFromY()==y2&&lastmove.getToX()==x&&lastmove.getToY()==y){
+					if(lastMovesP2SameUnit.size()==5){
+						return false;
+					}
+					else{
+						lastMovesP2SameUnit.add(move);
+					}
+				}
+			}
+			
+		}
+		
 		return true;
 	}
 
