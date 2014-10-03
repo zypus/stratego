@@ -1,5 +1,7 @@
 package com.theBombSquad.stratego.player;
 
+import lombok.Getter;
+
 import com.theBombSquad.stratego.gameMechanics.GameView;
 
 /**
@@ -10,7 +12,8 @@ import com.theBombSquad.stratego.gameMechanics.GameView;
  * @author Flo
  */
 public abstract class Player {
-
+	
+	@Getter
 	protected final GameView gameView;
 
 	private Thread currentAction = null;

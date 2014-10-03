@@ -324,11 +324,23 @@ public class Game {
 			call one of them to start move, second to idle
 		 */
 		if (states.size() % 2 == 1) {
-			player1.startMove();
-			player2.startIdle();
+			if(hasLost(player1)){
+				//TODO: Add Something to clarify Game end
+				return;
+			}
+			else{
+				player1.startMove();
+				player2.startIdle();
+			}
 		} else {
-			player2.startMove();
-			player1.startIdle();
+			if(hasLost(player2)){
+				//TODO: Add Something to clarify Game end
+				return;
+			}
+			else{
+				player2.startMove();
+				player1.startIdle();
+			}
 		}
 	}
 
@@ -346,6 +358,40 @@ public class Game {
 	public GameBoard getCurrentState() {
 
 		return current;
+	}
+	
+	/** Calculates and returns whether the Player has lost the game (immovable, flag destroyed, etc.) */
+	public boolean hasLost(Player player){
+		boolean hasLost = false;
+		if(hasNoFlag(player)){
+			hasLost = true;
+		}
+		return hasLost;
+	}
+	
+	private boolean hasNoFlag(Player player){
+		//TODO: Replace this method by saving whether a flag has been killed last turn
+		//TODO: Fix Bug
+		if(player.getGameView().getMoves()!=null && player.getGameView().getMoves().size()>0 && player.getGameView().getLastMove().getEncounter()!=null){
+			Unit[] lastTurnsFallen = player.getGameView().getLastMove().getEncounter().getDefeatedUnits();
+			for(int c=0; c<lastTurnsFallen.length; c++){
+				if(lastTurnsFallen[c].getType().getRank() == Unit.UnitType.FLAG.getRank()){
+					return true;
+				}
+			}
+		}
+		return false;
+//		boolean hasFlag = false;
+//		for(int cy=0; cy<player.getGameView().getCurrentState().getHeight(); cy++){
+//			for(int cx=0; cx<player.getGameView().getCurrentState().getWidth(); cx++){
+//				if(player.getGameView().getUnit(cx, cy).getOwner().equals(player.getGameView().getPlayerID())){
+//					if(player.getGameView().getUnit(cx, cy).getType().getRank() == Unit.UnitType.FLAG.getRank()){
+//						hasFlag = true;
+//					}
+//				}
+//			}
+//		}
+//		return !hasFlag;
 	}
 
 	public GameBoard getState(int turn) {

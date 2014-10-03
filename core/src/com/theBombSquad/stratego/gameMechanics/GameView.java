@@ -94,7 +94,6 @@ public class GameView {
 	 * @return Whether the setup is valid or not.
 	 */
 	public boolean validateSetup(Unit[][] setup) {
-
 		// Forwards the validation to game.
 		// Note: Setup doesn't need to be translated to game space for validation because validation is rotation independent.
 		return game.validateSetup(setup);
@@ -105,7 +104,6 @@ public class GameView {
 	 * @param setup The army setup in player space.
 	 */
 	public void setSetup(Unit[][] setup) {
-
 		// Return early if the view doesn't belong to a player
 		if (playerID.equals(PlayerID.NEMO)) {
 			log.severe("Non player tried to set setup.");
@@ -461,6 +459,11 @@ public class GameView {
 				}
 			}
 		}
+	}
+	
+	/** Returns whether the given X|Y is legal to be moved to */
+	public boolean walkable(int x, int y){
+		return game.getCurrentState().isInBounds(x, y) && (isEnemy(x, y) || isAir(x, y));
 	}
 
 }
