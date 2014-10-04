@@ -52,8 +52,8 @@ public class Game {
 		moves = new ArrayList<Move>();
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
-		lastMovesP1SameUnit=new ArrayList<Move>();
-		lastMovesP2SameUnit=new ArrayList<Move>();
+		lastMovesP1SameUnit = new ArrayList<Move>();
+		lastMovesP2SameUnit = new ArrayList<Move>();
 
 	}
 
@@ -163,51 +163,135 @@ public class Game {
 				}
 			}
 		}
-		//checks if goes one way and comes back all the time
-		if(states.size()% 2==1){
-			if(lastMovesP1SameUnit.size()==0){
+		// checks if goes one way and comes back all the time
+		if (states.size() % 2 == 1) {
+			if (lastMovesP1SameUnit.size() == 0) {
 				lastMovesP1SameUnit.add(move);
-			}
-			else {
-				Move lastmove = lastMovesP1SameUnit.get(lastMovesP1SameUnit.size()-1);
-				int x=move.getFromX();
-				int y=move.getFromY();
-				int x2=move.getToX();
-				int y2=move.getToY();
-				if(lastmove.getFromX()==x2&&lastmove.getFromY()==y2&&lastmove.getToX()==x&&lastmove.getToY()==y){
-					if(lastMovesP1SameUnit.size()==5){
-						return false;
+			} else {
+				Move move2 = lastMovesP1SameUnit
+						.get(lastMovesP1SameUnit.size() - 1);
+				int x = move2.getToX();
+				int y = move2.getToY();
+				int x2 = move.getFromX();
+				int y2 = move.getFromY();
+				// checks if the same unit moves, so it can add to last moves
+				// for the same unit
+				if (x == x2 & y == y2) {
+					lastMovesP1SameUnit.add(move);
+					if (lastMovesP1SameUnit.size() > 5) {
+						// checks if the moves were forward and back
+						int counter = 0;
+						for (int i = 0; i < 6; i++) {
+							Move moveToCheck1 = lastMovesP1SameUnit
+									.get(lastMovesP1SameUnit.size() - 1 - i);
+							Move moveToCheck2 = lastMovesP1SameUnit
+									.get(lastMovesP1SameUnit.size() - 1 - i - 1);
+							if (switchedMove(moveToCheck1, moveToCheck2)) {
+								counter++;
+							}
+						}
+						if (counter > 4) {
+							lastMovesP1SameUnit.remove(lastMovesP1SameUnit
+									.size() - 1);
+							return false;
+						}
+						// checks if p1 chases p2
+						if (lastMovesP1SameUnit.size() > 5) {
+							counter = 0;
+							for (int i = 0; i < 6; i++) {
+								Move moveToCheck1 = lastMovesP1SameUnit
+										.get(lastMovesP1SameUnit.size() - 1 - i);
+								Move moveToCheck2 = lastMovesP2SameUnit
+										.get(lastMovesP2SameUnit.size() - 1 - i);
+								if (sameMove(moveToCheck1, moveToCheck2)) {
+									counter++;
+								}
+							}
+							if (counter > 4) {
+								lastMovesP1SameUnit.remove(lastMovesP1SameUnit
+										.size() - 1);
+								return false;
+							}
+						}
 					}
-					else{
-						lastMovesP1SameUnit.add(move);
-					}
+				} else {
+					lastMovesP1SameUnit = new ArrayList<Move>();
+					lastMovesP1SameUnit.add(move);
 				}
 			}
-			
-		}
-		else{
-			if(lastMovesP2SameUnit.size()==0){
+		} else {
+			if (lastMovesP2SameUnit.size() == 0) {
 				lastMovesP2SameUnit.add(move);
-			}
-			else {
-				Move lastmove = lastMovesP2SameUnit.get(lastMovesP2SameUnit.size()-1);
-				int x=move.getFromX();
-				int y=move.getFromY();
-				int x2=move.getToX();
-				int y2=move.getToY();
-				if(lastmove.getFromX()==x2&&lastmove.getFromY()==y2&&lastmove.getToX()==x&&lastmove.getToY()==y){
-					if(lastMovesP2SameUnit.size()==5){
-						return false;
+			} else {
+				Move move2 = lastMovesP2SameUnit
+						.get(lastMovesP2SameUnit.size() - 1);
+				int x = move2.getToX();
+				int y = move2.getToY();
+				int x2 = move.getFromX();
+				int y2 = move.getFromY();
+				// checks if the same unit moves, so it can add to last moves
+				// for the same unit
+				if (x == x2 & y == y2) {
+					lastMovesP2SameUnit.add(move);
+					if (lastMovesP2SameUnit.size() > 5) {
+						// checks if the moves were forward and back
+						int counter = 0;
+						for (int i = 0; i < 6; i++) {
+							Move moveToCheck1 = lastMovesP2SameUnit
+									.get(lastMovesP2SameUnit.size() - 1 - i);
+							Move moveToCheck2 = lastMovesP2SameUnit
+									.get(lastMovesP2SameUnit.size() - 1 - i - 1);
+							if (switchedMove(moveToCheck1, moveToCheck2)) {
+								counter++;
+							}
+						}
+						if (counter > 4) {
+							lastMovesP2SameUnit.remove(lastMovesP2SameUnit
+									.size() - 1);
+							return false;
+						}
+						// checks if p2 chases p1
+						if (lastMovesP2SameUnit.size() > 5) {
+							counter = 0;
+							for (int i = 0; i < 6; i++) {
+								Move moveToCheck1 = lastMovesP2SameUnit
+										.get(lastMovesP2SameUnit.size() - 1 - i);
+								Move moveToCheck2 = lastMovesP1SameUnit
+										.get(lastMovesP1SameUnit.size() - 1 - i);
+								if (sameMove(moveToCheck1, moveToCheck2)) {
+									counter++;
+								}
+							}
+							if (counter > 4) {
+								lastMovesP2SameUnit.remove(lastMovesP2SameUnit
+										.size() - 1);
+								return false;
+							}
+						}
 					}
-					else{
-						lastMovesP2SameUnit.add(move);
-					}
+				} else {
+					lastMovesP2SameUnit = new ArrayList<Move>();
+					lastMovesP2SameUnit.add(move);
 				}
 			}
-			
 		}
-		
 		return true;
+	}
+
+	// checks if moves are the same but switched directions
+	private boolean switchedMove(Move move, Move move2) {
+		return move2.getFromX() == move.getToX()
+				&& move2.getFromY() == move.getToY()
+				&& move2.getToX() == move.getFromX()
+				&& move2.getToY() == move.getFromY();
+	}
+
+	// checks if the moves are the same
+	private boolean sameMove(Move move, Move move2) {
+		return move2.getFromX() == move.getFromX()
+				&& move2.getFromY() == move.getFromY()
+				&& move2.getToX() == move.getToX()
+				&& move2.getToY() == move.getToY();
 	}
 
 	private void discoverSpy() {
@@ -418,8 +502,7 @@ public class Game {
 							&& current.getUnit(i, j).getType().getRank() != 11) {
 						if (current.getUnit(i, j).getOwner() == PlayerID.PLAYER_1) {
 							UnitsP1.add(new Point(i, j));
-						}
-						else {
+						} else {
 							UnitsP2.add(new Point(i, j));
 						}
 					}
@@ -437,14 +520,15 @@ public class Game {
 	}
 
 	public boolean checkIfHasMoves(ArrayList<Point> units) {
-		for(int i =0; i<units.size();i++){
-			int x=(int)units.get(i).getX();
-			int y=(int)units.get(i).getY();
-			Move move1 = new Move(x,y,x+1,y);
-			Move move2 = new Move(x,y,x,y+1);
-			Move move3 = new Move(x,y,x,y-1);
-			Move move4 = new Move(x,y,x-1,y);
-			if(!validateMove(move1)&&!validateMove(move2)&&!validateMove(move3)&&!validateMove(move4)){
+		for (int i = 0; i < units.size(); i++) {
+			int x = (int) units.get(i).getX();
+			int y = (int) units.get(i).getY();
+			Move move1 = new Move(x, y, x + 1, y);
+			Move move2 = new Move(x, y, x, y + 1);
+			Move move3 = new Move(x, y, x, y - 1);
+			Move move4 = new Move(x, y, x - 1, y);
+			if (!validateMove(move1) && !validateMove(move2)
+					&& !validateMove(move3) && !validateMove(move4)) {
 				return false;
 			}
 		}
