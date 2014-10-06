@@ -1,5 +1,6 @@
 package com.theBombSquad.stratego.player.humanoid;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.tools.particleeditor.Chart.Point;
 import com.theBombSquad.stratego.StrategoConstants;
@@ -40,6 +41,15 @@ public class PlayerBoardInput extends InputAdapter {
 	}
 
 	@Override public boolean keyUp(int keycode) {
+		//TODO: Remove When Improved
+		//Debug Setup Submit
+		if(keycode==Input.Keys.ENTER){
+			player.submitSetUp();
+		}
+		//Debug Setup Reset
+		else if(keycode==Input.Keys.ESCAPE){
+			player.resetSetup();
+		}
 		return super.keyUp(keycode);
 	}
 }

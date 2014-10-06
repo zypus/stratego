@@ -21,7 +21,7 @@ import com.theBombSquad.stratego.player.Player;
  * @author Flo
  */
 public class HumanPlayer extends Player {
-
+	
 	public HumanPlayer(GameView gameView) {
 		super(gameView);
 		PlayerBoardInput input = new PlayerBoardInput(this, (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH);
@@ -84,8 +84,9 @@ public class HumanPlayer extends Player {
 	@Override
 	protected void setup() {
 		//TODO: Remove this
-		randomSetup();
+		//randomSetup();
 		//setSetUpPhase(false);
+		setSetUpPhase(true);
 	}
 
 	@Override
@@ -104,7 +105,13 @@ public class HumanPlayer extends Player {
 	}
 
 	public void receiveSetUpInput(int x, int y) {
-		if (xSelected == -1 || ySelected == -1
+		System.out.println(x+" "+y);
+		if (y == 4 || y == 5) {
+			// if middle of board
+			// deselect(xSelected, ySelected)
+			xSelected = -1;
+			ySelected = -1;
+		} else if (xSelected == -1 || ySelected == -1
 				&& Game.getCurrent().getUnit(x, y).getType().getRank() != -1) {
 			// select piece
 			xSelected = x;
@@ -115,19 +122,9 @@ public class HumanPlayer extends Player {
 			// deselect(xSelected, ySelected)
 			xSelected = -1;
 			ySelected = -1;
-		} else if (y > 3 && y < 6) {
-			// if middle of board
-			// deselect(xSelected, ySelected)
-			xSelected = -1;
-			ySelected = -1;
 		} else {
 			// SWITCH AROUND
-			Move move1 = new Move(xSelected, ySelected, 4, 4);
-			gameView.performMove(move1);
-			Move move2 = new Move(x, y, xSelected, ySelected);
-			gameView.performMove(move2);
-			Move move3 = new Move(4, 4, x, y);
-			gameView.performMove(move3);
+			gameView.hardSwapUnits(xSelected, ySelected, x, y);
 			// deselect(xSelected, ySelected)
 			xSelected = -1;
 			ySelected = -1;
@@ -136,13 +133,15 @@ public class HumanPlayer extends Player {
 	}
 
 	public void submitSetUp() {
-		Unit[][] setUp = new Unit[10][4];
+		Unit[][] setUp = new Unit[4][10];
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 4; j++) {
-				setUp[i][j] = Game.getCurrent().getUnit(i, 6 + j);
+				setUp[j][i] = gameView.getUnit(i, 6 + j);
 			}
 		}
+		System.out.println("Test Setup");
 		if (gameView.validateSetup(setUp)) {
+			System.out.println("Valid Setup");
 			gameView.setSetup(setUp);
 		}
 	}
@@ -163,7 +162,7 @@ public class HumanPlayer extends Player {
 				availableUnits.add(new Unit(type, gameView.getPlayerID()));
 			}
 		}
-		// shuffle the list containing all available units
+		//shuffle the list containing all available units
 		Collections.shuffle(availableUnits);
 		//go through the list and place them on the board as the units appear in the randomly shuffled list
 		for (int y = 0; y < 4; y++) {
