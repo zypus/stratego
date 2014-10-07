@@ -48,6 +48,10 @@ public class PlayerBoardInput extends InputAdapter {
 		else if(keycode==Input.Keys.ESCAPE){
 			player.resetSetup();
 		}
+		//Debug Setup Reset
+		else if(keycode==Input.Keys.R){
+			player.resetSetup();
+		}
 		return super.keyUp(keycode);
 	}
 }
