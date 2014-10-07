@@ -5,7 +5,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
-import lombok.Getter;
+import lombok.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
@@ -94,7 +94,6 @@ public class GameView {
 	 * @return Whether the setup is valid or not.
 	 */
 	public boolean validateSetup(Unit[][] setup) {
-
 		// Forwards the validation to game.
 		// Note: Setup doesn't need to be translated to game space for validation because validation is rotation independent.
 		return game.validateSetup(setup);
@@ -105,7 +104,6 @@ public class GameView {
 	 * @param setup The army setup in player space.
 	 */
 	public void setSetup(Unit[][] setup) {
-
 		// Return early if the view doesn't belong to a player
 		if (playerID.equals(PlayerID.NEMO)) {
 			log.severe("Non player tried to set setup.");
@@ -206,8 +204,30 @@ public class GameView {
 	}
 	
 	public boolean isEnemy(int x, int y){
-		PlayerID unitOwner = getUnit(x, y).getOwner();
-		return !unitOwner.equals(playerID) && !unitOwner.equals(PlayerID.NEMO);
+		PlayerID opponent = PlayerID.PLAYER_1;
+		if(this.playerID.equals(opponent)){
+			opponent = PlayerID.PLAYER_2;
+		}
+		Unit unit = getUnit(x, y);
+		PlayerID unitOwner = unit.getOwner();
+		return unitOwner.equals(opponent) || unit.getType().getRank()==Unit.UNKNOWN.getType().getRank();
+	}
+	
+	public boolean willWin(int ownX, int ownY, int targetX, int targetY){
+		if(isEnemy(targetX, targetY)){
+			Unit own = getUnit(ownX, ownY);
+			if(own.getOwner().equals(playerID)){
+				Unit foe = getUnit(targetX, targetY);
+				if(foe.getType().getRank()!=Unit.UNKNOWN.getType().getRank()){
+					int ownRank = own.getType().getRank();
+					int foeRank = foe.getType().getRank();
+					if(ownRank>foeRank || (foeRank==Unit.UnitType.MARSHAL.getRank() && ownRank==Unit.UnitType.SPY.getRank())){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -247,8 +267,7 @@ public class GameView {
 	 * @return The most recent move.
 	 */
 	public Move getLastMove() {
-
-		return getMove(game.getCurrentTurn()-1);
+		return getMove(game.getCurrentTurn()-2);
 	}
 
 	/**
@@ -410,6 +429,13 @@ public class GameView {
 	
 	/** sets all the units on the top of the board so we can start making the setup */
 	public void startSetup() {
+		for(int cy=0; cy<getCurrentState().getHeight(); cy++){
+			for(int cx=0; cx<getCurrentState().getWidth(); cx++){
+				if(game.getCurrentState().getUnit(cx, cy).getType().getRank()>=0){
+					game.getCurrentState().setUnit(cx, cy, Unit.AIR);
+				}
+			}
+		}
 		GameBoard board=game.getCurrentState();
 		ArrayList<Unit> units= new ArrayList<Unit>();
 		units.add(new Unit(UnitType.FLAG,playerID));
@@ -438,6 +464,10 @@ public class GameView {
 				}
 			}
 		}
+	}
+	/** Returns whether the given X|Y is legal to be moved to */
+	public boolean walkable(int x, int y){
+		return game.getCurrentState().isInBounds(x, y) && (isEnemy(x, y) || isAir(x, y));
 	}
 	
 	/** Swaps around two units on the map (Only to be used in Setup) (Does not consider board flipping) */
