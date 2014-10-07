@@ -104,7 +104,6 @@ public class HumanPlayer extends Player {
 	}
 
 	public void receiveSetUpInput(int x, int y) {
-		System.out.println(x+" "+y);
 		if (y == 4 || y == 5) {
 			// if middle of board
 			// deselect(xSelected, ySelected)
@@ -149,8 +148,6 @@ public class HumanPlayer extends Player {
 		gameView.startSetup();
 	}
 	
-	
-	//TODO Remove This as soon as proper setup is implemented
 	protected void randomSetup() {
 		Unit[][] setup = new Unit[4][10];
 		List<Unit> availableUnits = new ArrayList<Unit>(40);
@@ -169,11 +166,21 @@ public class HumanPlayer extends Player {
 				setup[y][x] = availableUnits.get(y*10+x);
 			}
 		}
-		// technically there is no need to check if the setup is valid because it cannot be invalid by the way it is created
-		// but, this is an easy way to check whether anything is broken
-		if(gameView.validateSetup(setup)){
-			gameView.setSetup(setup);
+		//Remove All Units
+		for(int cy=0; cy<gameView.getCurrentState().getHeight(); cy++){
+			for(int cx=0; cx<gameView.getCurrentState().getWidth(); cx++){
+				if(gameView.getCurrentState().getUnit(cx, cy).getType().getRank()>=0){
+					gameView.setUnit(cx, cy, Unit.AIR);
+				}
+			}
 		}
+		//Add Setup
+		for(int cy=0; cy<4; cy++){
+			for(int cx=0; cx<10; cx++){
+				gameView.setUnit(cx, cy+6, setup[cy][cx]);
+			}
+		}
+		System.out.println("Done");
 	}
 
 }

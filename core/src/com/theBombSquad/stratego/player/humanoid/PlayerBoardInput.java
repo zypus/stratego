@@ -50,7 +50,7 @@ public class PlayerBoardInput extends InputAdapter {
 		}
 		//Debug Setup Reset
 		else if(keycode==Input.Keys.R){
-			player.resetSetup();
+			player.randomSetup();
 		}
 		return super.keyUp(keycode);
 	}
