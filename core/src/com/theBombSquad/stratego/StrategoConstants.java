@@ -1,5 +1,10 @@
 package com.theBombSquad.stratego;
 
+import com.theBombSquad.stratego.gameMechanics.GameView;
+import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
+
 import java.awt.*;
 
 /**
@@ -29,7 +34,32 @@ public class StrategoConstants {
 		NEMO
 	}
 
+	public static enum PlayerType {
+		HUMAN(HumanPlayer.class),
+		RANDOM(RandomAI.class);
+
+		private Class<? extends Player> playerClass;
+
+		private PlayerType(Class<? extends Player> playerClass) {
+			this.playerClass = playerClass;
+		}
+
+		public Player createPlayer(GameView gameView) {
+			Player playerInstance = null;
+			try {
+				playerInstance = playerClass.getConstructor(GameView.class).newInstance(gameView);
+			} catch (Exception e) {
+				e.printStackTrace();
+				// cannot recover from here
+				System.exit(1);
+			}
+			return playerInstance;
+		}
+
+	}
+
 	/** Remote constants */
+	public static final String LOCAL_HOST = "127.0.0.1";
 	public static final int PORT_PLAYER1 = 9021;			// 21 stands usually for an FTP port TODO find a good port number
 	public static final int PORT_PLAYER2 = 9022;
 	public static final int SERVE_TIMEOUT = 4000; 	// in milliseconds

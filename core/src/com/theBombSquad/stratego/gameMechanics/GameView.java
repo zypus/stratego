@@ -164,9 +164,13 @@ public class GameView {
 	 */
 	public Unit getUnit(int x, int y) {
 
+		return getUnit(x,y,getCurrentTurn());
+	}
+
+	public Unit getUnit(int x, int y, int turn) {
 		// Translate the coordinates from player space to game space.
 		Point coords = conditionalCoordinateRotation(x, y);
-		Unit unit = game.getCurrentState().getUnit(coords.x, coords.y);
+		Unit unit = game.getState(turn).getUnit(coords.x, coords.y);
 		// Unit needs to be obscured if the assigned player shouldn't be able to see that unit.
 		return obscureUnitIfNecessary(unit, getCurrentTurn());
 	}
@@ -179,7 +183,7 @@ public class GameView {
 	 */
 	public boolean isAir(int x, int y) {
 
-		return getUnit(x,y) == Unit.AIR;
+		return isAir(x, y, getCurrentTurn());
 	}
 
 	/**
@@ -190,7 +194,7 @@ public class GameView {
 	 */
 	public boolean isLake(int x, int y) {
 
-		return getUnit(x,y) == Unit.LAKE;
+		return isLake(x,y,getCurrentTurn());
 	}
 
 	/**
@@ -201,7 +205,36 @@ public class GameView {
 	 */
 	public boolean isUnknown(int x, int y) {
 
-		return getUnit(x,y) == Unit.UNKNOWN;
+		return isUnknown(x,y, getCurrentTurn());
+	}
+
+	public boolean isAir(int x, int y, int turn) {
+
+		return getUnit(x,y,turn).isAir();
+	}
+
+	/**
+	 * Checks if the location contains a lake.
+	 *
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains a lake or not.
+	 */
+	public boolean isLake(int x, int y, int turn) {
+
+		return getUnit(x, y, turn).isLake();
+	}
+
+	/**
+	 * Checks if the location contains a unit that is unknown to the assigned player.
+	 *
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains a unknown unit or not.
+	 */
+	public boolean isUnknown(int x, int y, int turn) {
+
+		return getUnit(x, y, turn).isUnknown();
 	}
 
 	/**
@@ -334,7 +367,7 @@ public class GameView {
 	 */
 	private Unit obscureUnitIfNecessary(Unit unit, int turn) {
 		if (!unit.getOwner().equals(PlayerID.NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
-			return Unit.UNKNOWN;
+			return Unit.UnknownUnitPool.getInstance().getUnknownForUnit(unit);
 		} else {
 			return unit;
 		}
