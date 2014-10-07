@@ -83,9 +83,7 @@ public class HumanPlayer extends Player {
 
 	@Override
 	protected void setup() {
-		//TODO: Remove this
-		//randomSetup();
-		//setSetUpPhase(false);
+		resetSetup();
 		setSetUpPhase(true);
 	}
 

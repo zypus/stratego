@@ -38,6 +38,9 @@ public class Game {
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
+	
+	/** The Setups both players committed thus far */
+	private Unit[][][] setupClusters;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -47,6 +50,8 @@ public class Game {
 		moves = new ArrayList<Move>();
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
+		//Sets New Setup Clusters
+		this.setupClusters = new Unit[2][4][10];
 	}
 
 	public boolean validateMove(Move move) {
@@ -218,7 +223,6 @@ public class Game {
 		 * check if the setup is correct, check if every field is not empty and
 		 * how many of each unit there is
 		 */
-		boolean hasFlag = false;
 		// array of elements by rank
 		int[] unitsByRank = new int[12];
 		for (int i = 0; i < setup.length; i++) {
@@ -280,29 +284,33 @@ public class Game {
 			player 1 on the bottom player 2 on the top
 		 */
 		if (playerID == PlayerID.PLAYER_1) {
+			//Set Setup Cluster for Player 1
+			this.setupClusters[0] = setup;
 			player1FinishedSetup = true;
 			if(player1 instanceof HumanPlayer ){
 				((HumanPlayer) player1).setSetUpPhase(false);
 			}			
-			for (int i = 0; i < setup.length; i++) {
-				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(j, i+6, setup[i][j]);
-				}
-			}
 		} else {
+			//Set Setup Cluster for Player 2
+			this.setupClusters[1] = setup;
 			// MIGHT BE WRONG !!
 			// I DIDNT FLIP THE SETUP BEFORE PUTTING INTO ARRAY
 			player2FinishedSetup = true;
 			if(player2 instanceof HumanPlayer ){
 				((HumanPlayer) player2).setSetUpPhase(false);
 			}		
-			for (int i = 0; i < setup.length; i++) {
-				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(j, i, setup[i][j]);
-				}
-			}
 		}
 		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+			for (int i = 0; i < setup.length; i++) {
+				for (int j = 0; j < setup[0].length; j++) {
+					current.setUnit(j, i+6, this.setupClusters[0][i][j]);
+				}
+			}
+			for (int i = 0; i < setup.length; i++) {
+				for (int j = 0; j < setup[0].length; j++) {
+					current.setUnit(j, i, this.setupClusters[1][i][j]);
+				}
+			}
 			finishedSetup = true;
 			nextTurn();
 		}
