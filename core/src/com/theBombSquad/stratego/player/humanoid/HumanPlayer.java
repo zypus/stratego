@@ -170,9 +170,11 @@ public class HumanPlayer extends Player {
 				setup[y][x] = availableUnits.get(y*10+x);
 			}
 		}
-		// no need to check if the setup is valid because it cannot be invalid by the way it is created
-		// so simply sending the setup over to the game
-		gameView.setSetup(setup);
+		// technically there is no need to check if the setup is valid because it cannot be invalid by the way it is created
+		// but, this is an easy way to check whether anything is broken
+		if(gameView.validateSetup(setup)){
+			gameView.setSetup(setup);
+		}
 	}
 
 }

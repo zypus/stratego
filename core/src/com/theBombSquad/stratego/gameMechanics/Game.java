@@ -220,7 +220,7 @@ public class Game {
 		 */
 		boolean hasFlag = false;
 		// array of elements by rank
-		int[] unitsByRank = new int[11];
+		int[] unitsByRank = new int[12];
 		for (int i = 0; i < setup.length; i++) {
 			for (int j = 0; j < setup[0].length; j++) {
 				// for every element checks if it is not empty
@@ -228,57 +228,49 @@ public class Game {
 						|| setup[i][j].getType() == setup[i][j].getType().AIR
 						|| setup[i][j].getType() == setup[i][j].getType().LAKE) {
 					return false;
-				} else if (setup[i][j].getType() == setup[i][j].getType().FLAG) {
-					// checks if there is already one flag found
-					if (hasFlag = false) {
-						hasFlag = true;
-					} else {
-						return false;
-					}
-				} else {
+				}else {
 					// it counts units of each rank
 					unitsByRank[setup[i][j].getType().getRank()]++;
 				}
 			}
 		}
 		// checks the quantity of each unit
-		if (unitsByRank[0] != 7) {
+		if (unitsByRank[Unit.UnitType.FLAG.getRank()] != Unit.UnitType.FLAG.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[1] != 1) {
+		if (unitsByRank[Unit.UnitType.SPY.getRank()] != Unit.UnitType.SPY.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[2] != 8) {
+		if (unitsByRank[Unit.UnitType.SCOUT.getRank()] != Unit.UnitType.SCOUT.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[3] != 5) {
+		if (unitsByRank[Unit.UnitType.SAPPER.getRank()] != Unit.UnitType.SAPPER.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[4] != 4) {
+		if (unitsByRank[Unit.UnitType.SERGEANT.getRank()] != Unit.UnitType.SERGEANT.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[5] != 4) {
+		if (unitsByRank[Unit.UnitType.LIEUTENANT.getRank()] != Unit.UnitType.LIEUTENANT.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[6] != 4) {
+		if (unitsByRank[Unit.UnitType.CAPTAIN.getRank()] != Unit.UnitType.CAPTAIN.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[7] != 3) {
+		if (unitsByRank[Unit.UnitType.MAJOR.getRank()] != Unit.UnitType.MAJOR.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[8] != 2) {
+		if (unitsByRank[Unit.UnitType.COLONEL.getRank()] != Unit.UnitType.COLONEL.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[9] != 1) {
+		if (unitsByRank[Unit.UnitType.GENERAL.getRank()] != Unit.UnitType.GENERAL.getQuantity()) {
 			return false;
 		}
-		if (unitsByRank[10] != 1) {
+		if (unitsByRank[Unit.UnitType.MARSHAL.getRank()] != Unit.UnitType.MARSHAL.getQuantity()) {
 			return false;
 		}
-		if (!hasFlag) {
+		if (unitsByRank[Unit.UnitType.BOMB.getRank()] != Unit.UnitType.BOMB.getQuantity()) {
 			return false;
 		}
-
 		return true;
 	}
 
