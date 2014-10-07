@@ -1,8 +1,8 @@
 package com.theBombSquad.stratego.rendering;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.tools.texturepacker.TexturePacker;
-import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
+//import com.badlogic.gdx.Gdx;
+//import com.badlogic.gdx.tools.texturepacker.TexturePacker;
+//import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 
 public class AtlasPacker {
 	
