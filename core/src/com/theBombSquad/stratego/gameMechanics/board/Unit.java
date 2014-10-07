@@ -3,6 +3,10 @@ package com.theBombSquad.stratego.gameMechanics.board;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.theBombSquad.stratego.StrategoConstants.FIRST_TURN;
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
@@ -13,13 +17,12 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  */
-public class Unit {
+public class Unit implements Serializable {
 
 	private static int idCounter = 1;
 
 	public static final Unit AIR = new Air();
 	public static final Unit LAKE = new Lake();
-	public static final Unit UNKNOWN = new Unknown();
 
 	@Getter
 	protected final UnitType type;
@@ -30,10 +33,35 @@ public class Unit {
 	@Getter
 	private final int id;
 
+	protected Unit() {
+		type = UnitType.AIR;
+		owner = PlayerID.NEMO;
+		id = -1;
+	}
+
 	public Unit(UnitType type, PlayerID owner) {
 		this.type = type;
 		this.owner = owner;
-		this.id = idCounter++;
+		int baseID = owner.ordinal()*100;
+		this.id = baseID+idCounter++;
+	}
+
+	public Unit(UnitType type, PlayerID owner, int specificID) {
+		this.type = type;
+		this.owner = owner;
+		this.id = specificID;
+	}
+
+	public boolean isAir() {
+		return type==UnitType.AIR;
+	}
+
+	public boolean isLake() {
+		return type==UnitType.LAKE;
+	}
+
+	public boolean isUnknown() {
+		return type == UnitType.UNKNOWN;
 	}
 
 	public static enum UnitType {
@@ -80,10 +108,31 @@ public class Unit {
 	}
 
 	private static class Unknown extends Unit {
-		private Unknown() {
-			super(UnitType.UNKNOWN, PlayerID.NEMO);
-			revealedInTurn = FIRST_TURN;
+		private Unknown(Unit unit) {
+			super(UnitType.UNKNOWN, unit.getOwner(), unit.getId());
 		}
+	}
+
+	public static class UnknownUnitPool {
+
+		@Getter private static UnknownUnitPool instance = new UnknownUnitPool();
+
+		private Map<Integer, Unknown> pool = new HashMap<Integer, Unknown>();
+
+		public Unknown getUnknownForUnit(Unit unit) {
+			Unknown unknown = pool.get(unit.getId());
+			// if the requested object doesn't exist yet create and store it
+			if (unknown == null) {
+				unknown = new Unknown(unit);
+				pool.put(unit.getId(), unknown);
+			}
+			return unknown;
+		}
+
+		private void UnknowUnitPool() {
+
+		}
+
 	}
 
 }

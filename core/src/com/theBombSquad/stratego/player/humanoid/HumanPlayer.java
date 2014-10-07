@@ -1,27 +1,28 @@
 package com.theBombSquad.stratego.player.humanoid;
 
-import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
+
 /**
  * TODO Add description
- * 
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ *
+ * @author Fabian Frï¿½nz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class HumanPlayer extends Player {
-	
+
 	public HumanPlayer(GameView gameView) {
 		super(gameView);
 		PlayerBoardInput input = new PlayerBoardInput(this, (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH);
@@ -77,14 +78,16 @@ public class HumanPlayer extends Player {
 	}
 
 	@Override
-	protected void move() {
+	protected Move move() {
 
+		return null;
 	}
 
 	@Override
-	protected void setup() {
+	protected Setup setup() {
 		resetSetup();
 		setSetUpPhase(true);
+		return null;
 	}
 
 	@Override
@@ -100,7 +103,7 @@ public class HumanPlayer extends Player {
 		this.setUpPhase = setUpPhase;
 		xSelected = -1;
 		ySelected = -1;
-		
+
 	}
 
 	public void receiveSetUpInput(int x, int y) {
@@ -132,10 +135,10 @@ public class HumanPlayer extends Player {
 	}
 
 	public void submitSetUp() {
-		Unit[][] setUp = new Unit[4][10];
+		Setup setUp = new Setup(10,4);
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 4; j++) {
-				setUp[j][i] = gameView.getUnit(i, 6 + j);
+				setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
 			}
 		}
 		System.out.println("Test Setup");
@@ -148,11 +151,11 @@ public class HumanPlayer extends Player {
 	public void resetSetup() {
 		gameView.startSetup();
 	}
-	
-	
+
+
 	//TODO Remove This as soon as proper setup is implemented
 	protected void randomSetup() {
-		Unit[][] setup = new Unit[4][10];
+		Setup setup = new Setup(10,4);
 		List<Unit> availableUnits = new ArrayList<Unit>(40);
 		Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
 		// create a list containing all units that needs to be placed on the board
@@ -166,7 +169,7 @@ public class HumanPlayer extends Player {
 		//go through the list and place them on the board as the units appear in the randomly shuffled list
 		for (int y = 0; y < 4; y++) {
 			for (int x = 0; x < 10; x++) {
-				setup[y][x] = availableUnits.get(y*10+x);
+				setup.setUnit(x,y,availableUnits.get(y * 10 + x));
 			}
 		}
 		// technically there is no need to check if the setup is valid because it cannot be invalid by the way it is created

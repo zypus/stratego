@@ -3,6 +3,8 @@ package com.theBombSquad.stratego.gameMechanics.board;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
+
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 
 /**
@@ -13,7 +15,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
  */
 @Getter
 @RequiredArgsConstructor
-public class Move {
+public class Move implements Serializable {
 
 	private static Encounter DUMMY_ENCOUNTER = new Encounter(null, null, null);
 
@@ -31,7 +33,7 @@ public class Move {
 	private Encounter encounter = DUMMY_ENCOUNTER;
 
 	public boolean hasEncounter() {
-		return encounter != null;
+		return encounter != DUMMY_ENCOUNTER;
 	}
 
 	public void setPlayerID(PlayerID playerID) {

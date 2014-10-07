@@ -3,6 +3,8 @@ package com.theBombSquad.stratego.player;
 import lombok.Getter;
 
 import com.theBombSquad.stratego.gameMechanics.GameView;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 
 /**
  * Abstract player class which performs each player action (setup,move,idle).
@@ -63,8 +65,35 @@ public abstract class Player {
 	 * Implementation is responsible to finish their work once the thread gets interrupted.
 	 * -- if ( Thread.currentThread().isInterrupted() ) --
 	 */
-	protected abstract void move();
-	protected abstract void setup();
+	protected abstract Move move();
+	protected abstract Setup setup();
 	protected abstract void idle();
+
+	/**
+	 * Method to call the move() method directly. Primarily used by the remote players to access there underlying local player instance
+	 * method, without starting another thread. Moreover otherwise the remote player cannot access the move of the local player.
+	 * @return The performed move.
+	 */
+	public Move move_directAccessOverwrite() {
+		return move();
+	}
+
+	/**
+	 * Method to call the setup() method directly. Primarily used by the remote players to access there underlying local player instance
+	 * method, without starting another thread. Moreover otherwise the remote player cannot access the setup of the local player.
+	 *
+	 * @return The requested setup.
+	 */
+	public Setup setup_directAccessOverwrite() {
+		return setup();
+	}
+
+	/**
+	 * Method to call the idle() method directly. Primarily used by the remote players to access there underlying local player instance
+	 * method, without starting another thread.
+	 */
+	public void idle_directAccessOverwrite() {
+		idle();
+	}
 
 }

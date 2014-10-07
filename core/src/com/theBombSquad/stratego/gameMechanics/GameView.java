@@ -2,10 +2,10 @@ package com.theBombSquad.stratego.gameMechanics;
 
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
-
-import lombok.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
@@ -38,7 +38,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 @RequiredArgsConstructor
 @Log
 public class GameView {
-	
+
 	private final Game game;												/** Reference to the game. */
 	@Getter private final PlayerID playerID;								/** PlayerID which defines this views perspective */
 	private final List<Move> cashedRotatedMoves = new ArrayList<Move>();	/** List of moves which acts as a cache for rotated move for
@@ -93,7 +93,8 @@ public class GameView {
 	 * @param setup The army setup in player space.
 	 * @return Whether the setup is valid or not.
 	 */
-	public boolean validateSetup(Unit[][] setup) {
+	public boolean validateSetup(Setup setup) {
+
 		// Forwards the validation to game.
 		// Note: Setup doesn't need to be translated to game space for validation because validation is rotation independent.
 		return game.validateSetup(setup);
@@ -103,14 +104,15 @@ public class GameView {
 	 * Sets the setup.
 	 * @param setup The army setup in player space.
 	 */
-	public void setSetup(Unit[][] setup) {
+	public void setSetup(Setup setup) {
+
 		// Return early if the view doesn't belong to a player
 		if (playerID.equals(PlayerID.NEMO)) {
 			log.severe("Non player tried to set setup.");
 			return;
 		}
 		// Translates the setup from player space to game space.
-		Unit[][] preparedSetup = (playerID.equals(PlayerID.PLAYER_1)) ? setup : rotateBoard(setup);
+		Setup preparedSetup = (playerID.equals(PlayerID.PLAYER_1)) ? setup : rotateSetup(setup);
 		// Forwards the setup to the game and sets the correct player reference.
 		game.setSetup(preparedSetup, playerID);
 	}
@@ -163,9 +165,13 @@ public class GameView {
 	 */
 	public Unit getUnit(int x, int y) {
 
+		return getUnit(x,y,getCurrentTurn());
+	}
+
+	public Unit getUnit(int x, int y, int turn) {
 		// Translate the coordinates from player space to game space.
 		Point coords = conditionalCoordinateRotation(x, y);
-		Unit unit = game.getCurrentState().getUnit(coords.x, coords.y);
+		Unit unit = game.getState(turn).getUnit(coords.x, coords.y);
 		// Unit needs to be obscured if the assigned player shouldn't be able to see that unit.
 		return obscureUnitIfNecessary(unit, getCurrentTurn());
 	}
@@ -178,7 +184,7 @@ public class GameView {
 	 */
 	public boolean isAir(int x, int y) {
 
-		return getUnit(x,y) == Unit.AIR;
+		return isAir(x, y, getCurrentTurn());
 	}
 
 	/**
@@ -189,7 +195,7 @@ public class GameView {
 	 */
 	public boolean isLake(int x, int y) {
 
-		return getUnit(x,y) == Unit.LAKE;
+		return isLake(x,y,getCurrentTurn());
 	}
 
 	/**
@@ -200,25 +206,58 @@ public class GameView {
 	 */
 	public boolean isUnknown(int x, int y) {
 
-		return getUnit(x,y) == Unit.UNKNOWN;
+		return isUnknown(x, y, getCurrentTurn());
 	}
-	
-	public boolean isEnemy(int x, int y){
+
+	public boolean isAir(int x, int y, int turn) {
+
+		return getUnit(x,y,turn).isAir();
+	}
+
+	/**
+	 * Checks if the location contains a lake.
+	 *
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains a lake or not.
+	 */
+	public boolean isLake(int x, int y, int turn) {
+
+		return getUnit(x, y, turn).isLake();
+	}
+
+	/**
+	 * Checks if the location contains a unit that is unknown to the assigned player.
+	 *
+	 * @param x X Coordinate in player space.
+	 * @param y Y Coordinate in player space.
+	 * @return Whether the location contains a unknown unit or not.
+	 */
+	public boolean isUnknown(int x, int y, int turn) {
+
+		return getUnit(x, y, turn).isUnknown();
+	}
+
+	public boolean isEnemy(int x, int y) {
+		return isEnemy(x, y, getCurrentTurn());
+	}
+
+	public boolean isEnemy(int x, int y, int turn) {
 		PlayerID opponent = PlayerID.PLAYER_1;
-		if(this.playerID.equals(opponent)){
+		if (this.playerID.equals(opponent)) {
 			opponent = PlayerID.PLAYER_2;
 		}
-		Unit unit = getUnit(x, y);
+		Unit unit = getUnit(x, y, turn);
 		PlayerID unitOwner = unit.getOwner();
-		return unitOwner.equals(opponent) || unit.getType().getRank()==Unit.UNKNOWN.getType().getRank();
+		return unitOwner.equals(opponent) || unit.isUnknown();
 	}
-	
+
 	public boolean willWin(int ownX, int ownY, int targetX, int targetY){
 		if(isEnemy(targetX, targetY)){
 			Unit own = getUnit(ownX, ownY);
 			if(own.getOwner().equals(playerID)){
 				Unit foe = getUnit(targetX, targetY);
-				if(foe.getType().getRank()!=Unit.UNKNOWN.getType().getRank()){
+				if(foe.isUnknown()){
 					int ownRank = own.getType().getRank();
 					int foeRank = foe.getType().getRank();
 					if(ownRank>foeRank || (foeRank==Unit.UnitType.MARSHAL.getRank() && ownRank==Unit.UnitType.SPY.getRank())){
@@ -267,7 +306,7 @@ public class GameView {
 	 * @return The most recent move.
 	 */
 	public Move getLastMove() {
-		return getMove(game.getCurrentTurn()-2);
+		return getMove(game.getCurrentTurn() - 2);
 	}
 
 	/**
@@ -358,7 +397,7 @@ public class GameView {
 	 */
 	private Unit obscureUnitIfNecessary(Unit unit, int turn) {
 		if (!playerID.equals(PlayerID.NEMO) && !unit.getOwner().equals(PlayerID.NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
-			return Unit.UNKNOWN;
+			return Unit.UnknownUnitPool.getInstance().getUnknownForUnit(unit);
 		} else {
 			return unit;
 		}
@@ -411,22 +450,22 @@ public class GameView {
 	}
 
 	/**
-	 * Rotates the board by 180 degree.
-	 * @param board The board.
-	 * @return The rotated board.
+	 * Rotates the setup by 180 degree.
+	 * @param setup The setup.
+	 * @return The rotated setup.
 	 */
-	private Unit[][] rotateBoard(Unit[][] board) {
-		int height = board.length;
-		int width = board[0].length;
-		Unit[][] rotatedBoard = new Unit[height][width];
+	private Setup rotateSetup(Setup setup) {
+		int width = setup.getWidth();
+		int height = setup.getHeight();
+		Setup rotatedSetup = new Setup(width, height);
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				rotatedBoard[height-y-1][width-x-1] = board[y][x];
+				rotatedSetup.setUnit(width-x-1, height-y-1, setup.getUnit(x,y));
 			}
 		}
-		return rotatedBoard;
+		return rotatedSetup;
 	}
-	
+
 	/** sets all the units on the top of the board so we can start making the setup */
 	public void startSetup() {
 		for(int cy=0; cy<getCurrentState().getHeight(); cy++){
@@ -469,7 +508,7 @@ public class GameView {
 	public boolean walkable(int x, int y){
 		return game.getCurrentState().isInBounds(x, y) && (isEnemy(x, y) || isAir(x, y));
 	}
-	
+
 	/** Swaps around two units on the map (Only to be used in Setup) (Does not consider board flipping) */
 	public void hardSwapUnits(int x1, int y1, int x2, int y2){
 		//Get Relative Position

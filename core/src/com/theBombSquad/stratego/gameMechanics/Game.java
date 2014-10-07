@@ -4,6 +4,7 @@ import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
@@ -21,7 +22,7 @@ import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
 
 /**
  * TODO Add description
- * 
+ *
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @author Flo
  * @author Mateusz Garbacz
@@ -41,12 +42,12 @@ public class Game {
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
-	
+
 	private ArrayList<Move> lastMovesP1SameUnit;
 	private ArrayList<Move> lastMovesP2SameUnit;
-	
+
 	/** The Setups both players committed thus far */
-	private Unit[][][] setupClusters;
+	private Setup[] setupClusters;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -62,7 +63,7 @@ public class Game {
 
 
 		//Sets New Setup Clusters
-		this.setupClusters = new Unit[2][4][10];
+		this.setupClusters = new Setup[10];
 	}
 
 	public boolean validateMove(Move move) {
@@ -365,23 +366,23 @@ public class Game {
 		}
 	}
 
-	public boolean validateSetup(Unit[][] setup) {
+	public boolean validateSetup(Setup setup) {
 		/**
 		 * check if the setup is correct, check if every field is not empty and
 		 * how many of each unit there is
 		 */
 		// array of elements by rank
 		int[] unitsByRank = new int[12];
-		for (int i = 0; i < setup.length; i++) {
-			for (int j = 0; j < setup[0].length; j++) {
+		for (int i = 0; i < setup.getWidth(); i++) {
+			for (int j = 0; j < setup.getHeight(); j++) {
 				// for every element checks if it is not empty
-				if (setup[i][j] == null
-						|| setup[i][j].getType() == setup[i][j].getType().AIR
-						|| setup[i][j].getType() == setup[i][j].getType().LAKE) {
+				if (setup.getUnit(i,j) == null
+						|| setup.getUnit(i, j).isAir()
+						|| setup.getUnit(i, j).isLake()) {
 					return false;
 				}else {
 					// it counts units of each rank
-					unitsByRank[setup[i][j].getType().getRank()]++;
+					unitsByRank[setup.getUnit(i,j).getType().getRank()]++;
 				}
 			}
 		}
@@ -425,7 +426,7 @@ public class Game {
 		return true;
 	}
 
-	public void setSetup(Unit[][] setup, PlayerID playerID) {
+	public void setSetup(Setup setup, PlayerID playerID) {
 		/**
 		 * puts setup to the main grid depending on a player player 1 on the
 		 * bottom player 2 on the top
@@ -445,17 +446,17 @@ public class Game {
 			player2FinishedSetup = true;
 			if (player2 instanceof HumanPlayer) {
 				((HumanPlayer) player2).setSetUpPhase(false);
-			}		
+			}
 		}
 		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
-			for (int i = 0; i < setup.length; i++) {
-				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(j, i+6, this.setupClusters[0][i][j]);
+			for (int i = 0; i < setup.getWidth(); i++) {
+				for (int j = 0; j < setup.getHeight(); j++) {
+					current.setUnit(i, j+6, this.setupClusters[0].getUnit(i,j));
 				}
 			}
-			for (int i = 0; i < setup.length; i++) {
-				for (int j = 0; j < setup[0].length; j++) {
-					current.setUnit(j, i, this.setupClusters[1][i][j]);
+			for (int i = 0; i < setup.getWidth(); i++) {
+				for (int j = 0; j < setup.getHeight(); j++) {
+					current.setUnit(i, j, this.setupClusters[1].getUnit(i,j));
 				}
 			}
 		}
@@ -582,7 +583,7 @@ public class Game {
 		// TODO: Fix Bug
 		if (player.getGameView().getMoves() != null
 				&& player.getGameView().getMoves().size() > 0
-				&& player.getGameView().getLastMove().getEncounter() != null) {
+				&& player.getGameView().getLastMove().hasEncounter()) {
 			Unit[] lastTurnsFallen = player.getGameView().getLastMove()
 					.getEncounter().getDefeatedUnits();
 			for (int c = 0; c < lastTurnsFallen.length; c++) {

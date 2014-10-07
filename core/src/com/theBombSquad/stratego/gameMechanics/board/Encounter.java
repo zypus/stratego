@@ -21,14 +21,14 @@ public class Encounter {
 	public Encounter(Unit attackingUnit, Unit defendingUnit) {
 		this.attackingUnit=attackingUnit;
 		this.defendingUnit=defendingUnit;
-		if (defendingUnit.getType() == defendingUnit.getType().BOMB) {
-			if (attackingUnit.getType() == attackingUnit.getType().SAPPER) {
+		if (defendingUnit.getType() == Unit.UnitType.BOMB) {
+			if (attackingUnit.getType() == Unit.UnitType.SAPPER) {
 				result=CombatResult.VICTORIOUS_ATTACK;
 			} else {
 				result=CombatResult.VICTORIOUS_DEFENSE;
 			}
-		} else if (defendingUnit.getType() == defendingUnit.getType().MARSHAL
-				&& attackingUnit.getType() == attackingUnit.getType().SPY) {
+		} else if (defendingUnit.getType() == Unit.UnitType.MARSHAL
+				&& attackingUnit.getType() == Unit.UnitType.SPY) {
 			result=CombatResult.VICTORIOUS_ATTACK;
 		} else {
 			int defendingRank = defendingUnit.getType().getRank();
@@ -74,7 +74,7 @@ public class Encounter {
 		return null;
 	}
 
-	
+
 
 	public static enum CombatResult {
 		VICTORIOUS_ATTACK, VICTORIOUS_DEFENSE, MUTUAL_DEFEAT
