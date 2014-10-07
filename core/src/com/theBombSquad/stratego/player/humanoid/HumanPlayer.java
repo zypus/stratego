@@ -180,10 +180,9 @@ public class HumanPlayer extends Player {
 		//Add Setup
 		for(int cy=0; cy<4; cy++){
 			for(int cx=0; cx<10; cx++){
-				gameView.setUnit(cx, cy+6, setup[cy][cx]);
+				gameView.setUnit(cx, cy+6, availableUnits.get(cy * 10 + cx));
 			}
 		}
-		System.out.println("Done");
 	}
 
 }

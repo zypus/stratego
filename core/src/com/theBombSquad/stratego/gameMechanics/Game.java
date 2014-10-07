@@ -504,7 +504,6 @@ public class Game {
 		if (defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType()
 				.getRank() == 0) {
 			winner=player2;
-			System.out.println()
 			return true;
 		}
 		if (defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType()
