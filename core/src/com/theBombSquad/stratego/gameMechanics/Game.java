@@ -195,7 +195,7 @@ public class Game {
 					if (lastMovesP1SameUnit.size() > 5) {
 						// checks if the moves were forward and back
 						int counter = 0;
-						for (int i = 0; i < 6; i++) {
+						for (int i = 0; i < 5; i++) {
 							Move moveToCheck1 = lastMovesP1SameUnit
 									.get(lastMovesP1SameUnit.size() - 1 - i);
 							Move moveToCheck2 = lastMovesP1SameUnit
@@ -204,7 +204,7 @@ public class Game {
 								counter++;
 							}
 						}
-						if (counter > 4) {
+						if (counter > 3) {
 							lastMovesP1SameUnit.remove(lastMovesP1SameUnit
 									.size() - 1);
 							return false;
@@ -212,7 +212,7 @@ public class Game {
 						// checks if p1 chases p2
 						if (lastMovesP1SameUnit.size() > 5) {
 							counter = 0;
-							for (int i = 0; i < 6; i++) {
+							for (int i = 0; i < 5; i++) {
 								Move moveToCheck1 = lastMovesP1SameUnit
 										.get(lastMovesP1SameUnit.size() - 1 - i);
 								Move moveToCheck2 = lastMovesP2SameUnit
@@ -582,7 +582,8 @@ public class Game {
 		// TODO: Fix Bug
 		if (player.getGameView().getMoves() != null
 				&& player.getGameView().getMoves().size() > 0
-				&& player.getGameView().getLastMove().getEncounter() != null) {
+				&& player.getGameView().getLastMove().getEncounter() != null&&
+						player.getGameView().getLastMove().hasEncounter()) {
 			Unit[] lastTurnsFallen = player.getGameView().getLastMove()
 					.getEncounter().getDefeatedUnits();
 			for (int c = 0; c < lastTurnsFallen.length; c++) {

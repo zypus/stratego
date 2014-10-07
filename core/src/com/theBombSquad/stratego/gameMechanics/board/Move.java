@@ -31,7 +31,7 @@ public class Move {
 	private Encounter encounter = DUMMY_ENCOUNTER;
 
 	public boolean hasEncounter() {
-		return encounter != null;
+		return encounter != DUMMY_ENCOUNTER;
 	}
 
 	public void setPlayerID(PlayerID playerID) {
