@@ -102,6 +102,7 @@ public class HumanPlayer extends Player {
 		this.setUpPhase = setUpPhase;
 		xSelected = -1;
 		ySelected = -1;
+		
 	}
 
 	public void receiveSetUpInput(int x, int y) {
