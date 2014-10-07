@@ -12,7 +12,7 @@ import com.theBombSquad.stratego.rendering.Renderer;
 public class HumanMoveRenderer extends Renderer {
 
 	@Override public void render(SpriteBatch batch) {
-
+		
 	}
 
 	@Override

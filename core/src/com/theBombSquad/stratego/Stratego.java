@@ -11,6 +11,8 @@ import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
+import com.theBombSquad.stratego.rendering.AtlasPacker;
 import com.theBombSquad.stratego.rendering.BoardRenderer;
 import com.theBombSquad.stratego.rendering.DefeatedUnitRenderer;
 import com.theBombSquad.stratego.rendering.LayerRenderer;
@@ -47,6 +49,7 @@ public class Stratego extends ApplicationAdapter {
 	@Override
 	public void create () {
 		// TODO setup everything
+		AtlasPacker.pack();
 		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
 		setupGame();
 		this.batch = new SpriteBatch();
@@ -83,7 +86,7 @@ public class Stratego extends ApplicationAdapter {
 		Player player2 = new RandomAI(playerTwoView);
 
 		// tell the game about the players
-		game.setPlayer1(player1);
+		game.setPlayer1(new HumanPlayer(playerOneView));
 		game.setPlayer2(player2);
 
 		// TODO setup renderers

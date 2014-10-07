@@ -1,5 +1,12 @@
 package com.theBombSquad.stratego.player.humanoid;
 
+import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.badlogic.gdx.Gdx;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
@@ -14,9 +21,11 @@ import com.theBombSquad.stratego.player.Player;
  * @author Flo
  */
 public class HumanPlayer extends Player {
-
+	
 	public HumanPlayer(GameView gameView) {
 		super(gameView);
+		PlayerBoardInput input = new PlayerBoardInput(this, (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH);
+		Gdx.input.setInputProcessor(input);
 	}
 
 	private PlayerID playerID = gameView.getPlayerID();
@@ -34,7 +43,7 @@ public class HumanPlayer extends Player {
 		// opponent
 		else if ((xSelected == -1 || ySelected == -1)
 				&& (Game.getCurrent().getUnit(x, y).getType().getRank() != -1)
-				&& Game.getCurrent().getUnit(x, y).getOwner() != move
+				&& Game.getCurrent().getUnit(x, y).getOwner() == move
 						.getPlayerID()) {
 			xSelected = x;
 			ySelected = y;
@@ -74,7 +83,8 @@ public class HumanPlayer extends Player {
 
 	@Override
 	protected void setup() {
-
+		resetSetup();
+		setSetUpPhase(true);
 	}
 
 	@Override
@@ -90,10 +100,17 @@ public class HumanPlayer extends Player {
 		this.setUpPhase = setUpPhase;
 		xSelected = -1;
 		ySelected = -1;
+		
 	}
 
 	public void receiveSetUpInput(int x, int y) {
-		if (xSelected == -1 || ySelected == -1
+		System.out.println(x+" "+y);
+		if (y == 4 || y == 5) {
+			// if middle of board
+			// deselect(xSelected, ySelected)
+			xSelected = -1;
+			ySelected = -1;
+		} else if (xSelected == -1 || ySelected == -1
 				&& Game.getCurrent().getUnit(x, y).getType().getRank() != -1) {
 			// select piece
 			xSelected = x;
@@ -104,19 +121,9 @@ public class HumanPlayer extends Player {
 			// deselect(xSelected, ySelected)
 			xSelected = -1;
 			ySelected = -1;
-		} else if (y > 3 && y < 6) {
-			// if middle of board
-			// deselect(xSelected, ySelected)
-			xSelected = -1;
-			ySelected = -1;
 		} else {
 			// SWITCH AROUND
-			Move move1 = new Move(xSelected, ySelected, 4, 4);
-			gameView.performMove(move1);
-			Move move2 = new Move(x, y, xSelected, ySelected);
-			gameView.performMove(move2);
-			Move move3 = new Move(4, 4, x, y);
-			gameView.performMove(move3);
+			gameView.hardSwapUnits(xSelected, ySelected, x, y);
 			// deselect(xSelected, ySelected)
 			xSelected = -1;
 			ySelected = -1;
@@ -125,19 +132,48 @@ public class HumanPlayer extends Player {
 	}
 
 	public void submitSetUp() {
-		Unit[][] setUp = new Unit[10][4];
+		Unit[][] setUp = new Unit[4][10];
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 4; j++) {
-				setUp[i][j] = Game.getCurrent().getUnit(i, 6 + j);
+				setUp[j][i] = gameView.getUnit(i, 6 + j);
 			}
 		}
+		System.out.println("Test Setup");
 		if (gameView.validateSetup(setUp)) {
+			System.out.println("Valid Setup");
 			gameView.setSetup(setUp);
 		}
 	}
 
 	public void resetSetup() {
 		gameView.startSetup();
+	}
+	
+	
+	//TODO Remove This as soon as proper setup is implemented
+	protected void randomSetup() {
+		Unit[][] setup = new Unit[4][10];
+		List<Unit> availableUnits = new ArrayList<Unit>(40);
+		Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
+		// create a list containing all units that needs to be placed on the board
+		for (Unit.UnitType type : unitTypeEnum) {
+			for (int i = 0; i < type.getQuantity(); i++) {
+				availableUnits.add(new Unit(type, gameView.getPlayerID()));
+			}
+		}
+		//shuffle the list containing all available units
+		Collections.shuffle(availableUnits);
+		//go through the list and place them on the board as the units appear in the randomly shuffled list
+		for (int y = 0; y < 4; y++) {
+			for (int x = 0; x < 10; x++) {
+				setup[y][x] = availableUnits.get(y*10+x);
+			}
+		}
+		// technically there is no need to check if the setup is valid because it cannot be invalid by the way it is created
+		// but, this is an easy way to check whether anything is broken
+		if(gameView.validateSetup(setup)){
+			gameView.setSetup(setup);
+		}
 	}
 
 }
