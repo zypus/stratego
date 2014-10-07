@@ -520,5 +520,9 @@ public class GameView {
 		game.getCurrentState().setUnit(coords1.x, coords1.y, getUnit(coords2.x, coords2.y));
 		game.getCurrentState().setUnit(coords2.x, coords2.y, helpUnit);
 	}
+	
+	public void setUnit(int x, int y, Unit unit){
+		game.getCurrentState().setUnit(x, y, unit);
+	}
 
 }
