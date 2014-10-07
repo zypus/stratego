@@ -5,7 +5,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
-import lombok.Getter;
+import lombok.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
@@ -429,6 +429,13 @@ public class GameView {
 	
 	/** sets all the units on the top of the board so we can start making the setup */
 	public void startSetup() {
+		for(int cy=0; cy<getCurrentState().getHeight(); cy++){
+			for(int cx=0; cx<getCurrentState().getWidth(); cx++){
+				if(game.getCurrentState().getUnit(cx, cy).getType().getRank()>=0){
+					game.getCurrentState().setUnit(cx, cy, Unit.AIR);
+				}
+			}
+		}
 		GameBoard board=game.getCurrentState();
 		ArrayList<Unit> units= new ArrayList<Unit>();
 		units.add(new Unit(UnitType.FLAG,playerID));
@@ -461,6 +468,8 @@ public class GameView {
 	/** Returns whether the given X|Y is legal to be moved to */
 	public boolean walkable(int x, int y){
 		return game.getCurrentState().isInBounds(x, y) && (isEnemy(x, y) || isAir(x, y));
+	}
+	
 	/** Swaps around two units on the map (Only to be used in Setup) (Does not consider board flipping) */
 	public void hardSwapUnits(int x1, int y1, int x2, int y2){
 		//Get Relative Position
