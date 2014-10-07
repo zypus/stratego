@@ -78,9 +78,10 @@ public class Game {
 		int distanceY = Math.abs(fromY - toY);
 		// if we attack unit of ours then false
 		if(toX<0||toX>9||toY<0||toY>9){
+			System.out.println(toX+" " + toY);
 			return false;
 		}
-		if (move.getPlayerID() == current.getUnit(toX, toY).getOwner()) {
+		if (current.getUnit(fromX, fromY).getOwner() == current.getUnit(toX, toY).getOwner()) {
 			return false;
 		}
 		// if move from to is the same spot
@@ -177,10 +178,7 @@ public class Game {
 		}
 		// checks if goes one way and comes back all the time
 		if (states.size() % 2 == 1) {
-			System.out.println("Here");
 			if (lastMovesP1SameUnit.size() == 0) {
-				System.out.println("Here2");
-
 				lastMovesP1SameUnit.add(move);
 			} else {
 				Move move2 = lastMovesP1SameUnit
@@ -221,8 +219,12 @@ public class Game {
 								if (sameMove(moveToCheck1, moveToCheck2)) {
 									counter++;
 								}
+								else if ((lastMovesP2SameUnit.size() - 1 - i-1)>=0&&sameMove(moveToCheck1, lastMovesP2SameUnit
+										.get(lastMovesP2SameUnit.size() - 1 - i-1))) {
+									counter++;
+								}
 							}
-							if (counter > 4) {
+							if (counter > 3) {
 								lastMovesP1SameUnit.remove(lastMovesP1SameUnit
 										.size() - 1);
 								return false;
@@ -276,8 +278,13 @@ public class Game {
 								if (sameMove(moveToCheck1, moveToCheck2)) {
 									counter++;
 								}
+								else if ((lastMovesP1SameUnit.size() - 1 - i-1)>=0&&sameMove(moveToCheck1, lastMovesP1SameUnit
+										.get(lastMovesP1SameUnit.size() - 1 - i-1))) {
+									counter++;
+								}
+								
 							}
-							if (counter > 4) {
+							if (counter > 3) {
 								lastMovesP2SameUnit.remove(lastMovesP2SameUnit
 										.size() - 1);
 								return false;
@@ -555,6 +562,7 @@ public class Game {
 			Move move4 = new Move(x, y, x - 1, y);
 			if (validateMove(move1)|| validateMove(move2)
 					||validateMove(move3) ||validateMove(move4)) {
+				System.out.println("----------");
 				return false;
 			}
 		}
