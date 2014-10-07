@@ -41,6 +41,7 @@ public class Game {
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
+	private Player winner;
 	
 	private ArrayList<Move> lastMovesP1SameUnit;
 	private ArrayList<Move> lastMovesP2SameUnit;
@@ -204,13 +205,13 @@ public class Game {
 								counter++;
 							}
 						}
-						if (counter > 3) {
+						if (counter > 4) {
 							lastMovesP1SameUnit.remove(lastMovesP1SameUnit
 									.size() - 1);
 							return false;
 						}
 						// checks if p1 chases p2
-						if (lastMovesP1SameUnit.size() > 5) {
+						if (lastMovesP2SameUnit.size() > 5) {
 							counter = 0;
 							for (int i = 0; i < 5; i++) {
 								Move moveToCheck1 = lastMovesP1SameUnit
@@ -250,7 +251,7 @@ public class Game {
 					if (lastMovesP2SameUnit.size() > 5) {
 						// checks if the moves were forward and back
 						int counter = 0;
-						for (int i = 0; i < 6; i++) {
+						for (int i = 0; i < 5; i++) {
 							Move moveToCheck1 = lastMovesP2SameUnit
 									.get(lastMovesP2SameUnit.size() - 1 - i);
 							Move moveToCheck2 = lastMovesP2SameUnit
@@ -265,9 +266,9 @@ public class Game {
 							return false;
 						}
 						// checks if p2 chases p1
-						if (lastMovesP2SameUnit.size() > 5) {
+						if (lastMovesP1SameUnit.size() > 5) {
 							counter = 0;
-							for (int i = 0; i < 6; i++) {
+							for (int i = 0; i < 5; i++) {
 								Move moveToCheck1 = lastMovesP2SameUnit
 										.get(lastMovesP2SameUnit.size() - 1 - i);
 								Move moveToCheck2 = lastMovesP1SameUnit
@@ -501,11 +502,15 @@ public class Game {
 		}
 		if (defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType()
 				.getRank() == 0) {
+			winner=player2;
+			System.out.println()
 			return true;
 		}
 		if (defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType()
 				.getRank() == 0) {
+			winner=player1;
 			return true;
+			
 		}
 		ArrayList<Point> UnitsP1 = new ArrayList<Point>();
 		ArrayList<Point> UnitsP2 = new ArrayList<Point>();
@@ -525,9 +530,11 @@ public class Game {
 		}
 
 		if (!checkIfHasMoves(UnitsP1)) {
+			winner=player2;
 			return true;
 		}
 		if (!checkIfHasMoves(UnitsP2)) {
+			winner=player1;
 			return true;
 		}
 		return false;
