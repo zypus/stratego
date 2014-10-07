@@ -503,12 +503,13 @@ public class Game {
 		if (defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType()
 				.getRank() == 0) {
 			winner=player2;
-			System.out.println()
+			System.out.println("p2");
 			return true;
 		}
 		if (defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType()
 				.getRank() == 0) {
 			winner=player1;
+			System.out.println("p1");
 			return true;
 			
 		}
@@ -529,12 +530,16 @@ public class Game {
 			}
 		}
 
-		if (!checkIfHasMoves(UnitsP1)) {
+		if (checkIfHasMoves(UnitsP1)) {
 			winner=player2;
+			System.out.println("p2- no moves");
+
 			return true;
 		}
-		if (!checkIfHasMoves(UnitsP2)) {
+		if (checkIfHasMoves(UnitsP2)) {
 			winner=player1;
+			System.out.println("p1- no moves");
+
 			return true;
 		}
 		return false;
@@ -548,11 +553,12 @@ public class Game {
 			Move move2 = new Move(x, y, x, y + 1);
 			Move move3 = new Move(x, y, x, y - 1);
 			Move move4 = new Move(x, y, x - 1, y);
-			if (!validateMove(move1) && !validateMove(move2)
-					&& !validateMove(move3) && !validateMove(move4)) {
+			if (validateMove(move1)|| validateMove(move2)
+					||validateMove(move3) ||validateMove(move4)) {
 				return false;
 			}
 		}
+		System.out.println("FUCK");
 		return true;
 	}
 
