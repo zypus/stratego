@@ -267,8 +267,7 @@ public class GameView {
 	 * @return The most recent move.
 	 */
 	public Move getLastMove() {
-
-		return getMove(game.getCurrentTurn()-1);
+		return getMove(game.getCurrentTurn()-2);
 	}
 
 	/**

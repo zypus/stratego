@@ -68,6 +68,9 @@ public class Game {
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
 		// if we attack unit of ours then false
+		if(toX<0||toX>9||toY<0||toY>9){
+			return false;
+		}
 		if (move.getPlayerID() == current.getUnit(toX, toY).getOwner()) {
 			return false;
 		}
@@ -165,7 +168,10 @@ public class Game {
 		}
 		// checks if goes one way and comes back all the time
 		if (states.size() % 2 == 1) {
+			System.out.println("Here");
 			if (lastMovesP1SameUnit.size() == 0) {
+				System.out.println("Here2");
+
 				lastMovesP1SameUnit.add(move);
 			} else {
 				Move move2 = lastMovesP1SameUnit
@@ -485,6 +491,9 @@ public class Game {
 	}
 
 	public boolean gameOver() {
+		if(defeatedUnitsPlayer1.size()==0||defeatedUnitsPlayer2.size()==0){
+			return false;
+		}
 		if (defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType()
 				.getRank() == 0) {
 			return true;
