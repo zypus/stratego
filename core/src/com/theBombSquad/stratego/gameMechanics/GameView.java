@@ -38,7 +38,7 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
 @RequiredArgsConstructor
 @Log
 public class GameView {
-
+	
 	private final Game game;												/** Reference to the game. */
 	@Getter private final PlayerID playerID;								/** PlayerID which defines this views perspective */
 	private final List<Move> cashedRotatedMoves = new ArrayList<Move>();	/** List of moves which acts as a cache for rotated move for
@@ -286,7 +286,6 @@ public class GameView {
 	 * @return All defeated units of the opponent of the assigned player.
 	 */
 	public List<Unit> getOpponentsDefeatedUnits() {
-
 		// Return early if the view doesn't belong to a player
 		if (playerID.equals(PlayerID.NEMO)) {
 			log.severe("Non player tried to get 'his opponents' defeated units.");
@@ -439,6 +438,18 @@ public class GameView {
 				}
 			}
 		}
+	}
+	
+	/** Swaps around two units on the map (Only to be used in Setup) (Does not consider board flipping) */
+	public void hardSwapUnits(int x1, int y1, int x2, int y2){
+		//Get Relative Position
+		Point coords1 = conditionalCoordinateRotation(x1, y1);
+		Point coords2 = conditionalCoordinateRotation(x2, y2);
+		//Store one unit
+		Unit helpUnit = getUnit(coords1.x, coords1.y);
+		//Actually Swaps Units
+		game.getCurrentState().setUnit(coords1.x, coords1.y, getUnit(coords2.x, coords2.y));
+		game.getCurrentState().setUnit(coords2.x, coords2.y, helpUnit);
 	}
 
 }
