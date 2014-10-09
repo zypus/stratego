@@ -33,6 +33,11 @@ public class HumanPlayer extends Player {
 	private boolean setUpPhase = true;
 	private int xSelected = -1;
 	private int ySelected = -1;
+	
+	/** The move that will be sent by move */
+	private Move moveToSend = null;
+	/** The Setup that will be sent by setup */
+	private Setup setupToSend = null;
 
 	public void receiveInput(int x, int y) {
 		Move move = new Move(xSelected, ySelected, x, y);
@@ -54,7 +59,7 @@ public class HumanPlayer extends Player {
 		else if (xSelected != -1 || ySelected != -1) {
 			// check if the move is valid
 			if (gameView.validateMove(move)) {
-				gameView.performMove(move);
+				performMove(move);
 				// deselect(xSelect,ySelect);
 				xSelected = -1;
 				ySelected = -1;
@@ -76,18 +81,36 @@ public class HumanPlayer extends Player {
 			}
 		}
 	}
+	
+	/** Sets Move that will be sent by the Move Method */
+	private void performMove(Move move){
+		this.moveToSend = move;
+	}
 
 	@Override
 	protected Move move() {
-
-		return null;
+		final int sleepTime = 5;
+		while(moveToSend==null){
+			try{Thread.sleep(sleepTime);}catch(Exception ex){}
+		}
+		Move returnableMove = moveToSend;
+		this.moveToSend = null;
+		gameView.performMove(returnableMove);
+		return returnableMove;
 	}
 
 	@Override
 	protected Setup setup() {
 		resetSetup();
 		setSetUpPhase(true);
-		return null;
+		final int sleepTime = 5;
+		while(setupToSend==null){
+			try{Thread.sleep(sleepTime);}catch(Exception ex){}
+		}
+		Setup returnableSetup = setupToSend;
+		this.setupToSend = null;
+		gameView.setSetup(returnableSetup);
+		return returnableSetup;
 	}
 
 	@Override
@@ -140,11 +163,13 @@ public class HumanPlayer extends Player {
 				setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
 			}
 		}
-		System.out.println("Test Setup");
 		if (gameView.validateSetup(setUp)) {
-			System.out.println("Valid Setup");
-			gameView.setSetup(setUp);
+			setSetup(setUp);
 		}
+	}
+	
+	private void setSetup(Setup setup){
+		this.setupToSend = setup;
 	}
 
 	public void resetSetup() {
