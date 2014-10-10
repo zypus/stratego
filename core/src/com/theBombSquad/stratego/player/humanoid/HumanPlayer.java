@@ -1,7 +1,8 @@
 package com.theBombSquad.stratego.player.humanoid;
 
 import com.badlogic.gdx.Gdx;
-import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.StrategoConstants;
+import com.theBombSquad.stratego.StrategoConstants.*;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
@@ -13,12 +14,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
+import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
  * TODO Add description
  *
- * @author Fabian Fränz <f.fraenz@t-online.de>
+ * @author Fabian Frï¿½nz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class HumanPlayer extends Player {
@@ -33,23 +34,26 @@ public class HumanPlayer extends Player {
 	private boolean setUpPhase = true;
 	private int xSelected = -1;
 	private int ySelected = -1;
-	
+
 	/** The move that will be sent by move */
 	private Move moveToSend = null;
 	/** The Setup that will be sent by setup */
 	private Setup setupToSend = null;
 
 	public void receiveInput(int x, int y) {
+		if(gameView.getPlayerID().equals(PlayerID.PLAYER_2)) {
+			x = StrategoConstants.GRID_WIDTH - x - 1;
+			y = StrategoConstants.GRID_HEIGHT - y - 1;
+		}
 		Move move = new Move(xSelected, ySelected, x, y);
-		move.setPlayerID(playerID);
-		move.setMovedUnit(Game.getCurrent().getUnit(x, y));
+		//move.setMovedUnit(gameView.getUnit(x, y));
 		if (x < 0 || x > 9 || y < 0 || y > 9) {
 		}
 		// Checks if tile is not selected, air water or unknown or of your
 		// opponent
 		else if ((xSelected == -1 || ySelected == -1)
-				&& (Game.getCurrent().getUnit(x, y).getType().getRank() != -1)
-				&& Game.getCurrent().getUnit(x, y).getOwner() == move
+				&& (gameView.getUnit(x, y).getType().getRank() != -1)
+				&& gameView.getUnit(x, y).getOwner() == gameView
 						.getPlayerID()) {
 			xSelected = x;
 			ySelected = y;
@@ -58,6 +62,7 @@ public class HumanPlayer extends Player {
 		// your piece selected
 		else if (xSelected != -1 || ySelected != -1) {
 			// check if the move is valid
+			System.out.println(346);
 			if (gameView.validateMove(move)) {
 				performMove(move);
 				// deselect(xSelect,ySelect);
@@ -66,7 +71,7 @@ public class HumanPlayer extends Player {
 				// if invalid move
 			} else {
 				// your own piece
-				if (Game.getCurrent().getUnit(x, y).getOwner() == move
+				if (gameView.getUnit(x, y).getOwner() == move
 						.getPlayerID()) {
 					// select(x,y);
 					// deselect(xSelected,ySelected);
@@ -81,7 +86,7 @@ public class HumanPlayer extends Player {
 			}
 		}
 	}
-	
+
 	/** Sets Move that will be sent by the Move Method */
 	private void performMove(Move move){
 		if(gameView.validateMove(move)){
@@ -111,6 +116,7 @@ public class HumanPlayer extends Player {
 		}
 		Setup returnableSetup = setupToSend;
 		this.setupToSend = null;
+		this.setUpPhase = false;
 		gameView.setSetup(returnableSetup);
 		return returnableSetup;
 	}
@@ -162,14 +168,22 @@ public class HumanPlayer extends Player {
 		Setup setUp = new Setup(10,4);
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 4; j++) {
-				setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
+				setUp.setUnit(i, j, Game.getCurrent().getUnit(i, 6 + j));
 			}
 		}
 		if (gameView.validateSetup(setUp)) {
+			//Remove All Units
+			for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
+				for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {
+					if (gameView.getCurrentState().getUnit(cx, cy).getType().getRank() >= 0) {
+						gameView.setUnit(cx, cy, Unit.AIR);
+					}
+				}
+			}
 			setSetup(setUp);
 		}
 	}
-	
+
 	private void setSetup(Setup setup){
 		this.setupToSend = setup;
 	}
@@ -177,7 +191,7 @@ public class HumanPlayer extends Player {
 	public void resetSetup() {
 		gameView.startSetup();
 	}
-	
+
 	protected void randomSetup() {
 		Setup setup = new Setup(10,4);
 		List<Unit> availableUnits = new ArrayList<Unit>(40);

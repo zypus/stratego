@@ -3,6 +3,8 @@ package com.theBombSquad.stratego.gameMechanics.board;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 /**
  * TODO Add description
  *
@@ -11,12 +13,16 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class Encounter {
+public class Encounter implements Serializable {
 
 	private Unit attackingUnit;
 	private Unit defendingUnit;
 
 	private CombatResult result;
+
+	protected Encounter() {
+
+	}
 
 	public Encounter(Unit attackingUnit, Unit defendingUnit) {
 		this.attackingUnit=attackingUnit;

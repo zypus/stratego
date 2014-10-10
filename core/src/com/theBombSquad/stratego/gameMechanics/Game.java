@@ -43,7 +43,7 @@ public class Game {
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
 	private Player winner;
-	
+
 	private ArrayList<Move> lastMovesP1SameUnit;
 	private ArrayList<Move> lastMovesP2SameUnit;
 
@@ -334,6 +334,7 @@ public class Game {
 				// checks who is the winner
 				Encounter encounter = new Encounter(movedUnit, current.getUnit(
 						move.getToX(), move.getToY()));
+//				move.setEncounter(encounter);
 				Unit winner = encounter.getVictoriousUnit();
 				// if there is no winner then sets the field to air
 				if (winner == null) {
@@ -450,18 +451,13 @@ public class Game {
 			}
 		}
 		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+			System.out.println("Move");
 			for (int i = 0; i < setup.getWidth(); i++) {
 				for (int j = 0; j < setup.getHeight(); j++) {
 					current.setUnit(i, j+6, this.setupClusters[0].getUnit(i,j));
+					current.setUnit(i, j, this.setupClusters[1].getUnit(i, j));
 				}
 			}
-			for (int i = 0; i < setup.getWidth(); i++) {
-				for (int j = 0; j < setup.getHeight(); j++) {
-					current.setUnit(i, j, this.setupClusters[1].getUnit(i,j));
-				}
-			}
-		}
-		if (player1FinishedSetup && player2FinishedSetup && !finishedSetup) {
 			finishedSetup = true;
 			nextTurn();
 		}
@@ -510,7 +506,7 @@ public class Game {
 				.getRank() == 0) {
 			winner=player1;
 			return true;
-			
+
 		}
 		ArrayList<Point> UnitsP1 = new ArrayList<Point>();
 		ArrayList<Point> UnitsP2 = new ArrayList<Point>();

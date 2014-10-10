@@ -41,8 +41,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
-import static com.theBombSquad.stratego.StrategoConstants.LOCAL_HOST;
+import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
  * Entry point for the stratego game. Setups everything and establishes remote connections if necessary.
@@ -234,9 +233,11 @@ public class Stratego extends ApplicationAdapter {
 			if (gameSetting.isServing()) {
 				player1 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerOneView), playerOneView, gameSetting.getIp());
 				player2 = new RemoteListeningPlayer(playerTwoView);
+				observerView = playerOneView;
 			} else {
 				player1 = new RemoteListeningPlayer(playerOneView);
 				player2 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerTwoView), playerTwoView, gameSetting.getIp());
+				observerView = playerTwoView;
 			}
 		}
 

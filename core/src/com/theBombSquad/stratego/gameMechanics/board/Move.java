@@ -33,7 +33,7 @@ public class Move implements Serializable {
 	private Encounter encounter = DUMMY_ENCOUNTER;
 
 	public boolean hasEncounter() {
-		return encounter != DUMMY_ENCOUNTER;
+		return encounter.getResult() != null;
 	}
 
 	public void setPlayerID(PlayerID playerID) {
@@ -52,7 +52,7 @@ public class Move implements Serializable {
 	}
 
 	public void setEncounter(Encounter encounter) {
-		assert this.encounter == DUMMY_ENCOUNTER : "Trying to set encounter more than once";
+		assert this.encounter.getResult() == null : "Trying to set encounter more than once";
 		this.encounter = encounter;
 	}
 }
