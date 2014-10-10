@@ -35,12 +35,18 @@ public abstract class AI extends Player {
 						else{
 							for(int xx=-1; xx<=1; xx+=2){
 								if(walkable(board, cx+xx, cy)){
-									list.add(new Move(cx, cy, cx+xx, cy));
+									Move move = new Move(cx, cy, cx+xx, cy);
+									if(this.gameView.validateMove(move)){
+										list.add(move);
+									}
 								}
 							}
 							for(int yy=-1; yy<=1; yy+=2){
 								if(walkable(board, cx, cy+yy)){
-									list.add(new Move(cx, cy, cx, cy+yy));
+									Move move = new Move(cx, cy, cx, cy+yy);
+									if(this.gameView.validateMove(move)){
+										list.add(move);
+									}
 								}
 							}
 						}

@@ -84,7 +84,9 @@ public class HumanPlayer extends Player {
 	
 	/** Sets Move that will be sent by the Move Method */
 	private void performMove(Move move){
-		this.moveToSend = move;
+		if(gameView.validateMove(move)){
+			this.moveToSend = move;
+		}
 	}
 
 	@Override

@@ -110,11 +110,6 @@ public class Game {
 			}
 
 		}
-		// check end position if it is not lake
-		else if (current.getUnit(toX, toY).getType() == current.getUnit(toX,
-				toY).getType().LAKE) {
-			return false;
-		}
 
 		// if none of distances is 1 then one of them must be longer than one
 		else {
@@ -175,6 +170,11 @@ public class Game {
 					return false;
 				}
 			}
+		}
+		// check end position if it is not lake
+		if (current.getUnit(toX, toY).getType() == current.getUnit(toX,
+				toY).getType().LAKE) {
+			return false;
 		}
 		// checks if goes one way and comes back all the time
 		if (states.size() % 2 == 1) {
