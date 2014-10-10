@@ -18,7 +18,7 @@ import static com.theBombSquad.stratego.StrategoConstants.ASSUMED_WINDOW_WIDTH;
 /**
  * TODO Add description
  *
- * @author Fabian Frï¿½nz <f.fraenz@t-online.de>
+ * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
 public class HumanPlayer extends Player {
