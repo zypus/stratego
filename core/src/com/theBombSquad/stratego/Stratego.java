@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteListeningPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import com.theBombSquad.stratego.rendering.AtlasPacker;
@@ -18,6 +19,7 @@ import com.theBombSquad.stratego.rendering.RenderData;
 import com.theBombSquad.stratego.rendering.Renderer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -244,13 +246,15 @@ public class Stratego extends ApplicationAdapter {
 		// tell the game about the players
 		game.setPlayer1(player1);
 		game.setPlayer2(player2);
+		//TODO: this is only supposed to happen if the view is of Player 2, who is a human player:
+		//((HumanPlayer)player2).setFlippedBoard(true);
 
 		// TODO setup renderers
 		setupRenderer(playerOneView, playerTwoView, observerView);
 	}
 
-	private void setupRenderer(GameView gameView1, GameView gameView, GameView observerView) {
-		Renderer board = new BoardRenderer(observerView);
+	private void setupRenderer(GameView gameView1, GameView gameView2, GameView observerView) {
+		Renderer board = new BoardRenderer(gameView1);
 		Renderer death = new DefeatedUnitRenderer();
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();
 		rendererList.add(board);

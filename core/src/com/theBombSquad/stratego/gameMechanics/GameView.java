@@ -519,8 +519,8 @@ public class GameView {
 		//Store one unit
 		Unit helpUnit = getUnit(coords1.x, coords1.y);
 		//Actually Swaps Units
-		game.getCurrentState().setUnit(coords1.x, coords1.y, getUnit(coords2.x, coords2.y));
-		game.getCurrentState().setUnit(coords2.x, coords2.y, helpUnit);
+		game.getCurrentState().setUnit(x1, y1, getUnit(coords2.x, coords2.y));
+		game.getCurrentState().setUnit(x2, y2, helpUnit);
 	}
 
 	public void setUnit(int x, int y, Unit unit){

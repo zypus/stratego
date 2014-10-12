@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.Setter;
+
 import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
@@ -39,9 +41,14 @@ public class HumanPlayer extends Player {
 	private Move moveToSend = null;
 	/** The Setup that will be sent by setup */
 	private Setup setupToSend = null;
+	
+	/** If the board is actually flipped for this player, i.e. this is player 2 on normal game view */
+	@Setter
+	private boolean flippedBoard = false;
+	
 
 	public void receiveInput(int x, int y) {
-		if(gameView.getPlayerID().equals(PlayerID.PLAYER_2)) {
+		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && !flippedBoard) {
 			x = StrategoConstants.GRID_WIDTH - x - 1;
 			y = StrategoConstants.GRID_HEIGHT - y - 1;
 		}
@@ -138,6 +145,10 @@ public class HumanPlayer extends Player {
 	}
 
 	public void receiveSetUpInput(int x, int y) {
+		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && flippedBoard) {
+			x = StrategoConstants.GRID_WIDTH - x - 1;
+			y = StrategoConstants.GRID_HEIGHT - y - 1;
+		}
 		if (y == 4 || y == 5) {
 			// if middle of board
 			// deselect(xSelected, ySelected)
@@ -165,22 +176,24 @@ public class HumanPlayer extends Player {
 	}
 
 	public void submitSetUp() {
-		Setup setUp = new Setup(10,4);
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 4; j++) {
-				setUp.setUnit(i, j, Game.getCurrent().getUnit(i, 6 + j));
-			}
-		}
-		if (gameView.validateSetup(setUp)) {
-			//Remove All Units
-			for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
-				for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {
-					if (gameView.getCurrentState().getUnit(cx, cy).getType().getRank() >= 0) {
-						gameView.setUnit(cx, cy, Unit.AIR);
-					}
+		if(setUpPhase){
+			Setup setUp = new Setup(10,4);
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 4; j++) {
+					setUp.setUnit(i, j, Game.getCurrent().getUnit(i, 6 + j));
 				}
 			}
-			setSetup(setUp);
+			if (gameView.validateSetup(setUp)) {
+				//Remove All Units
+				for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
+					for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {
+						if (gameView.getCurrentState().getUnit(cx, cy).getType().getRank() >= 0) {
+							gameView.setUnit(cx, cy, Unit.AIR);
+						}
+					}
+				}
+				setSetup(setUp);
+			}
 		}
 	}
 
@@ -189,39 +202,43 @@ public class HumanPlayer extends Player {
 	}
 
 	public void resetSetup() {
-		gameView.startSetup();
+		if(setUpPhase){
+			gameView.startSetup();
+		}
 	}
 
 	protected void randomSetup() {
-		Setup setup = new Setup(10,4);
-		List<Unit> availableUnits = new ArrayList<Unit>(40);
-		Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
-		// create a list containing all units that needs to be placed on the board
-		for (Unit.UnitType type : unitTypeEnum) {
-			for (int i = 0; i < type.getQuantity(); i++) {
-				availableUnits.add(new Unit(type, gameView.getPlayerID()));
-			}
-		}
-		//shuffle the list containing all available units
-		Collections.shuffle(availableUnits);
-		//go through the list and place them on the board as the units appear in the randomly shuffled list
-		for (int y = 0; y < 4; y++) {
-			for (int x = 0; x < 10; x++) {
-				setup.setUnit(x,y,availableUnits.get(y * 10 + x));
-			}
-		}
-		//Remove All Units
-		for(int cy=0; cy<gameView.getCurrentState().getHeight(); cy++){
-			for(int cx=0; cx<gameView.getCurrentState().getWidth(); cx++){
-				if(gameView.getCurrentState().getUnit(cx, cy).getType().getRank()>=0){
-					gameView.setUnit(cx, cy, Unit.AIR);
+		if(setUpPhase){
+			Setup setup = new Setup(10,4);
+			List<Unit> availableUnits = new ArrayList<Unit>(40);
+			Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
+			// create a list containing all units that needs to be placed on the board
+			for (Unit.UnitType type : unitTypeEnum) {
+				for (int i = 0; i < type.getQuantity(); i++) {
+					availableUnits.add(new Unit(type, gameView.getPlayerID()));
 				}
 			}
-		}
-		//Add Setup
-		for(int cy=0; cy<4; cy++){
-			for(int cx=0; cx<10; cx++){
-				gameView.setUnit(cx, cy+6, availableUnits.get(cy * 10 + cx));
+			//shuffle the list containing all available units
+			Collections.shuffle(availableUnits);
+			//go through the list and place them on the board as the units appear in the randomly shuffled list
+			for (int y = 0; y < 4; y++) {
+				for (int x = 0; x < 10; x++) {
+					setup.setUnit(x,y,availableUnits.get(y * 10 + x));
+				}
+			}
+			//Remove All Units
+			for(int cy=0; cy<gameView.getCurrentState().getHeight(); cy++){
+				for(int cx=0; cx<gameView.getCurrentState().getWidth(); cx++){
+					if(!gameView.getCurrentState().getUnit(cx, cy).isLake()){
+						gameView.setUnit(cx, cy, Unit.AIR);
+					}
+				}
+			}
+			//Add Setup
+			for(int cy=0; cy<4; cy++){
+				for(int cx=0; cx<10; cx++){
+					gameView.setUnit(cx, cy+6, availableUnits.get(cy * 10 + cx));
+				}
 			}
 		}
 	}
