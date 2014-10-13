@@ -27,7 +27,7 @@ public class InformationRenderer extends Renderer{
 
 	@Override
 	public void render(SpriteBatch batch) {
-		font.draw(batch, "Player's Move Here ", 250*getScale(), 250*getScale());
+		//font.draw(batch, "Player's Move Here ", 250*getScale(), 250*getScale());
 	}
 
 }
