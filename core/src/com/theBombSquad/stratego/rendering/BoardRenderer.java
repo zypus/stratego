@@ -29,8 +29,8 @@ public class BoardRenderer extends Renderer {
 	private TextureRegion black;
 	private TextureRegion water;
 
-	/** Textures of Units that have been defeated, in the order they will be drawn from top to bottom */
-	private TextureRegion[] rUnits;
+	/** Textures of Units */
+	private TextureRegion[][] rUnits;
 	/** Textures of Units's backs that have been defeated, in the order they will be drawn from top to bottom */
 	private TextureRegion[] unitBacks;
 
@@ -49,11 +49,12 @@ public class BoardRenderer extends Renderer {
 
 	/** Initializes the Texture Regions that represent the Units */
 	private void initUnitImages(){
-		rUnits = new TextureRegion[12];
+		rUnits = new TextureRegion[2][12];
 		Array<AtlasRegion> units = super.renderData.getAtlas().findRegions("unit");
-		for(int c=0; c<rUnits.length; c++){
-			rUnits[c] = units.get(c);
-
+		Array<AtlasRegion> units2 = super.renderData.getAtlas().findRegions("unit2");
+		for(int c=0; c<rUnits[0].length; c++){
+			rUnits[0][c] = units.get(c);
+			rUnits[1][c] = units2.get(c);
 		}
 		unitBacks = new TextureRegion[2];
 		Array<AtlasRegion> backs = super.renderData.getAtlas().findRegions("back");
@@ -92,9 +93,12 @@ public class BoardRenderer extends Renderer {
 				Unit unit = view.getUnit(cx, cy);
 				int unitRank = unit.getType().getRank();
 				if(unitRank != -1){
-					drawTile(unitBacks[view.getUnit(cx, cy).getOwner().equals(PlayerID.PLAYER_1)?0:1], batch, cx, cy, size, gridX, gridY);
+					int player = (view.getUnit(cx, cy).getOwner().equals(PlayerID.PLAYER_1)?0:1);
 					if(!unit.isUnknown()){
-						drawTile(rUnits[unitRank], batch, cx, cy, size, gridX, gridY);
+						drawTile(rUnits[player][unitRank], batch, cx, cy, size, gridX, gridY);
+					}
+					else{
+						drawTile(unitBacks[player], batch, cx, cy, size, gridX, gridY);
 					}
 				}
 			}

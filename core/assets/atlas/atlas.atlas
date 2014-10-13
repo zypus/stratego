@@ -1,125 +1,209 @@
 
 atlas.png
-size: 54,126
+size: 978,126
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 back
   rotate: false
-  xy: 2, 110
-  size: 16, 16
-  orig: 16, 16
+  xy: 187, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 0
 back
   rotate: false
-  xy: 2, 92
-  size: 16, 16
-  orig: 16, 16
+  xy: 187, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 1
 tileBlack
   rotate: false
-  xy: 20, 110
-  size: 16, 16
-  orig: 16, 16
+  xy: 124, 65
+  size: 61, 61
+  orig: 61, 61
   offset: 0, 0
   index: -1
 tileWater
   rotate: false
-  xy: 2, 74
-  size: 16, 16
-  orig: 16, 16
+  xy: 2, 6
+  size: 120, 120
+  orig: 120, 120
   offset: 0, 0
   index: -1
 tileWhite
   rotate: false
-  xy: 20, 92
-  size: 16, 16
-  orig: 16, 16
+  xy: 124, 2
+  size: 61, 61
+  orig: 61, 61
   offset: 0, 0
   index: -1
 unit
   rotate: false
-  xy: 38, 110
-  size: 16, 16
-  orig: 16, 16
+  xy: 614, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 0
 unit
   rotate: false
-  xy: 2, 56
-  size: 16, 16
-  orig: 16, 16
+  xy: 614, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 1
 unit
   rotate: false
-  xy: 20, 74
-  size: 16, 16
-  orig: 16, 16
+  xy: 675, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 2
 unit
   rotate: false
-  xy: 38, 92
-  size: 16, 16
-  orig: 16, 16
+  xy: 675, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 3
 unit
   rotate: false
-  xy: 2, 38
-  size: 16, 16
-  orig: 16, 16
+  xy: 736, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 4
 unit
   rotate: false
-  xy: 20, 56
-  size: 16, 16
-  orig: 16, 16
+  xy: 736, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 5
 unit
   rotate: false
-  xy: 38, 74
-  size: 16, 16
-  orig: 16, 16
+  xy: 797, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 6
 unit
   rotate: false
-  xy: 2, 20
-  size: 16, 16
-  orig: 16, 16
+  xy: 797, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 7
 unit
   rotate: false
-  xy: 2, 2
-  size: 16, 16
-  orig: 16, 16
+  xy: 858, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 8
 unit
   rotate: false
-  xy: 20, 38
-  size: 16, 16
-  orig: 16, 16
+  xy: 858, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 9
 unit
   rotate: false
-  xy: 38, 56
-  size: 16, 16
-  orig: 16, 16
+  xy: 919, 67
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 10
 unit
   rotate: false
-  xy: 20, 20
-  size: 16, 16
-  orig: 16, 16
+  xy: 919, 6
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 11
+unit2
+  rotate: false
+  xy: 248, 67
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 0
+unit2
+  rotate: false
+  xy: 248, 6
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 1
+unit2
+  rotate: false
+  xy: 309, 67
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 2
+unit2
+  rotate: false
+  xy: 309, 6
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 3
+unit2
+  rotate: false
+  xy: 370, 67
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 4
+unit2
+  rotate: false
+  xy: 370, 6
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 5
+unit2
+  rotate: false
+  xy: 431, 67
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 6
+unit2
+  rotate: false
+  xy: 431, 6
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 7
+unit2
+  rotate: false
+  xy: 492, 67
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 8
+unit2
+  rotate: false
+  xy: 492, 6
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 9
+unit2
+  rotate: false
+  xy: 553, 67
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: 10
+unit2
+  rotate: false
+  xy: 553, 6
+  size: 59, 59
+  orig: 59, 59
   offset: 0, 0
   index: 11
