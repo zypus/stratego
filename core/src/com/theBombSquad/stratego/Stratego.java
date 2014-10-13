@@ -13,6 +13,7 @@ import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import com.theBombSquad.stratego.rendering.AtlasPacker;
 import com.theBombSquad.stratego.rendering.BoardRenderer;
 import com.theBombSquad.stratego.rendering.DefeatedUnitRenderer;
+import com.theBombSquad.stratego.rendering.InformationRenderer;
 import com.theBombSquad.stratego.rendering.LayerRenderer;
 import com.theBombSquad.stratego.rendering.RenderData;
 import com.theBombSquad.stratego.rendering.Renderer;
@@ -257,11 +258,13 @@ public class Stratego extends ApplicationAdapter {
 	}
 
 	private void setupRenderer(GameView gameView1, GameView gameView2, GameView observerView) {
-		Renderer board = new BoardRenderer(observerView);
-		Renderer death = new DefeatedUnitRenderer();
+		Renderer board = new BoardRenderer(gameView1);
+		Renderer death = new DefeatedUnitRenderer(game);
+		Renderer info = new InformationRenderer(game);
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();
 		rendererList.add(board);
 		rendererList.add(death);
+		rendererList.add(info);
 		this.layerRenderer = new LayerRenderer(rendererList, new RenderData(windowScale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas"))));
 	}
 
