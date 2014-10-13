@@ -52,7 +52,7 @@ public class Move implements Serializable {
 	}
 
 	public void setEncounter(Encounter encounter) {
-		assert this.encounter.getResult() == null : "Trying to set encounter more than once";
+//		assert this.encounter.getResult() == null : "Trying to set encounter more than once";
 		this.encounter = encounter;
 	}
 }

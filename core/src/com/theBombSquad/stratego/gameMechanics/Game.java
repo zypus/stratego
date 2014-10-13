@@ -334,7 +334,7 @@ public class Game {
 				// checks who is the winner
 				Encounter encounter = new Encounter(movedUnit, current.getUnit(
 						move.getToX(), move.getToY()));
-//				move.setEncounter(encounter);
+				move.setEncounter(encounter);
 				Unit winner = encounter.getVictoriousUnit();
 				// if there is no winner then sets the field to air
 				if (winner == null) {

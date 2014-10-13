@@ -231,6 +231,11 @@ public class Stratego extends ApplicationAdapter {
 		if (gameSetting.isLocal()) {
 			player1 = gameSetting.getPlayer1().createPlayer(playerOneView);
 			player2 = gameSetting.getPlayer2().createPlayer(playerTwoView);
+			if (gameSetting.getPlayer1() == PlayerType.HUMAN) {
+				observerView = playerOneView;
+			} else if (gameSetting.getPlayer1() == PlayerType.HUMAN) {
+				observerView = playerTwoView;
+			}
 		} else {
 			if (gameSetting.isServing()) {
 				player1 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerOneView), playerOneView, gameSetting.getIp());
