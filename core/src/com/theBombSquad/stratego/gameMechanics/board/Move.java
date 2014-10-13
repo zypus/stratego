@@ -7,6 +7,8 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
+import static java.lang.Math.*;
+
 /**
  * TODO Add description
  *
@@ -55,5 +57,18 @@ public class Move implements Serializable {
 	public void setEncounter(Encounter encounter) {
 		//		assert this.encounter.getResult() == null : "Trying to set encounter more than once";
 		this.encounter = encounter;
+	}
+
+	/**
+	 * Utility methods
+	 */
+
+	public int getDistance() {
+		if (fromX == toX) {
+			return abs(fromY - toY);
+		} else if (fromY == toY) {
+			return abs(fromX - toX);
+		}
+		return 0;
 	}
 }

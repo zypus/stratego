@@ -16,9 +16,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.theBombSquad.stratego.StrategoConstants.DEFAULT_LAKES;
-import static com.theBombSquad.stratego.StrategoConstants.GRID_HEIGHT;
-import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
+import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
  * TODO Add description
@@ -354,6 +352,9 @@ public class Game {
 					}
 				}
 
+			}
+			if (movedUnit.getType() == Unit.UnitType.SCOUT && move.getDistance() > 1 && movedUnit.getRevealedInTurn() == UNREVEALED) {
+				movedUnit.setRevealedInTurn(states.size());
 			}
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
