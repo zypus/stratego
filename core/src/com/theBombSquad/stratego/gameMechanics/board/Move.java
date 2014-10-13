@@ -1,11 +1,11 @@
 package com.theBombSquad.stratego.gameMechanics.board;
 
+import com.theBombSquad.stratego.StrategoConstants;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
-
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
 
 /**
  * TODO Add description
@@ -14,6 +14,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
  * @author Flo
  */
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class Move implements Serializable {
 
@@ -26,7 +27,7 @@ public class Move implements Serializable {
 	private final int toY;
 
 	// set by game view
-	private PlayerID playerID = null;
+	private StrategoConstants.PlayerID playerID = null;
 	// set by game
 	private int turn = -1;
 	private Unit movedUnit = null;
@@ -36,7 +37,7 @@ public class Move implements Serializable {
 		return encounter.getResult() != null;
 	}
 
-	public void setPlayerID(PlayerID playerID) {
+	public void setPlayerID(StrategoConstants.PlayerID playerID) {
 		assert this.playerID == null : "Trying to set playerID more than once";
 		this.playerID = playerID;
 	}
@@ -52,7 +53,7 @@ public class Move implements Serializable {
 	}
 
 	public void setEncounter(Encounter encounter) {
-//		assert this.encounter.getResult() == null : "Trying to set encounter more than once";
+		//		assert this.encounter.getResult() == null : "Trying to set encounter more than once";
 		this.encounter = encounter;
 	}
 }

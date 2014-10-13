@@ -1,20 +1,17 @@
 package com.theBombSquad.stratego.player.humanoid;
 
 import com.badlogic.gdx.Gdx;
-import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.*;
-import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import lombok.Setter;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
 
@@ -41,17 +38,17 @@ public class HumanPlayer extends Player {
 	private Move moveToSend = null;
 	/** The Setup that will be sent by setup */
 	private Setup setupToSend = null;
-	
+
 	/** If the board is actually flipped for this player, i.e. this is player 2 on normal game view */
 	@Setter
 	private boolean flippedBoard = false;
-	
+
 
 	public void receiveInput(int x, int y) {
-		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && !flippedBoard) {
-			x = StrategoConstants.GRID_WIDTH - x - 1;
-			y = StrategoConstants.GRID_HEIGHT - y - 1;
-		}
+//		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && !flippedBoard) {
+//			x = StrategoConstants.GRID_WIDTH - x - 1;
+//			y = StrategoConstants.GRID_HEIGHT - y - 1;
+//		}
 		Move move = new Move(xSelected, ySelected, x, y);
 		//move.setMovedUnit(gameView.getUnit(x, y));
 		if (x < 0 || x > 9 || y < 0 || y > 9) {
@@ -145,17 +142,17 @@ public class HumanPlayer extends Player {
 	}
 
 	public void receiveSetUpInput(int x, int y) {
-		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && flippedBoard) {
-			x = StrategoConstants.GRID_WIDTH - x - 1;
-			y = StrategoConstants.GRID_HEIGHT - y - 1;
-		}
+//		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && flippedBoard) {
+//			x = StrategoConstants.GRID_WIDTH - x - 1;
+//			y = StrategoConstants.GRID_HEIGHT - y - 1;
+//		}
 		if (y == 4 || y == 5) {
 			// if middle of board
 			// deselect(xSelected, ySelected)
 			xSelected = -1;
 			ySelected = -1;
 		} else if (xSelected == -1 || ySelected == -1
-				&& Game.getCurrent().getUnit(x, y).getType().getRank() != -1) {
+				&& gameView.getUnit(x, y).getType().getRank() != -1) {
 			// select piece
 			xSelected = x;
 			ySelected = y;
@@ -180,7 +177,7 @@ public class HumanPlayer extends Player {
 			Setup setUp = new Setup(10,4);
 			for (int i = 0; i < 10; i++) {
 				for (int j = 0; j < 4; j++) {
-					setUp.setUnit(i, j, Game.getCurrent().getUnit(i, 6 + j));
+					setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
 				}
 			}
 			if (gameView.validateSetup(setUp)) {

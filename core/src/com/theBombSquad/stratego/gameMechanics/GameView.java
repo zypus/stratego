@@ -496,7 +496,8 @@ public class GameView {
 			for (int j = 0; j < 4; j++) {
 				if (units.get(marker).getType().getQuantity() > counter) {
 					counter++;
-					board.setUnit(i, j, new Unit(units.get(marker).getType(),
+					Point coords1 = conditionalCoordinateRotation(i, j);
+					board.setUnit(coords1.x, coords1.y, new Unit(units.get(marker).getType(),
 							playerID));
 				} else {
 					marker++;
@@ -517,14 +518,15 @@ public class GameView {
 		Point coords1 = conditionalCoordinateRotation(x1, y1);
 		Point coords2 = conditionalCoordinateRotation(x2, y2);
 		//Store one unit
-		Unit helpUnit = getUnit(coords1.x, coords1.y);
+		Unit helpUnit = getUnit(x1, y1);
 		//Actually Swaps Units
-		game.getCurrentState().setUnit(x1, y1, getUnit(coords2.x, coords2.y));
-		game.getCurrentState().setUnit(x2, y2, helpUnit);
+		setUnit(x1, y1, getUnit(x2, y2));
+		setUnit(x2, y2, helpUnit);
 	}
 
 	public void setUnit(int x, int y, Unit unit){
-		game.getCurrentState().setUnit(x, y, unit);
+		Point coords1 = conditionalCoordinateRotation(x, y);
+		game.getCurrentState().setUnit(coords1.x, coords1.y, unit);
 	}
 
 }

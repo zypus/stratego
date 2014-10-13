@@ -327,8 +327,7 @@ public class Game {
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
 			// if moved to air just set the air to unit
-			if (current.getUnit(move.getFromX(), move.getFromY()).getType() == current
-					.getUnit(move.getFromX(), move.getFromY()).getType().AIR) {
+			if (current.getUnit(move.getToX(), move.getToY()).getType() == Unit.UnitType.AIR) {
 				current.setUnit(move.getToX(), move.getToY(), movedUnit);
 			} else {
 				// checks who is the winner

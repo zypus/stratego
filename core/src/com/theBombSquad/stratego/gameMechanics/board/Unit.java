@@ -42,7 +42,7 @@ public class Unit implements Serializable {
 	public Unit(UnitType type, PlayerID owner) {
 		this.type = type;
 		this.owner = owner;
-		int baseID = owner.ordinal()*100;
+		int baseID = owner.ordinal()+100;
 		this.id = baseID+idCounter++;
 	}
 
