@@ -85,6 +85,14 @@ public class BoardRenderer extends Renderer {
 				}
 			}
 		}
+		//Draws Lakes Properly
+		for(int cy=0; cy<board.getHeight(); cy++){
+			for(int cx=0; cx<board.getWidth(); cx++){
+				if(board.getUnit(cx, cy) == Unit.LAKE && board.getUnit(cx+1, cy) == Unit.LAKE && board.getUnit(cx, cy+1) == Unit.LAKE && board.getUnit(cx+1, cy+1) == Unit.LAKE){
+					batch.draw(water, gridX + cx*POINT_TILE_SIZE*getScale(), gridY + (GRID_HEIGHT-cy-1-1)*POINT_TILE_SIZE*getScale(), size*2, size*2);
+				}
+			}
+		}
 		//Draw Units
 		for(int cy=0; cy<board.getHeight(); cy++){
 			for(int cx=0; cx<board.getWidth(); cx++){

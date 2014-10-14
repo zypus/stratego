@@ -45,7 +45,7 @@ public class InformationRenderer extends Renderer{
 		if(game.gameOver()){
 			font.setScale(1.5f);
 			int currentPlayer = game.getWinner().getGameView().getPlayerID()==StrategoConstants.PlayerID.PLAYER_1?0:1;
-			font.draw(batch, "Player "+(currentPlayer+1)+"\nYou Are Winner", StrategoConstants.ASSUMED_WINDOW_WIDTH*getScale()/2/10, StrategoConstants.ASSUMED_WINDOW_HEIGHT*getScale()/2);
+			font.draw(batch, "Player "+(currentPlayer+1)+", You Are Winner", StrategoConstants.ASSUMED_WINDOW_WIDTH*getScale()/2/10, StrategoConstants.ASSUMED_WINDOW_HEIGHT*getScale()/2);
 		}
 	}
 	
