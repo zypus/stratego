@@ -508,21 +508,16 @@ public class Game {
 		} else {
 			// stop the game!
 			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
-			reavealBoard();
+			revealBoard();
 		}
 	}
 
 	public boolean gameOver() {
-		if(defeatedUnitsPlayer1.size()==0||defeatedUnitsPlayer2.size()==0){
-			return false;
-		}
-		if (defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType()
-				.getRank() == 0) {
+		if (defeatedUnitsPlayer1.size() > 0 && defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType() == Unit.UnitType.FLAG) {
 			winner=player2;
 			return true;
 		}
-		if (defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType()
-				.getRank() == 0) {
+		if (defeatedUnitsPlayer2.size() > 0 && defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType() == Unit.UnitType.FLAG) {
 			winner=player1;
 			return true;
 
@@ -709,7 +704,7 @@ public class Game {
 		}
 	}
 
-	private void reavealBoard() {
+	private void revealBoard() {
 		for (int x = 0; x < current.getWidth(); x++) {
 			for (int y = 0; y < current.getHeight(); y++) {
 				current.getUnit(x,y).setRevealedInTurn(getCurrentTurn());
