@@ -1,7 +1,7 @@
 package com.theBombSquad.stratego.gameMechanics;
 
 import com.theBombSquad.stratego.StrategoConstants;
-import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.StrategoConstants.*;
 import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
@@ -9,13 +9,14 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
-
 import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
 
@@ -48,6 +49,7 @@ public class Game {
 
 	/** The Setups both players committed thus far */
 	private Setup[] setupClusters;
+	private Map<PlayerID, List<Move>> lastMoves = new HashMap<PlayerID, List<Move>>();
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -76,10 +78,17 @@ public class Game {
 		int toY = move.getToY();
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
-		// if we attack unit of ours then false
 		if(toX<0||toX>9||toY<0||toY>9){
 			return false;
 		}
+		if (move.getPlayerID() != current.getUnit(fromX, fromY).getOwner()) {
+			return false;
+		}
+		// check end position if it is not lake
+		if (current.getUnit(toX, toY).getType() == Unit.UnitType.LAKE) {
+			return false;
+		}
+		// if we attack unit of ours then false
 		if (move.getPlayerID() == current.getUnit(toX, toY).getOwner()) {
 			return false;
 		}
@@ -94,17 +103,13 @@ public class Game {
 
 		// first we check if one of distances is equal to one
 		// if place from which the move comes is either air, lake, bomb or flag
-		// then it is not validqweqweq
+		// then it is not valid
 
 		else if (distanceX == 1 || distanceY == 1) {
-			if (current.getUnit(fromX, fromY).getType() == current.getUnit(
-					fromX, fromY).getType().AIR
-					|| current.getUnit(fromX, fromY).getType() == current
-							.getUnit(fromX, fromY).getType().LAKE
-					|| current.getUnit(fromX, fromY).getType() == current
-							.getUnit(fromX, fromY).getType().BOMB
-					|| current.getUnit(fromX, fromY).getType() == current
-							.getUnit(fromX, fromY).getType().FLAG) {
+			if (current.getUnit(fromX, fromY).getType() == Unit.UnitType.AIR
+					|| current.getUnit(fromX, fromY).getType() == Unit.UnitType.LAKE
+					|| current.getUnit(fromX, fromY).getType() == Unit.UnitType.BOMB
+					|| current.getUnit(fromX, fromY).getType() == Unit.UnitType.FLAG) {
 				return false;
 			}
 
@@ -114,14 +119,12 @@ public class Game {
 		else {
 			// check how long is the step, only scout can go more than one cell
 			if (distanceX > 1) {
-				if (current.getUnit(fromX, fromY).getType() == current.getUnit(
-						fromX, fromY).getType().SCOUT) {
+				if (current.getUnit(fromX, fromY).getType() == Unit.UnitType.SCOUT) {
 					// if it is a scout and it goes right we check all the steps
 					// between
 					if (toX - fromX > 0) {
 						for (int i = fromX + 1; i <= toX - 1; i++) {
-							if (current.getUnit(i, fromY).getType() != current
-									.getUnit(fromX, fromY).getType().AIR) {
+							if (current.getUnit(i, fromY).getType() != Unit.UnitType.AIR) {
 								return false;
 							}
 						}
@@ -129,8 +132,7 @@ public class Game {
 						return true;
 					} else {
 						for (int i = toX + 1; i <= fromX - 1; i++) {
-							if (current.getUnit(i, fromY).getType() != current
-									.getUnit(fromX, fromY).getType().AIR) {
+							if (current.getUnit(i, fromY).getType() != Unit.UnitType.AIR) {
 								return false;
 							}
 						}
@@ -142,12 +144,10 @@ public class Game {
 					return false;
 				}
 			} else if (distanceY > 1) {
-				if (current.getUnit(fromX, fromY).getType() == current.getUnit(
-						fromX, fromY).getType().SCOUT) {
+				if (current.getUnit(fromX, fromY).getType() == Unit.UnitType.SCOUT) {
 					if (toY - fromY > 0) {
 						for (int i = fromY + 1; i <= toY - 1; i++) {
-							if (current.getUnit(fromX, i).getType() != current
-									.getUnit(fromX, i).getType().AIR) {
+							if (current.getUnit(fromX, i).getType() != Unit.UnitType.AIR) {
 								return false;
 							}
 						}
@@ -155,8 +155,7 @@ public class Game {
 						return true;
 					} else {
 						for (int i = toY + 1; i <= fromY - 1; i++) {
-							if (current.getUnit(fromX, i).getType() != current
-									.getUnit(fromX, i).getType().AIR) {
+							if (current.getUnit(fromX, i).getType() != Unit.UnitType.AIR) {
 								return false;
 							}
 						}
@@ -169,11 +168,6 @@ public class Game {
 					return false;
 				}
 			}
-		}
-		// check end position if it is not lake
-		if (current.getUnit(toX, toY).getType() == current.getUnit(toX,
-				toY).getType().LAKE) {
-			return false;
 		}
 		// checks if goes one way and comes back all the time
 		if (states.size() % 2 == 1) {
@@ -191,7 +185,7 @@ public class Game {
 				int y2 = move.getFromY();
 				// checks if the same unit moves, so it can add to last moves
 				// for the same unit
-				if (x == x2 & y == y2) {
+				if (x == x2 && y == y2) {
 					lastMovesP1SameUnit.add(move);
 					if (lastMovesP1SameUnit.size() > 5) {
 						// checks if the moves were forward and back
@@ -246,7 +240,7 @@ public class Game {
 				int y2 = move.getFromY();
 				// checks if the same unit moves, so it can add to last moves
 				// for the same unit
-				if (x == x2 & y == y2) {
+				if (x == x2 && y == y2) {
 					lastMovesP2SameUnit.add(move);
 					if (lastMovesP2SameUnit.size() > 5) {
 						// checks if the moves were forward and back
@@ -623,7 +617,7 @@ public class Game {
 	public static GameBoard getCurrent() {
 		return current;
 	}
-	
+
 	/** Returns number of units of given type and given player that have been defeated thus far */
 	public int getNumberOfDefeatedUnits(int unitRank, PlayerID playerId){
 		List<Unit> defeatedUnits;
@@ -640,6 +634,23 @@ public class Game {
 			}
 		}
 		return counter;
+	}
+
+	private boolean twoSquareRule(Move move) {
+
+		List<Move> previousMoves = lastMoves.get(move.getPlayerID());
+		Unit unitInQuestion = current.getUnit(move.getFromX(), move.getFromY());
+		if (previousMoves.isEmpty()) {
+			return true;
+		} else if (unitInQuestion != previousMoves.get(0).getMovedUnit()) {
+			return true;
+		} else {
+			if (previousMoves.size() < 5) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 }

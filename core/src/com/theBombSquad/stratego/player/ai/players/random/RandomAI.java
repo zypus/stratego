@@ -36,10 +36,6 @@ public class RandomAI extends AI {
 				}
 			}
 		}
-		for (Move move1 : possibleMoves) {
-			System.out.println(move1);
-		}
-		System.out.println(possibleMoves.size());
 		Collections.shuffle(possibleMoves);
 		move = possibleMoves.get(0);
 		gameView.performMove(move);

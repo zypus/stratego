@@ -258,7 +258,7 @@ public class Stratego extends ApplicationAdapter {
 	}
 
 	private void setupRenderer(GameView gameView1, GameView gameView2, GameView observerView) {
-		Renderer board = new BoardRenderer(gameView1);
+		Renderer board = new BoardRenderer(observerView);
 		Renderer death = new DefeatedUnitRenderer(game);
 		Renderer info = new InformationRenderer(game);
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();
