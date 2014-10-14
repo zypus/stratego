@@ -4,16 +4,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.StrategoConstants.*;
+import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
-import static com.theBombSquad.stratego.StrategoConstants.GRID_HEIGHT;
-import static com.theBombSquad.stratego.StrategoConstants.GRID_POSITION_X;
-import static com.theBombSquad.stratego.StrategoConstants.GRID_POSITION_Y;
-import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
-import static com.theBombSquad.stratego.StrategoConstants.POINT_TILE_SIZE;
+import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
  * TODO Add description
@@ -23,7 +20,7 @@ import static com.theBombSquad.stratego.StrategoConstants.POINT_TILE_SIZE;
  */
 public class BoardRenderer extends Renderer {
 
-	private GameView view;
+	private Game game;
 
 	private TextureRegion white;
 	private TextureRegion black;
@@ -35,8 +32,8 @@ public class BoardRenderer extends Renderer {
 	private TextureRegion[] unitBacks;
 
 
-	public BoardRenderer(GameView view){
-		this.view = view;
+	public BoardRenderer(Game game){
+		this.game = game;
 	}
 
 	@Override
@@ -65,6 +62,7 @@ public class BoardRenderer extends Renderer {
 
 	@Override
 	public void render(SpriteBatch batch) {
+		GameView view = game.getActiveGameView();
 		GameBoard board = view.getCurrentState();
 		float gridX = GRID_POSITION_X*getScale();
 		float gridY = GRID_POSITION_Y*getScale();

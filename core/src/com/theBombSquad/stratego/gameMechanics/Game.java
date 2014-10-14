@@ -9,8 +9,8 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
+import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.java.Log;
 
 import java.awt.Point;
@@ -37,10 +37,8 @@ public class Game {
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
-	@Setter
-	private Player player1;
-	@Setter
-	private Player player2;
+	private Player player1 = null;
+	private Player player2 = null;
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
@@ -52,6 +50,7 @@ public class Game {
 	/** The Setups both players committed thus far */
 	private Setup[] setupClusters;
 	private Map<PlayerID, List<Move>> lastMoves = new HashMap<PlayerID, List<Move>>();
+	private GameView activeGameView;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -173,9 +172,7 @@ public class Game {
 		}
 		// checks if goes one way and comes back all the time
 		if (states.size() % 2 == 1) {
-			System.out.println("Here");
 			if (lastMovesP1SameUnit.size() == 0) {
-				System.out.println("Here2");
 
 				lastMovesP1SameUnit.add(move);
 			} else {
@@ -354,6 +351,8 @@ public class Game {
 				movedUnit.setRevealedInTurn(states.size());
 			}
 			// sets the unit that is moved to air
+			move.setTurn(getCurrentTurn());
+			move.setMovedUnit(movedUnit);
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			states.add(current.duplicate());
 			nextTurn();
@@ -448,7 +447,6 @@ public class Game {
 			}
 		}
 		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
-			System.out.println("Move");
 			for (int i = 0; i < setup.getWidth(); i++) {
 				for (int j = 0; j < setup.getHeight(); j++) {
 					current.setUnit(i, j+6, this.setupClusters[0].getUnit(i,j));
@@ -472,6 +470,15 @@ public class Game {
 					log.info("PLAYER_1 lost.");
 					return;
 				} else {
+					if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer && ((RemoteServingPlayer)player1).getLocalPlayer() instanceof HumanPlayer)) {
+						activeGameView = player1.getGameView();
+					} else {
+						try {
+							Thread.sleep(AI_DELAY);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 					log.info("It is PLAYER_1s move.");
 					player1.startMove();
 					player2.startIdle();
@@ -482,6 +489,16 @@ public class Game {
 					log.info("PLAYER_2 lost.");
 					return;
 				} else {
+					if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
+														   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
+						activeGameView = player2.getGameView();
+					} else {
+						try {
+							Thread.sleep(AI_DELAY);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 					log.info("It is PLAYER_2s move.");
 					player2.startMove();
 					player1.startIdle();
@@ -560,7 +577,27 @@ public class Game {
 	}
 
 	public void startSetupPhase() {
+		if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
+											   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
+			activeGameView = player1.getGameView();
+		}
+		log.info("PLAYER_1 is asked to setup.");
 		player1.startSetup();
+		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
+			while (!player1FinishedSetup) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("Waiting");
+			}
+		}
+		log.info("PLAYER_2 is asked to setup.");
+		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
+											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
+			activeGameView = player2.getGameView();
+		}
 		player2.startSetup();
 	}
 
@@ -662,6 +699,26 @@ public class Game {
 			} else {
 				return false;
 			}
+		}
+	}
+
+	public void setPlayer1(Player player1) {
+		this.player1 = player1;
+		if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
+											   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
+			activeGameView = player1.getGameView();
+		} else if (player2 != null) {
+			activeGameView = new GameView(this, PlayerID.NEMO);
+		}
+	}
+
+	public void setPlayer2(Player player2) {
+		this.player2 = player2;
+		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
+											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
+			activeGameView = player2.getGameView();
+		} else if (player1 != null) {
+			activeGameView = new GameView(this, PlayerID.NEMO);
 		}
 	}
 

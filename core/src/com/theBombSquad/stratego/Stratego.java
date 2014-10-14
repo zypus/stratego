@@ -269,11 +269,11 @@ public class Stratego extends ApplicationAdapter {
 		//((HumanPlayer)player2).setFlippedBoard(true);
 
 		// TODO setup renderers
-		setupRenderer(renderView);
+		setupRenderer(game);
 	}
 
-	private void setupRenderer(GameView renderView) {
-		Renderer board = new BoardRenderer(renderView);
+	private void setupRenderer(Game game) {
+		Renderer board = new BoardRenderer(game);
 		Renderer death = new DefeatedUnitRenderer(game);
 		Renderer info = new InformationRenderer(game);
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();

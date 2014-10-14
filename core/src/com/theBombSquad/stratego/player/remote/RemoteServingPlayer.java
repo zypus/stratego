@@ -9,6 +9,7 @@ import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
+import lombok.Getter;
 import lombok.extern.java.Log;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import static com.theBombSquad.stratego.StrategoConstants.SERVE_TIMEOUT;
 public class RemoteServingPlayer
 		extends Player {
 
-	private final Player localPlayer;
+	@Getter private final Player localPlayer;
 	private final String ipAddress;
 
 	public RemoteServingPlayer(Player localPlayer, GameView gameView1, String ipAddress) {

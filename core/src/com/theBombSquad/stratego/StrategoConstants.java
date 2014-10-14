@@ -30,6 +30,8 @@ public class StrategoConstants {
 	public static final int UNREVEALED = -42;
 	public static final int FIRST_TURN = 0;
 
+	public static final int AI_DELAY = 200;
+
 	public static enum PlayerID {
 		PLAYER_1,
 		PLAYER_2,

@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.humanoid;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.theBombSquad.stratego.StrategoConstants.*;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
@@ -23,14 +24,21 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
  */
 public class HumanPlayer extends Player {
 
+	private static InputMultiplexer multiplexer = null;
+
 	public HumanPlayer(GameView gameView) {
 		super(gameView);
 		PlayerBoardInput input = new PlayerBoardInput(this, (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH);
-		Gdx.input.setInputProcessor(input);
+		if (multiplexer == null) {
+			multiplexer = new InputMultiplexer();
+			Gdx.input.setInputProcessor(multiplexer);
+		}
+		multiplexer.addProcessor(input);
 	}
 
 	private PlayerID playerID = gameView.getPlayerID();
-	private boolean setUpPhase = true;
+	private boolean setUpPhase = false;
+	private boolean movePhase = false;
 	private int xSelected = -1;
 	private int ySelected = -1;
 
@@ -45,42 +53,44 @@ public class HumanPlayer extends Player {
 
 
 	public void receiveInput(int x, int y) {
-		Move move = new Move(xSelected, ySelected, x, y);
-		//move.setMovedUnit(gameView.getUnit(x, y));
-		if (x < 0 || x > 9 || y < 0 || y > 9) {
-		}
-		// Checks if tile is not selected, air water or unknown or of your
-		// opponent
-		else if ((xSelected == -1 || ySelected == -1)
-				&& (gameView.getUnit(x, y).getType().getRank() != -1)
-				&& gameView.getUnit(x, y).getOwner() == gameView
-						.getPlayerID()) {
-			xSelected = x;
-			ySelected = y;
-			// select(x,y);
-		}
-		// your piece selected
-		else if (xSelected != -1 || ySelected != -1) {
-			// check if the move is valid
-			if (gameView.validateMove(move)) {
-				performMove(move);
-				// deselect(xSelect,ySelect);
-				xSelected = -1;
-				ySelected = -1;
-				// if invalid move
-			} else {
-				// your own piece
-				if (gameView.getUnit(x, y).getOwner() == move
-						.getPlayerID()) {
-					// select(x,y);
-					// deselect(xSelected,ySelected);
-					xSelected = x;
-					ySelected = y;
-					// something else that shouldn't be selected
-				} else {
-					// deselect(xSelected,ySelected);
+		if (movePhase) {
+			Move move = new Move(xSelected, ySelected, x, y);
+			//move.setMovedUnit(gameView.getUnit(x, y));
+			if (x < 0 || x > 9 || y < 0 || y > 9) {
+			}
+			// Checks if tile is not selected, air water or unknown or of your
+			// opponent
+			else if ((xSelected == -1 || ySelected == -1)
+					 && (gameView.getUnit(x, y).getType().getRank() != -1)
+					 && gameView.getUnit(x, y).getOwner() == gameView
+					.getPlayerID()) {
+				xSelected = x;
+				ySelected = y;
+				// select(x,y);
+			}
+			// your piece selected
+			else if (xSelected != -1 || ySelected != -1) {
+				// check if the move is valid
+				if (gameView.validateMove(move)) {
+					performMove(move);
+					// deselect(xSelect,ySelect);
 					xSelected = -1;
 					ySelected = -1;
+					// if invalid move
+				} else {
+					// your own piece
+					if (gameView.getUnit(x, y).getOwner() == move
+							.getPlayerID()) {
+						// select(x,y);
+						// deselect(xSelected,ySelected);
+						xSelected = x;
+						ySelected = y;
+						// something else that shouldn't be selected
+					} else {
+						// deselect(xSelected,ySelected);
+						xSelected = -1;
+						ySelected = -1;
+					}
 				}
 			}
 		}
@@ -95,6 +105,7 @@ public class HumanPlayer extends Player {
 
 	@Override
 	protected Move move() {
+		movePhase = true;
 		final int sleepTime = 5;
 		while(moveToSend==null){
 			try{Thread.sleep(sleepTime);}catch(Exception ex){}
@@ -102,13 +113,14 @@ public class HumanPlayer extends Player {
 		Move returnableMove = moveToSend;
 		this.moveToSend = null;
 		gameView.performMove(returnableMove);
+		movePhase = false;
 		return returnableMove;
 	}
 
 	@Override
 	protected Setup setup() {
-		resetSetup();
 		setSetUpPhase(true);
+		resetSetup();
 		final int sleepTime = 5;
 		while(setupToSend==null){
 			try{Thread.sleep(sleepTime);}catch(Exception ex){}
@@ -137,30 +149,32 @@ public class HumanPlayer extends Player {
 	}
 
 	public void receiveSetUpInput(int x, int y) {
-		if (y == 4 || y == 5) {
-			// if middle of board
-			// deselect(xSelected, ySelected)
-			xSelected = -1;
-			ySelected = -1;
-		} else if (xSelected == -1 || ySelected == -1
-				&& gameView.getUnit(x, y).getType().getRank() != -1) {
-			// select piece
-			xSelected = x;
-			ySelected = y;
-			// select(x,y);
-		} else if (xSelected == x && ySelected == y) {
-			// same piece
-			// deselect(xSelected, ySelected)
-			xSelected = -1;
-			ySelected = -1;
-		} else {
-			// SWITCH AROUND
-			gameView.hardSwapUnits(xSelected, ySelected, x, y);
-			// deselect(xSelected, ySelected)
-			xSelected = -1;
-			ySelected = -1;
+		if (setUpPhase) {
+			System.out.println(gameView.getPlayerID());
+			if (y == 4 || y == 5) {
+				// if middle of board
+				// deselect(xSelected, ySelected)
+				xSelected = -1;
+				ySelected = -1;
+			} else if (xSelected == -1 || ySelected == -1
+										  && gameView.getUnit(x, y).getType().getRank() != -1) {
+				// select piece
+				xSelected = x;
+				ySelected = y;
+				// select(x,y);
+			} else if (xSelected == x && ySelected == y) {
+				// same piece
+				// deselect(xSelected, ySelected)
+				xSelected = -1;
+				ySelected = -1;
+			} else {
+				// SWITCH AROUND
+				gameView.hardSwapUnits(xSelected, ySelected, x, y);
+				// deselect(xSelected, ySelected)
+				xSelected = -1;
+				ySelected = -1;
+			}
 		}
-
 	}
 
 	public void submitSetUp() {
