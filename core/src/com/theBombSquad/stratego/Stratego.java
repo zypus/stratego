@@ -77,7 +77,18 @@ public class Stratego extends ApplicationAdapter {
 		setupGame();
 		this.batch = new SpriteBatch();
 		// TODO start the setup phase of the game
-		startGame();
+
+		// delayed method execution
+		new Thread(new Runnable() {
+			@Override public void run() {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				startGame();
+			}
+		}).start();
 	}
 
 	@Override
