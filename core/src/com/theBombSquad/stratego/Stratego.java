@@ -112,6 +112,7 @@ public class Stratego extends ApplicationAdapter {
 			JDialog dialog = pane.createDialog(null, "Game Setup");
 			dialog.setVisible(true);
 			dialog.setAlwaysOnTop(true);
+			dialog.setAutoRequestFocus(true);
 
 			return new GameSetting(true, (StrategoConstants.PlayerType)comboBox1.getSelectedItem(),
 								   (StrategoConstants.PlayerType)comboBox2.getSelectedItem(), false, "");
@@ -197,6 +198,7 @@ public class Stratego extends ApplicationAdapter {
 			final JDialog dialog = pane.createDialog(null, "Game Setup");
 			dialog.setVisible(true);
 			dialog.setAlwaysOnTop(true);
+			dialog.setAutoRequestFocus(true);
 
 			return new GameSetting(false, (StrategoConstants.PlayerType)comboBox1.getSelectedItem(), null, host.isSelected(), ipAdress.getText());
 		}
