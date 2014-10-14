@@ -31,7 +31,7 @@ public class Move implements Serializable {
 	// set by game
 	private int turn = -1;
 	private Unit movedUnit = null;
-	private Encounter encounter = null;
+	transient private Encounter encounter = null;
 
 	public boolean hasEncounter() {
 		return encounter != null;
