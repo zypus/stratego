@@ -1,5 +1,6 @@
 package com.theBombSquad.stratego.gameMechanics;
 
+import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
@@ -621,6 +622,24 @@ public class Game {
 
 	public static GameBoard getCurrent() {
 		return current;
+	}
+	
+	/** Returns number of units of given type and given player that have been defeated thus far */
+	public int getNumberOfDefeatedUnits(int unitRank, PlayerID playerId){
+		List<Unit> defeatedUnits;
+		if(playerId==StrategoConstants.PlayerID.PLAYER_1){
+			defeatedUnits = this.defeatedUnitsPlayer1;
+		}
+		else{
+			defeatedUnits = this.defeatedUnitsPlayer2;
+		}
+		int counter = 0;
+		for(Unit unit : defeatedUnits){
+			if(unit.getType().getRank() == unitRank){
+				counter++;
+			}
+		}
+		return counter;
 	}
 
 }

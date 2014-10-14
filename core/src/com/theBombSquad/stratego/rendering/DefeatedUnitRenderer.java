@@ -80,13 +80,8 @@ public class DefeatedUnitRenderer extends Renderer {
 	
 	/** Returns the amount of Units of given type and player that have already died */
 	private int calcDead(int unit, int player){
-//		if(player==0){
-//			return game.getDefeatedUnitsPlayer1().get(unit).;
-//		}
-//		else{
-//			return game.getDefeatedUnitsPlayer2().get(unit)
-//		}
-		return 0;
+		PlayerID playerId = (player==0)?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
+		return game.getNumberOfDefeatedUnits(unit+1, playerId);
 	}
 	
 }
