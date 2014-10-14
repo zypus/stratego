@@ -513,12 +513,15 @@ public class Game {
 	}
 
 	public boolean gameOver() {
+		if (getCurrentTurn() <= 1) {
+			return false;
+		}
 		if (defeatedUnitsPlayer1.size() > 0 && defeatedUnitsPlayer1.get(defeatedUnitsPlayer1.size() - 1).getType() == Unit.UnitType.FLAG) {
-			winner=player2;
+			winner = player2;
 			return true;
 		}
 		if (defeatedUnitsPlayer2.size() > 0 && defeatedUnitsPlayer2.get(defeatedUnitsPlayer2.size() - 1).getType() == Unit.UnitType.FLAG) {
-			winner=player1;
+			winner = player1;
 			return true;
 
 		}
@@ -528,7 +531,7 @@ public class Game {
 			for (int i = 0; i < current.getWidth(); i++) {
 				if (current.getUnit(i, j).getType().getRank() != -1) {
 					if (current.getUnit(i, j).getType().getRank() != 0
-							&& current.getUnit(i, j).getType().getRank() != 11) {
+						&& current.getUnit(i, j).getType().getRank() != 11) {
 						if (current.getUnit(i, j).getOwner() == PlayerID.PLAYER_1) {
 							UnitsP1.add(new Point(i, j));
 						} else {
@@ -540,11 +543,11 @@ public class Game {
 		}
 
 		if (!checkIfHasMoves(UnitsP1, PlayerID.PLAYER_1)) {
-			winner=player2;
+			winner = player2;
 			return true;
 		}
 		if (!checkIfHasMoves(UnitsP2, PlayerID.PLAYER_2)) {
-			winner=player1;
+			winner = player1;
 			return true;
 		}
 		return false;
