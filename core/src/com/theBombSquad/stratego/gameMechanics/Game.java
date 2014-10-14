@@ -41,6 +41,7 @@ public class Game {
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
 	private boolean finishedSetup = false;
+	@Getter
 	private Player winner;
 
 	private ArrayList<Move> lastMovesP1SameUnit;
@@ -640,6 +641,11 @@ public class Game {
 			}
 		}
 		return counter;
+	}
+	
+	/** Returns Player ID Of player that is currently active */
+	public PlayerID getCurrentPlayer(){
+		return this.getStates().size()%2==1?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
 	}
 
 }
