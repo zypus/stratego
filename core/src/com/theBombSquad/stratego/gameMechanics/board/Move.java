@@ -71,12 +71,12 @@ public class Move implements Serializable {
 		}
 		return 0;
 	}
-	
+
 	/** Returns Move As Text */
 	public String toString(){
 		String text = "";
-		text += ""+playerName(playerID)+"'s "+movedUnit+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);
-		if(!encounter.equals(DUMMY_ENCOUNTER)){
+		text += ""+playerName(playerID)+"'s "+movedUnit.getType()+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);
+		if(encounter != null){
 			text += ", ";
 			if(encounter.mutualDefeat()){
 				text += "both it and "+playerName(encounter.getDefendingUnit().getOwner())+"'s "+encounter.getDefendingUnit().getType()+" died.";
@@ -87,7 +87,7 @@ public class Move implements Serializable {
 		}
 		return text;
 	}
-	
+
 	private String playerName(PlayerID id){
 		return (id==StrategoConstants.PlayerID.PLAYER_1)?"Pl 1":"Pl 2";
 	}
