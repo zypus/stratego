@@ -66,6 +66,7 @@ public class DefeatedUnitRenderer extends Renderer {
 	
 	/** Renders Unit Images */
 	private void drawUnits(SpriteBatch batch, float size, float yStart){
+		font.setScale(0.8f);
 		for(int cp=0; cp<2; cp++){
 			float x = ((ASSUMED_WINDOW_WIDTH-(POINT_TILE_SIZE*1.5f))*cp + POINT_TILE_SIZE*0.25f)*getScale();
 			for(int cu=0; cu<defeatedUnits[0].length; cu++){
