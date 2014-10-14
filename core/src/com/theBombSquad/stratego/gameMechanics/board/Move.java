@@ -1,6 +1,8 @@
 package com.theBombSquad.stratego.gameMechanics.board;
 
 import com.theBombSquad.stratego.StrategoConstants;
+import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -68,5 +70,25 @@ public class Move implements Serializable {
 			return abs(fromX - toX);
 		}
 		return 0;
+	}
+	
+	/** Returns Move As Text */
+	public String toString(){
+		String text = "";
+		text += ""+playerName(playerID)+"'s "+movedUnit+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);
+		if(!encounter.equals(DUMMY_ENCOUNTER)){
+			text += ", ";
+			if(encounter.mutualDefeat()){
+				text += "both it and "+playerName(encounter.getDefendingUnit().getOwner())+"'s "+encounter.getDefendingUnit().getType()+" died.";
+			}
+			else{
+				text += playerName(encounter.getVictoriousUnit().getOwner())+"'s "+encounter.getVictoriousUnit().getType()+" killed "+playerName(encounter.getDefeatedUnits()[0].getOwner())+"'s "+encounter.getDefeatedUnits()[0].getType();
+			}
+		}
+		return text;
+	}
+	
+	private String playerName(PlayerID id){
+		return (id==StrategoConstants.PlayerID.PLAYER_1)?"Pl 1":"Pl 2";
 	}
 }
