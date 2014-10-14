@@ -685,7 +685,7 @@ public class Game {
 		}
 		return counter;
 	}
-	
+
 	/** Returns Player ID Of player that is currently active */
 	public PlayerID getCurrentPlayer(){
 		return this.getStates().size()%2==1?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;

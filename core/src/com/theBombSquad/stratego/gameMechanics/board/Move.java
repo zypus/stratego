@@ -45,12 +45,12 @@ public class Move implements Serializable {
 	}
 
 	public void setTurn(int turn) {
-		assert this.turn == -1 : "Trying to set turn more than once";
+//		assert this.turn == -1 : "Trying to set turn more than once";
 		this.turn = turn;
 	}
 
 	public void setMovedUnit(Unit movedUnit) {
-		assert this.movedUnit == null : "Trying to set movedUnit more than once";
+//		assert this.movedUnit == null : "Trying to set movedUnit more than once";
 		this.movedUnit = movedUnit;
 	}
 
