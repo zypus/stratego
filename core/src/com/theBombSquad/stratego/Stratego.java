@@ -110,9 +110,9 @@ public class Stratego extends ApplicationAdapter {
 											   JOptionPane.QUESTION_MESSAGE,
 											   JOptionPane.YES_NO_OPTION, null, new Object[]{"Start"});
 			JDialog dialog = pane.createDialog(null, "Game Setup");
-			dialog.setVisible(true);
 			dialog.setAlwaysOnTop(true);
 			dialog.setAutoRequestFocus(true);
+			dialog.setVisible(true);
 
 			return new GameSetting(true, (StrategoConstants.PlayerType)comboBox1.getSelectedItem(),
 								   (StrategoConstants.PlayerType)comboBox2.getSelectedItem(), false, "");
@@ -196,9 +196,9 @@ public class Stratego extends ApplicationAdapter {
 											   JOptionPane.QUESTION_MESSAGE,
 											   JOptionPane.YES_NO_OPTION, null, new Object[] { startButton });
 			final JDialog dialog = pane.createDialog(null, "Game Setup");
-			dialog.setVisible(true);
 			dialog.setAlwaysOnTop(true);
 			dialog.setAutoRequestFocus(true);
+			dialog.setVisible(true);
 
 			return new GameSetting(false, (StrategoConstants.PlayerType)comboBox1.getSelectedItem(), null, host.isSelected(), ipAdress.getText());
 		}
