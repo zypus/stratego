@@ -20,8 +20,6 @@ import static java.lang.Math.*;
 @RequiredArgsConstructor
 public class Move implements Serializable {
 
-	private static Encounter DUMMY_ENCOUNTER = new Encounter(null, null, null);
-
 	// set by player
 	private final int fromX;
 	private final int fromY;
@@ -33,10 +31,10 @@ public class Move implements Serializable {
 	// set by game
 	private int turn = -1;
 	private Unit movedUnit = null;
-	private Encounter encounter = DUMMY_ENCOUNTER;
+	private Encounter encounter = null;
 
 	public boolean hasEncounter() {
-		return encounter.getResult() != null;
+		return encounter != null;
 	}
 
 	public void setPlayerID(StrategoConstants.PlayerID playerID) {
