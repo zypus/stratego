@@ -75,7 +75,11 @@ public class Move implements Serializable {
 	/** Returns Move As Text */
 	public String toString(){
 		String text = "";
-		text += ""+playerName(playerID)+"'s "+movedUnit.getType()+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);
+		String nameOfMovedUnit = "Unit";
+		if(!(movedUnit.getRevealedInTurn()==StrategoConstants.UNREVEALED)){
+			nameOfMovedUnit = ""+movedUnit.getType();
+		}
+		text += ""+playerName(playerID)+"'s "+nameOfMovedUnit+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);
 		if(encounter != null){
 			text += ", ";
 			if(encounter.mutualDefeat()){
