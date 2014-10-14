@@ -221,7 +221,7 @@ public class Stratego extends ApplicationAdapter {
 		GameView playerOneView = new GameView(game, StrategoConstants.PlayerID.PLAYER_1);
 		GameView playerTwoView = new GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
-		GameView observerView = new GameView(game, StrategoConstants.PlayerID.NEMO);
+		GameView renderView = new GameView(game, StrategoConstants.PlayerID.NEMO);
 
 		// TODO create the players or get the players?
 		Player player1;
@@ -231,19 +231,19 @@ public class Stratego extends ApplicationAdapter {
 			player1 = gameSetting.getPlayer1().createPlayer(playerOneView);
 			player2 = gameSetting.getPlayer2().createPlayer(playerTwoView);
 			if (gameSetting.getPlayer1() == PlayerType.HUMAN) {
-				observerView = playerOneView;
+				renderView = playerOneView;
 			} else if (gameSetting.getPlayer2() == PlayerType.HUMAN) {
-				observerView = playerTwoView;
+				renderView = playerTwoView;
 			}
 		} else {
 			if (gameSetting.isServing()) {
 				player1 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerOneView), playerOneView, gameSetting.getIp());
 				player2 = new RemoteListeningPlayer(playerTwoView);
-				observerView = playerOneView;
+				renderView = playerOneView;
 			} else {
 				player1 = new RemoteListeningPlayer(playerOneView);
 				player2 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerTwoView), playerTwoView, gameSetting.getIp());
-				observerView = playerTwoView;
+				renderView = playerTwoView;
 			}
 		}
 
@@ -254,11 +254,11 @@ public class Stratego extends ApplicationAdapter {
 		//((HumanPlayer)player2).setFlippedBoard(true);
 
 		// TODO setup renderers
-		setupRenderer(playerOneView, playerTwoView, observerView);
+		setupRenderer(renderView);
 	}
 
-	private void setupRenderer(GameView gameView1, GameView gameView2, GameView observerView) {
-		Renderer board = new BoardRenderer(observerView);
+	private void setupRenderer(GameView renderView) {
+		Renderer board = new BoardRenderer(renderView);
 		Renderer death = new DefeatedUnitRenderer(game);
 		Renderer info = new InformationRenderer(game);
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();

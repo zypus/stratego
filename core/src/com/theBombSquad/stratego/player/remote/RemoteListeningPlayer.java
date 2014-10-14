@@ -76,6 +76,7 @@ public class RemoteListeningPlayer
 
 		if (receivedObject instanceof Move) {
 			Move move = (Move) receivedObject;
+			log.info("Move successfully received from " + gameView.getPlayerID().toString() + ".");
 			gameView.performMove(move);
 			return move;
 		} else {
@@ -93,8 +94,9 @@ public class RemoteListeningPlayer
 
 		if (receivedObject instanceof Setup) {
 			Setup setup = (Setup) receivedObject;
+			log.info("Setup successfully received from " + gameView.getPlayerID().toString() + ".");
 			gameView.setSetup(setup);
-			log.info("Setup successfully received from "+gameView.getPlayerID().toString()+".");
+
 			return setup;
 		} else {
 			log.severe("Unrecognized object received. Objects class is: " + receivedObject.getClass());
