@@ -319,6 +319,8 @@ public class Game {
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
+			move.setTurn(getCurrentTurn());
+			move.setMovedUnit(movedUnit);
 			// if moved to air just set the air to unit
 			if (current.getUnit(move.getToX(), move.getToY()).getType() == Unit.UnitType.AIR) {
 				current.setUnit(move.getToX(), move.getToY(), movedUnit);
@@ -352,8 +354,6 @@ public class Game {
 				movedUnit.setRevealedInTurn(states.size());
 			}
 			// sets the unit that is moved to air
-			move.setTurn(getCurrentTurn());
-			move.setMovedUnit(movedUnit);
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			states.add(current.duplicate());
 			nextTurn();
