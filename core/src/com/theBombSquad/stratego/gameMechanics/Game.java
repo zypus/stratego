@@ -489,7 +489,7 @@ public class Game {
 			}
 		} else {
 			// stop the game!
-			log.info("GAME OVER");
+			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
 		}
 	}
 
@@ -525,18 +525,19 @@ public class Game {
 			}
 		}
 
-		if (!checkIfHasMoves(UnitsP1)) {
+		if (!checkIfHasMoves(UnitsP1, PlayerID.PLAYER_1)) {
 			winner=player2;
 			return true;
 		}
-		if (!checkIfHasMoves(UnitsP2)) {
+		if (!checkIfHasMoves(UnitsP2, PlayerID.PLAYER_2)) {
 			winner=player1;
 			return true;
 		}
 		return false;
 	}
 
-	public boolean checkIfHasMoves(ArrayList<Point> units) {
+	public boolean checkIfHasMoves(ArrayList<Point> units, PlayerID playerID) {
+		boolean theirAreMovesLeft = false;
 		for (int i = 0; i < units.size(); i++) {
 			int x = (int) units.get(i).getX();
 			int y = (int) units.get(i).getY();
@@ -544,12 +545,18 @@ public class Game {
 			Move move2 = new Move(x, y, x, y + 1);
 			Move move3 = new Move(x, y, x, y - 1);
 			Move move4 = new Move(x, y, x - 1, y);
-			if (!validateMove(move1) && !validateMove(move2)
-					&& !validateMove(move3) && !validateMove(move4)) {
-				return false;
+			move1.setPlayerID(playerID);
+			move2.setPlayerID(playerID);
+			move3.setPlayerID(playerID);
+			move4.setPlayerID(playerID);
+			if (validateMove(move1) || validateMove(move2)
+					|| validateMove(move3) || validateMove(move4)) {
+
+				theirAreMovesLeft = true;
+				break;
 			}
 		}
-		return true;
+		return theirAreMovesLeft;
 	}
 
 	public void startSetupPhase() {
