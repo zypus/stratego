@@ -1,7 +1,6 @@
 package com.theBombSquad.stratego.player.humanoid;
 
 import com.badlogic.gdx.Gdx;
-import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.*;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
@@ -46,10 +45,6 @@ public class HumanPlayer extends Player {
 
 
 	public void receiveInput(int x, int y) {
-		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && !flippedBoard) {
-			x = StrategoConstants.GRID_WIDTH - x - 1;
-			y = StrategoConstants.GRID_HEIGHT - y - 1;
-		}
 		Move move = new Move(xSelected, ySelected, x, y);
 		//move.setMovedUnit(gameView.getUnit(x, y));
 		if (x < 0 || x > 9 || y < 0 || y > 9) {
@@ -142,10 +137,6 @@ public class HumanPlayer extends Player {
 	}
 
 	public void receiveSetUpInput(int x, int y) {
-//		if(gameView.getPlayerID()==StrategoConstants.PlayerID.PLAYER_2 && flippedBoard) {
-//			x = StrategoConstants.GRID_WIDTH - x - 1;
-//			y = StrategoConstants.GRID_HEIGHT - y - 1;
-//		}
 		if (y == 4 || y == 5) {
 			// if middle of board
 			// deselect(xSelected, ySelected)

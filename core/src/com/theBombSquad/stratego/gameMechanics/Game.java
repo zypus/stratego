@@ -11,6 +11,7 @@ import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
  * @author Mateusz Garbacz
  */
 @Getter
+@Log
 public class Game {
 
 	private List<GameBoard> states;
@@ -464,27 +466,30 @@ public class Game {
 		 * of them to start move, second to idle
 		 */
 		if (!gameOver()) {
-
 			if (states.size() % 2 == 1) {
 				if (hasLost(player1)) {
 					// TODO: Add Something to clarify Game end
+					log.info("PLAYER_1 lost.");
 					return;
 				} else {
+					log.info("It is PLAYER_1s move.");
 					player1.startMove();
 					player2.startIdle();
 				}
 			} else {
 				if (hasLost(player2)) {
 					// TODO: Add Something to clarify Game end
+					log.info("PLAYER_2 lost.");
 					return;
 				} else {
+					log.info("It is PLAYER_2s move.");
 					player2.startMove();
 					player1.startIdle();
 				}
 			}
 		} else {
 			// stop the game!
-
+			log.info("GAME OVER");
 		}
 	}
 
