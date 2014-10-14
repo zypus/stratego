@@ -508,6 +508,7 @@ public class Game {
 		} else {
 			// stop the game!
 			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
+			reavealBoard();
 		}
 	}
 
@@ -704,6 +705,14 @@ public class Game {
 				return true;
 			} else {
 				return false;
+			}
+		}
+	}
+
+	private void reavealBoard() {
+		for (int x = 0; x < current.getWidth(); x++) {
+			for (int y = 0; y < current.getHeight(); y++) {
+				current.getUnit(x,y).setRevealedInTurn(getCurrentTurn());
 			}
 		}
 	}
