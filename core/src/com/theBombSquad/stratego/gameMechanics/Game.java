@@ -89,6 +89,7 @@ public class Game {
 		int toY = move.getToY();
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
+		boolean validScoutMove = true;
 		if(toX<0||toX>9||toY<0||toY>9){
 			return false;
 		}
@@ -136,47 +137,43 @@ public class Game {
 					if (toX - fromX > 0) {
 						for (int i = fromX + 1; i <= toX - 1; i++) {
 							if (current.getUnit(i, fromY).getType() != Unit.UnitType.AIR) {
-								return false;
+								validScoutMove = false;
 							}
 						}
 						discoverSpy();
-						return true;
 					} else {
 						for (int i = toX + 1; i <= fromX - 1; i++) {
 							if (current.getUnit(i, fromY).getType() != Unit.UnitType.AIR) {
-								return false;
+								validScoutMove = false;
 							}
 						}
 						discoverSpy();
-						return true;
 					}
 
 				} else {
-					return false;
+					validScoutMove = false;
 				}
 			} else if (distanceY > 1) {
 				if (current.getUnit(fromX, fromY).getType() == Unit.UnitType.SCOUT) {
 					if (toY - fromY > 0) {
 						for (int i = fromY + 1; i <= toY - 1; i++) {
 							if (current.getUnit(fromX, i).getType() != Unit.UnitType.AIR) {
-								return false;
+								validScoutMove = false;
 							}
 						}
 						discoverSpy();
-						return true;
 					} else {
 						for (int i = toY + 1; i <= fromY - 1; i++) {
 							if (current.getUnit(fromX, i).getType() != Unit.UnitType.AIR) {
-								return false;
+								validScoutMove = false;
 							}
 						}
 						discoverSpy();
-						return true;
 					}
 				}
 
 				else {
-					return false;
+					validScoutMove = false;
 				}
 			}
 		}
@@ -186,7 +183,7 @@ public class Game {
 		if (!chaseRuleValidation(move)) {
 			return false;
 		}
-		return true;
+		return validScoutMove;
 	}
 
 	// checks if moves are the same but switched directions
@@ -240,14 +237,20 @@ public class Game {
 				else {
 					current.setUnit(move.getToX(), move.getToY(), winner);
 					// Reveals the victorious unit
-					winner.setRevealedInTurn(states.size());
+					if (winner.getRevealedInTurn() == UNREVEALED) {
+						winner.setRevealedInTurn(states.size());
+					}
 				}
 				Unit[] loosers = encounter.getDefeatedUnits();
 				for (int i = 0; i < loosers.length; i++) {
-					if (loosers[i].getOwner() == PlayerID.PLAYER_1) {
-						defeatedUnitsPlayer1.add(loosers[i]);
+					Unit looser = loosers[i];
+					if (looser.getOwner() == PlayerID.PLAYER_1) {
+						defeatedUnitsPlayer1.add(looser);
 					} else {
-						defeatedUnitsPlayer2.add(loosers[i]);
+						defeatedUnitsPlayer2.add(looser);
+					}
+					if (looser.getRevealedInTurn() == UNREVEALED) {
+						looser.setRevealedInTurn(states.size());
 					}
 				}
 
@@ -602,7 +605,6 @@ public class Game {
 
 		List<Move> previousMoves = lastConsecutiveMoves.get(move.getPlayerID());
 		Unit unitInQuestion = current.getUnit(move.getFromX(), move.getFromY());
-		System.out.println(previousMoves.size());
 		if (previousMoves.isEmpty()) {
 			return true;
 		} else if (unitInQuestion != previousMoves.get(0).getMovedUnit()) {
@@ -612,21 +614,21 @@ public class Game {
 				return true;
 			} else {
 				// have the last 5 moves in scope
-				int fiveMovesBefore = previousMoves.size()-5;
+				int fiveMovesBefore = previousMoves.size() - 5;
 				// Special case for the scout to two his increased movement range
 				// Movement isn't allowed to occur more than 5 times in the range of the first move
 				if (unitInQuestion.getType() == Unit.UnitType.SCOUT) {
 					Move referenceMove = previousMoves.get(fiveMovesBefore);
-					return !(previousMoves.get(fiveMovesBefore+1).isMovementInBetween(referenceMove)
-							 && previousMoves.get(fiveMovesBefore+2).isMovementInBetween(referenceMove)
-							 && previousMoves.get(fiveMovesBefore+3).isMovementInBetween(referenceMove)
-							 && previousMoves.get(fiveMovesBefore+4).isMovementInBetween(referenceMove)
+					return !(previousMoves.get(fiveMovesBefore + 1).isMovementInBetween(referenceMove)
+							 && previousMoves.get(fiveMovesBefore + 2).isMovementInBetween(referenceMove)
+							 && previousMoves.get(fiveMovesBefore + 3).isMovementInBetween(referenceMove)
+							 && previousMoves.get(fiveMovesBefore + 4).isMovementInBetween(referenceMove)
 							 && move.isMovementInBetween(referenceMove));
 				} else {
-					return !(previousMoves.get(fiveMovesBefore).isSameMovementAs(previousMoves.get(fiveMovesBefore+2))
-							 && previousMoves.get(fiveMovesBefore+1).isSameMovementAs(previousMoves.get(fiveMovesBefore +3))
-							 && previousMoves.get(fiveMovesBefore +2).isSameMovementAs(previousMoves.get(fiveMovesBefore +4))
-							 && previousMoves.get(fiveMovesBefore +3).isSameMovementAs(move));
+					return !(previousMoves.get(fiveMovesBefore).isSameMovementAs(previousMoves.get(fiveMovesBefore + 2))
+							 && previousMoves.get(fiveMovesBefore + 1).isSameMovementAs(previousMoves.get(fiveMovesBefore + 3))
+							 && previousMoves.get(fiveMovesBefore + 2).isSameMovementAs(previousMoves.get(fiveMovesBefore + 4))
+							 && previousMoves.get(fiveMovesBefore + 3).isSameMovementAs(move));
 				}
 			}
 		}

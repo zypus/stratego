@@ -1,8 +1,7 @@
 package com.theBombSquad.stratego.gameMechanics.board;
 
 import com.theBombSquad.stratego.StrategoConstants;
-import com.theBombSquad.stratego.StrategoConstants.PlayerID;
-
+import com.theBombSquad.stratego.StrategoConstants.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -74,17 +73,17 @@ public class Move implements Serializable {
 	}
 
 	public boolean isXMovement() {
-		return fromY == toY;
+		return this.fromY == this.toY;
 	}
 
 	public boolean isYMovement() {
-		return fromX == toX;
+		return this.fromX == this.toX;
 	}
 
 	public int xMovementDirection() {
-		if (fromX < toX) {
+		if (this.fromX < this.toX) {
 			return 1;
-		} else if (fromX > toX) {
+		} else if (this.fromX > this.toX) {
 			return -1;
 		} else {
 			return 0;
@@ -92,9 +91,9 @@ public class Move implements Serializable {
 	}
 
 	public int yMovementDirection() {
-		if (fromY < toY) {
+		if (this.fromY < this.toY) {
 			return 1;
-		} else if (fromY > toY) {
+		} else if (this.fromY > this.toY) {
 			return -1;
 		} else {
 			return 0;
@@ -109,29 +108,29 @@ public class Move implements Serializable {
 		if (isXMovement() && move.isXMovement()) {
 			if (xMovementDirection() == move.xMovementDirection()) {
 				if (xMovementDirection() == 1) {
-					return fromX >= move.getFromX() && toX <= move.getToX();
+					return this.fromX >= move.getFromX() && this.toX <= move.getToX();
 				} else {
-					return fromX <= move.getToX() && toX >= move.getFromX();
+					return this.fromX <= move.getFromX() && this.toX >= move.getToX();
 				}
 			} else {
 				if (xMovementDirection() == 1) {
-					return fromX >= move.getToX() && toX <= move.getFromX();
+					return this.fromX >= move.getToX() && this.toX <= move.getFromX();
 				} else {
-					return fromX <= move.getToX() && toX >= move.getFromX();
+					return this.fromX <= move.getToX() && this.toX >= move.getFromX();
 				}
 			}
 		} else if (isYMovement() && move.isYMovement()) {
 			if (yMovementDirection() == move.yMovementDirection()) {
 				if (yMovementDirection() == 1) {
-					return fromY >= move.getFromY() && toY <= move.getToY();
+					return this.fromY >= move.getFromY() && this.toY <= move.getToY();
 				} else {
-					return fromY <= move.getToY() && toY >= move.getFromY();
+					return this.fromY <= move.getFromY() && this.toY >= move.getToY();
 				}
 			} else {
 				if (yMovementDirection() == 1) {
-					return fromY >= move.getToY() && toY <= move.getFromY();
+					return this.fromY >= move.getToY() && this.toY <= move.getFromY();
 				} else {
-					return fromY <= move.getToY() && toY >= move.getFromY();
+					return this.fromY <= move.getToY() && this.toY >= move.getFromY();
 				}
 			}
 		} else {
@@ -143,7 +142,7 @@ public class Move implements Serializable {
 	public String toString(){
 		String text = "";
 		String nameOfMovedUnit = "Unit";
-		if(!(movedUnit.getRevealedInTurn()== UNREVEALED)){
+		if(movedUnit != null && !(movedUnit.getRevealedInTurn()== UNREVEALED)){
 			nameOfMovedUnit = ""+movedUnit.getType();
 		}
 		text += ""+playerName(playerID)+"'s "+nameOfMovedUnit+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);
