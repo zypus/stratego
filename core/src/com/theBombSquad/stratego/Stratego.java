@@ -17,6 +17,7 @@ import com.theBombSquad.stratego.rendering.InformationRenderer;
 import com.theBombSquad.stratego.rendering.LayerRenderer;
 import com.theBombSquad.stratego.rendering.RenderData;
 import com.theBombSquad.stratego.rendering.Renderer;
+import com.theBombSquad.stratego.rendering.humanRenderer.HumanUIRenderer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -276,10 +277,12 @@ public class Stratego extends ApplicationAdapter {
 		Renderer board = new BoardRenderer(game);
 		Renderer death = new DefeatedUnitRenderer(game);
 		Renderer info = new InformationRenderer(game);
+		Renderer ui = new HumanUIRenderer(game);
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();
 		rendererList.add(board);
 		rendererList.add(death);
 		rendererList.add(info);
+		rendererList.add(ui);
 		this.layerRenderer = new LayerRenderer(rendererList, new RenderData(windowScale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas"))));
 	}
 
