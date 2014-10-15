@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
+import static com.theBombSquad.stratego.StrategoConstants.*;
 import static java.lang.Math.*;
 
 /**
@@ -31,7 +32,7 @@ public class Move implements Serializable {
 	// set by game view
 	private StrategoConstants.PlayerID playerID = null;
 	// set by game
-	private int turn = -1;
+	private int turn = UNREVEALED;
 	private Unit movedUnit = null;
 	transient private Encounter encounter = null;
 
@@ -72,11 +73,77 @@ public class Move implements Serializable {
 		return 0;
 	}
 
+	public boolean isXMovement() {
+		return fromY == toY;
+	}
+
+	public boolean isYMovement() {
+		return fromX == toX;
+	}
+
+	public int xMovementDirection() {
+		if (fromX < toX) {
+			return 1;
+		} else if (fromX > toX) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	public int yMovementDirection() {
+		if (fromY < toY) {
+			return 1;
+		} else if (fromY > toY) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	public boolean isSameMovementAs(Move move) {
+		return this.fromX == move.getFromX() && this.fromY == move.getFromY() && this.toX == move.getToX() && this.toY == move.getToY();
+	}
+
+	public boolean isMovementInBetween(Move move) {
+		if (isXMovement() && move.isXMovement()) {
+			if (xMovementDirection() == move.xMovementDirection()) {
+				if (xMovementDirection() == 1) {
+					return fromX >= move.getFromX() && toX <= move.getToX();
+				} else {
+					return fromX <= move.getToX() && toX >= move.getFromX();
+				}
+			} else {
+				if (xMovementDirection() == 1) {
+					return fromX >= move.getToX() && toX <= move.getFromX();
+				} else {
+					return fromX <= move.getToX() && toX >= move.getFromX();
+				}
+			}
+		} else if (isYMovement() && move.isYMovement()) {
+			if (yMovementDirection() == move.yMovementDirection()) {
+				if (yMovementDirection() == 1) {
+					return fromY >= move.getFromY() && toY <= move.getToY();
+				} else {
+					return fromY <= move.getToY() && toY >= move.getFromY();
+				}
+			} else {
+				if (yMovementDirection() == 1) {
+					return fromY >= move.getToY() && toY <= move.getFromY();
+				} else {
+					return fromY <= move.getToY() && toY >= move.getFromY();
+				}
+			}
+		} else {
+			return false;
+		}
+	}
+
 	/** Returns Move As Text */
 	public String toString(){
 		String text = "";
 		String nameOfMovedUnit = "Unit";
-		if(!(movedUnit.getRevealedInTurn()==StrategoConstants.UNREVEALED)){
+		if(!(movedUnit.getRevealedInTurn()== UNREVEALED)){
 			nameOfMovedUnit = ""+movedUnit.getType();
 		}
 		text += ""+playerName(playerID)+"'s "+nameOfMovedUnit+" from "+(fromX+1)+"|"+(fromY+1)+" to "+(toX+1)+"|"+(toY+1);

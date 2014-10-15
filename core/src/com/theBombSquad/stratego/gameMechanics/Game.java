@@ -50,8 +50,9 @@ public class Game {
 
 	/** The Setups both players committed thus far */
 	private Setup[] setupClusters;
-	private Map<PlayerID, List<Move>> lastMoves = new HashMap<PlayerID, List<Move>>();
+	private Map<PlayerID, List<Move>> lastConsecutiveMoves = new HashMap<PlayerID, List<Move>>();
 	private GameView activeGameView;
+	private boolean gameOver;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -68,6 +69,14 @@ public class Game {
 
 		//Sets New Setup Clusters
 		this.setupClusters = new Setup[10];
+
+		reset();
+	}
+
+	public void reset() {
+		gameOver = false;
+		lastConsecutiveMoves.put(PlayerID.PLAYER_1, new ArrayList<Move>());
+		lastConsecutiveMoves.put(PlayerID.PLAYER_2, new ArrayList<Move>());
 	}
 
 	public boolean validateMove(Move move) {
@@ -171,118 +180,11 @@ public class Game {
 				}
 			}
 		}
-		// checks if goes one way and comes back all the time
-		if (states.size() % 2 == 1) {
-			if (lastMovesP1SameUnit.size() == 0) {
-
-				lastMovesP1SameUnit.add(move);
-			} else {
-				Move move2 = lastMovesP1SameUnit
-						.get(lastMovesP1SameUnit.size() - 1);
-				int x = move2.getToX();
-				int y = move2.getToY();
-				int x2 = move.getFromX();
-				int y2 = move.getFromY();
-				// checks if the same unit moves, so it can add to last moves
-				// for the same unit
-				if (x == x2 && y == y2) {
-					lastMovesP1SameUnit.add(move);
-					if (lastMovesP1SameUnit.size() > 5) {
-						// checks if the moves were forward and back
-						int counter = 0;
-						for (int i = 0; i < 5; i++) {
-							Move moveToCheck1 = lastMovesP1SameUnit
-									.get(lastMovesP1SameUnit.size() - 1 - i);
-							Move moveToCheck2 = lastMovesP1SameUnit
-									.get(lastMovesP1SameUnit.size() - 1 - i - 1);
-							if (switchedMove(moveToCheck1, moveToCheck2)) {
-								counter++;
-							}
-						}
-						if (counter > 4) {
-							lastMovesP1SameUnit.remove(lastMovesP1SameUnit
-									.size() - 1);
-							return false;
-						}
-						// checks if p1 chases p2
-						if (lastMovesP2SameUnit.size() > 5) {
-							counter = 0;
-							for (int i = 0; i < 5; i++) {
-								Move moveToCheck1 = lastMovesP1SameUnit
-										.get(lastMovesP1SameUnit.size() - 1 - i);
-								Move moveToCheck2 = lastMovesP2SameUnit
-										.get(lastMovesP2SameUnit.size() - 1 - i);
-								if (sameMove(moveToCheck1, moveToCheck2)) {
-									counter++;
-								}
-							}
-							if (counter > 4) {
-								lastMovesP1SameUnit.remove(lastMovesP1SameUnit
-										.size() - 1);
-								return false;
-							}
-						}
-					}
-				} else {
-					lastMovesP1SameUnit = new ArrayList<Move>();
-					lastMovesP1SameUnit.add(move);
-				}
-			}
-		} else {
-			if (lastMovesP2SameUnit.size() == 0) {
-				lastMovesP2SameUnit.add(move);
-			} else {
-				Move move2 = lastMovesP2SameUnit
-						.get(lastMovesP2SameUnit.size() - 1);
-				int x = move2.getToX();
-				int y = move2.getToY();
-				int x2 = move.getFromX();
-				int y2 = move.getFromY();
-				// checks if the same unit moves, so it can add to last moves
-				// for the same unit
-				if (x == x2 && y == y2) {
-					lastMovesP2SameUnit.add(move);
-					if (lastMovesP2SameUnit.size() > 5) {
-						// checks if the moves were forward and back
-						int counter = 0;
-						for (int i = 0; i < 5; i++) {
-							Move moveToCheck1 = lastMovesP2SameUnit
-									.get(lastMovesP2SameUnit.size() - 1 - i);
-							Move moveToCheck2 = lastMovesP2SameUnit
-									.get(lastMovesP2SameUnit.size() - 1 - i - 1);
-							if (switchedMove(moveToCheck1, moveToCheck2)) {
-								counter++;
-							}
-						}
-						if (counter > 4) {
-							lastMovesP2SameUnit.remove(lastMovesP2SameUnit
-									.size() - 1);
-							return false;
-						}
-						// checks if p2 chases p1
-						if (lastMovesP1SameUnit.size() > 5) {
-							counter = 0;
-							for (int i = 0; i < 5; i++) {
-								Move moveToCheck1 = lastMovesP2SameUnit
-										.get(lastMovesP2SameUnit.size() - 1 - i);
-								Move moveToCheck2 = lastMovesP1SameUnit
-										.get(lastMovesP1SameUnit.size() - 1 - i);
-								if (sameMove(moveToCheck1, moveToCheck2)) {
-									counter++;
-								}
-							}
-							if (counter > 4) {
-								lastMovesP2SameUnit.remove(lastMovesP2SameUnit
-										.size() - 1);
-								return false;
-							}
-						}
-					}
-				} else {
-					lastMovesP2SameUnit = new ArrayList<Move>();
-					lastMovesP2SameUnit.add(move);
-				}
-			}
+		if (!twoSquareRuleValidation(move)) {
+			return false;
+		}
+		if (!chaseRuleValidation(move)) {
+			return false;
 		}
 		return true;
 	}
@@ -355,6 +257,11 @@ public class Game {
 			}
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
+			List<Move> previousMoves = lastConsecutiveMoves.get(move.getPlayerID());
+			if (!previousMoves.isEmpty() && movedUnit != previousMoves.get(0).getMovedUnit()) {
+				previousMoves.clear();
+			}
+			previousMoves.add(move);
 			states.add(current.duplicate());
 			nextTurn();
 		}
@@ -464,7 +371,8 @@ public class Game {
 		 * when called, first determine which players turn is it, then call one
 		 * of them to start move, second to idle
 		 */
-		if (!gameOver()) {
+		gameOver = gameOver();
+		if (!gameOver) {
 			if (states.size() % 2 == 1) {
 				if (hasLost(player1)) {
 					// TODO: Add Something to clarify Game end
@@ -690,10 +598,11 @@ public class Game {
 		return this.getStates().size()%2==1?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
 	}
 
-	private boolean twoSquareRule(Move move) {
+	private boolean twoSquareRuleValidation(Move move) {
 
-		List<Move> previousMoves = lastMoves.get(move.getPlayerID());
+		List<Move> previousMoves = lastConsecutiveMoves.get(move.getPlayerID());
 		Unit unitInQuestion = current.getUnit(move.getFromX(), move.getFromY());
+		System.out.println(previousMoves.size());
 		if (previousMoves.isEmpty()) {
 			return true;
 		} else if (unitInQuestion != previousMoves.get(0).getMovedUnit()) {
@@ -702,9 +611,30 @@ public class Game {
 			if (previousMoves.size() < 5) {
 				return true;
 			} else {
-				return false;
+				// have the last 5 moves in scope
+				int fiveMovesBefore = previousMoves.size()-5;
+				// Special case for the scout to two his increased movement range
+				// Movement isn't allowed to occur more than 5 times in the range of the first move
+				if (unitInQuestion.getType() == Unit.UnitType.SCOUT) {
+					Move referenceMove = previousMoves.get(fiveMovesBefore);
+					return !(previousMoves.get(fiveMovesBefore+1).isMovementInBetween(referenceMove)
+							 && previousMoves.get(fiveMovesBefore+2).isMovementInBetween(referenceMove)
+							 && previousMoves.get(fiveMovesBefore+3).isMovementInBetween(referenceMove)
+							 && previousMoves.get(fiveMovesBefore+4).isMovementInBetween(referenceMove)
+							 && move.isMovementInBetween(referenceMove));
+				} else {
+					return !(previousMoves.get(fiveMovesBefore).isSameMovementAs(previousMoves.get(fiveMovesBefore+2))
+							 && previousMoves.get(fiveMovesBefore+1).isSameMovementAs(previousMoves.get(fiveMovesBefore +3))
+							 && previousMoves.get(fiveMovesBefore +2).isSameMovementAs(previousMoves.get(fiveMovesBefore +4))
+							 && previousMoves.get(fiveMovesBefore +3).isSameMovementAs(move));
+				}
 			}
 		}
+	}
+
+	private boolean chaseRuleValidation(Move move) {
+
+		return true;
 	}
 
 	private void revealBoard() {
