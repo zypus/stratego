@@ -8,6 +8,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -39,8 +40,11 @@ public class HumanPlayer extends Player {
 	private PlayerID playerID = gameView.getPlayerID();
 	private boolean setUpPhase = false;
 	private boolean movePhase = false;
-	private int xSelected = -1;
-	private int ySelected = -1;
+	@Getter private int xSelected = -1;
+	@Getter private int ySelected = -1;
+
+	@Getter int xMouseOver = -1;
+	@Getter int yMouseOver = -1;
 
 	/** The move that will be sent by move */
 	private Move moveToSend = null;
@@ -79,12 +83,16 @@ public class HumanPlayer extends Player {
 					// if invalid move
 				} else {
 					// your own piece
-					if (gameView.getUnit(x, y).getOwner() == move
-							.getPlayerID()) {
+					if (gameView.getUnit(x, y).getOwner() == gameView.getPlayerID()) {
 						// select(x,y);
 						// deselect(xSelected,ySelected);
-						xSelected = x;
-						ySelected = y;
+						if (xSelected == x && ySelected == y) {
+							xSelected = -1;
+							ySelected = -1;
+						} else {
+							xSelected = x;
+							ySelected = y;
+						}
 						// something else that shouldn't be selected
 					} else {
 						// deselect(xSelected,ySelected);
@@ -150,14 +158,17 @@ public class HumanPlayer extends Player {
 
 	public void receiveSetUpInput(int x, int y) {
 		if (setUpPhase) {
-			System.out.println(gameView.getPlayerID());
-			if (y == 4 || y == 5) {
+			if (x < 0 || x > 9 || y < 0 || y > 9) {
+				xSelected = -1;
+				ySelected = -1;
+			}
+			else if (y == 4 || y == 5) {
 				// if middle of board
 				// deselect(xSelected, ySelected)
 				xSelected = -1;
 				ySelected = -1;
-			} else if (xSelected == -1 || ySelected == -1
-										  && gameView.getUnit(x, y).getType().getRank() != -1) {
+			} else if (xSelected == -1 && ySelected == -1
+										  && gameView.getUnit(x, y).getOwner() == gameView.getPlayerID()) {
 				// select piece
 				xSelected = x;
 				ySelected = y;
@@ -167,7 +178,7 @@ public class HumanPlayer extends Player {
 				// deselect(xSelected, ySelected)
 				xSelected = -1;
 				ySelected = -1;
-			} else {
+			} else if (xSelected != -1 && ySelected != -1){
 				// SWITCH AROUND
 				gameView.hardSwapUnits(xSelected, ySelected, x, y);
 				// deselect(xSelected, ySelected)
@@ -245,4 +256,19 @@ public class HumanPlayer extends Player {
 		}
 	}
 
+	public void setxMouseOver(int xMouseOver) {
+		if (xMouseOver < 0 || xMouseOver > GRID_WIDTH-1) {
+			this.xMouseOver = -1;
+		} else {
+			this.xMouseOver = xMouseOver;
+		}
+	}
+
+	public void setyMouseOver(int yMouseOver) {
+		if (yMouseOver < 0 || yMouseOver > GRID_WIDTH - 1) {
+			this.yMouseOver = -1;
+		} else {
+			this.yMouseOver = yMouseOver;
+		}
+	}
 }

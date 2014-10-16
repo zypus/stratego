@@ -90,6 +90,9 @@ public class Game {
 		int distanceX = Math.abs(fromX - toX);
 		int distanceY = Math.abs(fromY - toY);
 		boolean validScoutMove = true;
+		if (distanceX == 0 && distanceY == 0) {
+			return false;
+		}
 		if(toX<0||toX>9||toY<0||toY>9){
 			return false;
 		}
@@ -217,6 +220,9 @@ public class Game {
 
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
+			GameBoard nextState = current.duplicate();
+			states.add(nextState);
+			current = nextState;
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
 			move.setTurn(getCurrentTurn());
 			move.setMovedUnit(movedUnit);
@@ -265,7 +271,6 @@ public class Game {
 				previousMoves.clear();
 			}
 			previousMoves.add(move);
-			states.add(current.duplicate());
 			nextTurn();
 		}
 

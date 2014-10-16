@@ -24,7 +24,7 @@ public class RandomAI extends AI {
 
 	@Override protected Move move() {
 		Move move;
-		List<Move> possibleMoves = super.createAllLegalMoves(gameView.getCurrentState());
+		List<Move> possibleMoves = AI.createAllLegalMoves(gameView, gameView.getCurrentState());
 		for(int c=0; c<possibleMoves.size(); c++){
 			Move mover = possibleMoves.get(c);
 			if(gameView.isEnemy(mover.getToX(), mover.getToY())){

@@ -2,8 +2,9 @@ package com.theBombSquad.stratego.player.humanoid;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.theBombSquad.stratego.StrategoConstants;
 import lombok.RequiredArgsConstructor;
+
+import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
  * TODO Add description
@@ -18,9 +19,10 @@ public class PlayerBoardInput extends InputAdapter {
 	private final double scale;
 
 	@Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if(screenX>StrategoConstants.GRID_POSITION_X*scale && screenY>StrategoConstants.GRID_POSITION_Y*scale && screenX<=((float)StrategoConstants.POINT_TILE_SIZE)*((float)StrategoConstants.GRID_WIDTH)*scale+StrategoConstants.GRID_POSITION_X*scale && screenY<=(StrategoConstants.GRID_POSITION_Y*scale)+((float)StrategoConstants.POINT_TILE_SIZE)*((float)StrategoConstants.GRID_HEIGHT*scale)){
-			int x = (int)((((float)(screenX - StrategoConstants.GRID_POSITION_X*scale))/(((float)StrategoConstants.POINT_TILE_SIZE)*scale)));
-			int y = (int)((((float)(screenY - StrategoConstants.GRID_POSITION_Y*scale))/(((float)StrategoConstants.POINT_TILE_SIZE)*scale)));
+		if(screenX> GRID_POSITION_X*scale && screenY> GRID_POSITION_Y*scale && screenX<=((float) POINT_TILE_SIZE)*((float) GRID_WIDTH)*scale+
+																						GRID_POSITION_X*scale && screenY<=(GRID_POSITION_Y*scale)+((float) POINT_TILE_SIZE)*((float) GRID_HEIGHT*scale)){
+			int x = (int)((((float)(screenX - GRID_POSITION_X*scale))/(((float) POINT_TILE_SIZE)*scale)));
+			int y = (int)((((float)(screenY - GRID_POSITION_Y*scale))/(((float) POINT_TILE_SIZE)*scale)));
 			if(player.getSetUpPhase()){
 				player.receiveSetUpInput(x,y);
 			}else{
@@ -35,6 +37,12 @@ public class PlayerBoardInput extends InputAdapter {
 	}
 
 	@Override public boolean mouseMoved(int screenX, int screenY) {
+		if (screenX > GRID_POSITION_X * scale && screenY > GRID_POSITION_Y * scale && screenX <=  ((float) POINT_TILE_SIZE)* ((float) GRID_WIDTH) * scale + GRID_POSITION_X * scale && screenY <= (GRID_POSITION_Y * scale) + ((float) POINT_TILE_SIZE) * ((float) GRID_HEIGHT * scale)) {
+			int x = (int) ((((float) (screenX - GRID_POSITION_X * scale)) / (((float) POINT_TILE_SIZE) * scale)));
+			int y =(int) ((((float) (screenY - GRID_POSITION_Y * scale)) / (((float) POINT_TILE_SIZE) * scale)));
+			player.setxMouseOver(x);
+			player.setyMouseOver(y);
+		}
 		return super.mouseMoved(screenX, screenY);
 	}
 
