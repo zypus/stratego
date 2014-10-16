@@ -51,6 +51,10 @@ public class PlayerBoardInput extends InputAdapter {
 		//Debug Setup Reset
 		else if(keycode==Input.Keys.R){
 			player.randomSetup();
+		} else if (keycode == Input.Keys.S) {
+			player.saveSetup();
+		} else if (keycode == Input.Keys.L) {
+			player.loadSetup();
 		}
 		return super.keyUp(keycode);
 	}

@@ -1,6 +1,5 @@
 package com.theBombSquad.stratego.rendering;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -18,28 +17,28 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
  * @author Flo
  */
 public class DefeatedUnitRenderer extends Renderer {
-	
+
 	/** Reference to the font in Render Data */
 	private BitmapFont font;
-	
+
 	/** Textures of Units that have been defeated, in the order they will be drawn from top to bottom */
 	private TextureRegion[][] defeatedUnits;
 	/** Textures of Units's backs that have been defeated, in the order they will be drawn from top to bottom */
 	private TextureRegion[] defeatedBacks;
-	
+
 	/** Reference to Game */
 	private Game game;
-	
+
 	public DefeatedUnitRenderer(Game game){
 		this.game = game;
 	}
-	
+
 	@Override
 	public void init() {
 		initUnitImages();
 		this.font = super.renderData.getFont();
 	}
-	
+
 	/** Initializes the Texture Regions that represent the Units */
 	private void initUnitImages(){
 		defeatedUnits = new TextureRegion[2][11];
@@ -55,15 +54,17 @@ public class DefeatedUnitRenderer extends Renderer {
 			defeatedBacks[c] = backs.get(c);
 		}
 	}
-	
+
 	@Override
 	public void render(SpriteBatch batch) {
-		float size = POINT_TILE_SIZE*getScale();
-		float yStart = 1.5f*POINT_TILE_SIZE;
-		font.setScale(getScale());
-		drawUnits(batch, size, yStart);
+		if (!game.isReseted()) {
+			float size = POINT_TILE_SIZE * getScale();
+			float yStart = 1.5f * POINT_TILE_SIZE;
+			font.setScale(getScale());
+			drawUnits(batch, size, yStart);
+		}
 	}
-	
+
 	/** Renders Unit Images */
 	private void drawUnits(SpriteBatch batch, float size, float yStart){
 		font.setScale(0.8f);
@@ -78,11 +79,11 @@ public class DefeatedUnitRenderer extends Renderer {
 			}
 		}
 	}
-	
+
 	/** Returns the amount of Units of given type and player that have already died */
 	private int calcDead(int unit, int player){
 		PlayerID playerId = (player==0)?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
 		return game.getNumberOfDefeatedUnits(unit+1, playerId);
 	}
-	
+
 }

@@ -10,6 +10,8 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import lombok.Setter;
 
+import javax.swing.JFileChooser;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,16 +26,10 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
  */
 public class HumanPlayer extends Player {
 
-	private static InputMultiplexer multiplexer = null;
-
 	public HumanPlayer(GameView gameView) {
 		super(gameView);
 		PlayerBoardInput input = new PlayerBoardInput(this, (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH);
-		if (multiplexer == null) {
-			multiplexer = new InputMultiplexer();
-			Gdx.input.setInputProcessor(multiplexer);
-		}
-		multiplexer.addProcessor(input);
+		((InputMultiplexer)Gdx.input.getInputProcessor()).addProcessor(input);
 	}
 
 	private PlayerID playerID = gameView.getPlayerID();
@@ -150,7 +146,6 @@ public class HumanPlayer extends Player {
 
 	public void receiveSetUpInput(int x, int y) {
 		if (setUpPhase) {
-			System.out.println(gameView.getPlayerID());
 			if (y == 4 || y == 5) {
 				// if middle of board
 				// deselect(xSelected, ySelected)
@@ -212,14 +207,7 @@ public class HumanPlayer extends Player {
 	protected void randomSetup() {
 		if(setUpPhase){
 			Setup setup = new Setup(10,4);
-			List<Unit> availableUnits = new ArrayList<Unit>(40);
-			Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
-			// create a list containing all units that needs to be placed on the board
-			for (Unit.UnitType type : unitTypeEnum) {
-				for (int i = 0; i < type.getQuantity(); i++) {
-					availableUnits.add(new Unit(type, gameView.getPlayerID()));
-				}
-			}
+			List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
 			//shuffle the list containing all available units
 			Collections.shuffle(availableUnits);
 			//go through the list and place them on the board as the units appear in the randomly shuffled list
@@ -245,4 +233,45 @@ public class HumanPlayer extends Player {
 		}
 	}
 
+	public void saveSetup() {
+		if (setUpPhase) {
+			Setup setUp = new Setup(10, 4);
+			for (int i = 0; i < 10; i++) {
+				for (int j = 0; j < 4; j++) {
+					setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
+				}
+			}
+			if (gameView.validateSetup(setUp)) {
+				JFileChooser fileChooser = new JFileChooser(SETUP_PATH);
+				if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(null)) {
+					File file = fileChooser.getSelectedFile();
+					Setup.writeToFile(file, setUp);
+				}
+			}
+		}
+	}
+
+	public void loadSetup() {
+		if (setUpPhase) {
+			JFileChooser fileChooser = new JFileChooser(SETUP_PATH);
+			if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(null)) {
+				File file = fileChooser.getSelectedFile();
+				Setup setup = Setup.readFromFile(file, gameView.getAvailableUnits());
+				//Remove All Units
+				for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
+					for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {
+						if (!gameView.getCurrentState().getUnit(cx, cy).isLake()) {
+							gameView.setUnit(cx, cy, Unit.AIR);
+						}
+					}
+				}
+				//Add Setup
+				for (int cy = 0; cy < 4; cy++) {
+					for (int cx = 0; cx < 10; cx++) {
+						gameView.setUnit(cx, cy + 6, setup.getUnit(cx,cy));
+					}
+				}
+			}
+		}
+	}
 }

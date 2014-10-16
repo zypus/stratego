@@ -4,20 +4,17 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.theBombSquad.stratego.StrategoConstants.GRID_HEIGHT;
-import static com.theBombSquad.stratego.StrategoConstants.GRID_WIDTH;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
-import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
+import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 
 /**
  * The gameView acts as the communication interface between players/renderers and the game.
@@ -53,12 +50,12 @@ public class GameView {
 	public boolean validateMove(Move move) {
 
 		// Return early if the view doesn't belong to a player
-		if (playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(NEMO)) {
 			log.severe("Non player tried to validate move.");
 			return false;
 		}
 		// Translates the move from player space to game space.
-		Move preparedMove = (playerID.equals(PlayerID.PLAYER_1)) ? move : rotateMove(move);
+		Move preparedMove = (playerID.equals(PLAYER_1)) ? move : rotateMove(move);
 		// Assigns the move to the appropriate player.
 		if (preparedMove.getPlayerID() == null) {
 			preparedMove.setPlayerID(playerID);
@@ -76,12 +73,12 @@ public class GameView {
 	public void performMove(Move move) {
 
 		// Return early if the view doesn't belong to a player
-		if (playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(NEMO)) {
 			log.severe("Non player tried to perform move.");
 			return;
 		}
 		// Translates the move from player space to game space.
-		Move preparedMove = (playerID.equals(PlayerID.PLAYER_1)) ? move : rotateMove(move);
+		Move preparedMove = (playerID.equals(PLAYER_1)) ? move : rotateMove(move);
 		// Checks if the playerId was already set due to a call to validateMove.
 		if (preparedMove.getPlayerID() == null) {
 			preparedMove.setPlayerID(playerID);
@@ -109,12 +106,12 @@ public class GameView {
 	public void setSetup(Setup setup) {
 
 		// Return early if the view doesn't belong to a player
-		if (playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(NEMO)) {
 			log.severe("Non player tried to set setup.");
 			return;
 		}
 		// Translates the setup from player space to game space.
-		Setup preparedSetup = (playerID.equals(PlayerID.PLAYER_1)) ? setup : rotateSetup(setup);
+		Setup preparedSetup = (playerID.equals(PLAYER_1)) ? setup : rotateSetup(setup);
 		// Forwards the setup to the game and sets the correct player reference.
 		game.setSetup(preparedSetup, playerID);
 	}
@@ -146,10 +143,10 @@ public class GameView {
 
 		GameBoard gameBoard;
 		// If the game view owner is not a player return an unobscured game board copy.
-		if (playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(NEMO)) {
 			gameBoard = game.getState(turn).duplicate();
 		}
-		else if (playerID.equals(PlayerID.PLAYER_1)) {
+		else if (playerID.equals(PLAYER_1)) {
 			// Obscure all units on the board which should be unknown to the player assigned to this view.
 			gameBoard = obscureBoard(game.getState(turn), turn);
 		} else {
@@ -245,9 +242,9 @@ public class GameView {
 	}
 
 	public boolean isEnemy(int x, int y, int turn) {
-		PlayerID opponent = PlayerID.PLAYER_1;
+		PlayerID opponent = PLAYER_1;
 		if (this.playerID.equals(opponent)) {
-			opponent = PlayerID.PLAYER_2;
+			opponent = PLAYER_2;
 		}
 		Unit unit = getUnit(x, y, turn);
 		PlayerID unitOwner = unit.getOwner();
@@ -279,7 +276,7 @@ public class GameView {
 
 		List<Move> moves = game.getMoves();
 		// if the player is player 2 then translate all uncashed moves and add them to the cashed list
-		if (playerID.equals(PlayerID.PLAYER_2)) {
+		if (playerID.equals(PLAYER_2)) {
 			for (int t = cashedRotatedMoves.size(); t < moves.size(); t++) {
 				Move move = moves.get(t);
 
@@ -288,7 +285,7 @@ public class GameView {
 				cashedRotatedMoves.add(rotatedMove);
 			}
 		}
-		return (playerID.equals(PlayerID.PLAYER_2)) ? cashedRotatedMoves : moves;
+		return (playerID.equals(PLAYER_2)) ? cashedRotatedMoves : moves;
 	}
 
 	/**
@@ -333,11 +330,11 @@ public class GameView {
 	public List<Unit> getOwnDefeatedUnits() {
 
 		// Return early if the view doesn't belong to a player
-		if (playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(NEMO)) {
 			log.severe("Non player tried to get 'his' defeated units.");
 			return null;
 		}
-		List<Unit> units = playerID.equals(PlayerID.PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
+		List<Unit> units = playerID.equals(PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
 		return Collections.unmodifiableList(units);
 	}
 
@@ -347,11 +344,11 @@ public class GameView {
 	 */
 	public List<Unit> getOpponentsDefeatedUnits() {
 		// Return early if the view doesn't belong to a player
-		if (playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(NEMO)) {
 			log.severe("Non player tried to get 'his opponents' defeated units.");
 			return null;
 		}
-		List<Unit> units = playerID.equals(PlayerID.PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
+		List<Unit> units = playerID.equals(PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
 		return Collections.unmodifiableList(units);
 	}
 
@@ -398,7 +395,7 @@ public class GameView {
 	 * @return The unit itself or an obscured unit.
 	 */
 	private Unit obscureUnitIfNecessary(Unit unit, int turn) {
-		if (!playerID.equals(PlayerID.NEMO) && !unit.getOwner().equals(PlayerID.NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
+		if (!playerID.equals(NEMO) && !unit.getOwner().equals(NEMO) && !unit.getOwner().equals(playerID) && (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > turn)) {
 			return Unit.UnknownUnitPool.getInstance().getUnknownForUnit(unit);
 		} else {
 			return unit;
@@ -413,10 +410,10 @@ public class GameView {
 	 */
 	private Point conditionalCoordinateRotation(int x, int y) {
 		Point coord = new Point(-1,-1);
-		if (playerID.equals(PlayerID.PLAYER_1) || playerID.equals(PlayerID.NEMO)) {
+		if (playerID.equals(PLAYER_1) || playerID.equals(NEMO)) {
 			// Player 1 coordinates are equal to game space coordinates.
 			coord = new Point(x,y);
-		} else if (playerID.equals(PlayerID.PLAYER_2)) {
+		} else if (playerID.equals(PLAYER_2)) {
 			// Player 2 coordinates need to be rotated by 180 degree to be in game space.
 			coord = new Point(GRID_WIDTH - x - 1, GRID_HEIGHT - y - 1);
 		} else {
@@ -478,32 +475,13 @@ public class GameView {
 			}
 		}
 		GameBoard board=game.getCurrentState();
-		ArrayList<Unit> units= new ArrayList<Unit>();
-		units.add(new Unit(UnitType.FLAG,playerID));
-		units.add(new Unit(UnitType.BOMB,playerID));
-		units.add(new Unit(UnitType.SPY,playerID));
-		units.add(new Unit(UnitType.SCOUT,playerID));
-		units.add(new Unit(UnitType.SAPPER,playerID));
-		units.add(new Unit(UnitType.SERGEANT,playerID));
-		units.add(new Unit(UnitType.LIEUTENANT,playerID));
-		units.add(new Unit(UnitType.CAPTAIN,playerID));
-		units.add(new Unit(UnitType.MAJOR,playerID));
-		units.add(new Unit(UnitType.COLONEL,playerID));
-		units.add(new Unit(UnitType.GENERAL,playerID));
-		units.add(new Unit(UnitType.MARSHAL,playerID));
-		int counter=0; int marker=0;
+		List<Unit> units = getAvailableUnits();
+		int counter = 0;
 		for(int i = 0; i<board.getWidth();i++){
 			for (int j = 0; j < 4; j++) {
-				if (units.get(marker).getType().getQuantity() > counter) {
-					counter++;
-					Point coords1 = conditionalCoordinateRotation(i, j);
-					board.setUnit(coords1.x, coords1.y, new Unit(units.get(marker).getType(),
-							playerID));
-				} else {
-					marker++;
-					counter = 0;
-					j--;
-				}
+				Point coords1 = conditionalCoordinateRotation(i, j);
+				board.setUnit(coords1.x, coords1.y, units.get(counter));
+				counter++;
 			}
 		}
 	}
@@ -527,6 +505,10 @@ public class GameView {
 	public void setUnit(int x, int y, Unit unit){
 		Point coords1 = conditionalCoordinateRotation(x, y);
 		game.getCurrentState().setUnit(coords1.x, coords1.y, unit);
+	}
+
+	public List<Unit> getAvailableUnits() {
+		return (playerID == PLAYER_1) ? game.getPlayer1Units() : game.getPlayer2Units();
 	}
 
 }
