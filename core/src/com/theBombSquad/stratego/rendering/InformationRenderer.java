@@ -44,7 +44,7 @@ public class InformationRenderer extends Renderer{
 
 	private void renderGameOver(SpriteBatch batch){
 		if(game.isGameOver()){
-			font.setScale(1.5f);
+			font.setScale(3f);
 			PlayerID winner = game.getWinner().getGameView().getPlayerID();
 			PlayerID current = game.getActiveGameView().getPlayerID();
 			String string = (winner==current) ? "VICTORY" : "DEFEAT";
