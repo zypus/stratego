@@ -2,6 +2,9 @@ package com.theBombSquad.stratego;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -72,12 +75,18 @@ public class Stratego extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		Gdx.input.setInputProcessor(inputMultiplexer);
+
 		// TODO setup everything
 		AtlasPacker.pack();
 		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
 		setupGame();
 		this.batch = new SpriteBatch();
 		// TODO start the setup phase of the game
+
+		inputMultiplexer.addProcessor(new GameRestarter(game, this));
 
 		// delayed method execution
 		new Thread(new Runnable() {
@@ -240,37 +249,34 @@ public class Stratego extends ApplicationAdapter {
 		GameView renderView = new GameView(game, StrategoConstants.PlayerID.NEMO);
 
 		// TODO create the players or get the players?
-		Player player1;
-		Player player2;
-		GameSetting gameSetting = showMainMenu();
-		if (gameSetting.isLocal()) {
-			player1 = gameSetting.getPlayer1().createPlayer(playerOneView);
-			player2 = gameSetting.getPlayer2().createPlayer(playerTwoView);
-			if (gameSetting.getPlayer1() == PlayerType.HUMAN) {
-				renderView = playerOneView;
-			} else if (gameSetting.getPlayer2() == PlayerType.HUMAN) {
-				renderView = playerTwoView;
-			}
-		} else {
-			if (gameSetting.isServing()) {
-				player1 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerOneView), playerOneView, gameSetting.getIp());
-				player2 = new RemoteListeningPlayer(playerTwoView);
-				renderView = playerOneView;
-			} else {
-				player1 = new RemoteListeningPlayer(playerOneView);
-				player2 = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerTwoView), playerTwoView, gameSetting.getIp());
-				renderView = playerTwoView;
-			}
-		}
+		Player[] player = determinePlayers(playerOneView, playerTwoView);
 
 		// tell the game about the players
-		game.setPlayer1(player1);
-		game.setPlayer2(player2);
+		game.setPlayer1(player[0]);
+		game.setPlayer2(player[1]);
 		//TODO: this is only supposed to happen if the view is of Player 2, who is a human player:
 		//((HumanPlayer)player2).setFlippedBoard(true);
 
 		// TODO setup renderers
 		setupRenderer(game);
+	}
+
+	private Player[] determinePlayers(GameView playerOneView, GameView playerTwoView) {
+		Player[] player = new Player[2];
+		GameSetting gameSetting = showMainMenu();
+		if (gameSetting.isLocal()) {
+			player[0] = gameSetting.getPlayer1().createPlayer(playerOneView);
+			player[1] = gameSetting.getPlayer2().createPlayer(playerTwoView);
+		} else {
+			if (gameSetting.isServing()) {
+				player[0] = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerOneView), playerOneView, gameSetting.getIp());
+				player[1] = new RemoteListeningPlayer(playerTwoView);
+			} else {
+				player[0] = new RemoteListeningPlayer(playerOneView);
+				player[1] = new RemoteServingPlayer(gameSetting.getPlayer1().createPlayer(playerTwoView), playerTwoView, gameSetting.getIp());
+			}
+		}
+		return player;
 	}
 
 	private void setupRenderer(Game game) {
@@ -305,5 +311,37 @@ public class Stratego extends ApplicationAdapter {
 		private StrategoConstants.PlayerType player2;
 		private boolean serving;
 		private String ip;
+	}
+
+	@AllArgsConstructor
+	private class GameRestarter
+			extends InputAdapter {
+
+		Game game;
+		Stratego strategoInstance;
+
+		@Override public boolean keyDown(int keycode) {
+			if (keycode == Input.Keys.SPACE) {
+				if (this.game.isGameOver()) {
+					InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+					inputMultiplexer.clear();
+					inputMultiplexer.addProcessor(this);
+					this.game.reset();
+					GameView playerOneView = new GameView(this.game, StrategoConstants.PlayerID.PLAYER_1);
+					GameView playerTwoView = new GameView(this.game, StrategoConstants.PlayerID.PLAYER_2);
+					Player[] player = strategoInstance.determinePlayers(playerOneView, playerTwoView);
+					// tell the game about the players
+					this.game.setPlayer1(player[0]);
+					this.game.setPlayer2(player[1]);
+					new Thread(new Runnable() {
+						@Override public void run() {
+							strategoInstance.startGame();
+						}
+					}).start();
+				}
+			}
+			return super.keyDown(keycode);
+		}
+
 	}
 }

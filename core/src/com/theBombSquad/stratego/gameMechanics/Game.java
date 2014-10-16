@@ -45,14 +45,15 @@ public class Game {
 	@Getter
 	private Player winner;
 
-	private ArrayList<Move> lastMovesP1SameUnit;
-	private ArrayList<Move> lastMovesP2SameUnit;
-
 	/** The Setups both players committed thus far */
 	private Setup[] setupClusters;
 	private Map<PlayerID, List<Move>> lastConsecutiveMoves = new HashMap<PlayerID, List<Move>>();
 	private GameView activeGameView;
 	private boolean gameOver;
+	private boolean reseted = true;
+
+	private List<Unit> player1Units;
+	private List<Unit> player2Units;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -63,20 +64,51 @@ public class Game {
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 
-		lastMovesP1SameUnit = new ArrayList<Move>();
-		lastMovesP2SameUnit = new ArrayList<Move>();
-
-
-		//Sets New Setup Clusters
-		this.setupClusters = new Setup[10];
+		player1Units = createUnitsForPlayer(PlayerID.PLAYER_1);
+		player2Units = createUnitsForPlayer(PlayerID.PLAYER_2);
 
 		reset();
 	}
 
+	private List<Unit> createUnitsForPlayer(PlayerID playerID) {
+		List<Unit> availableUnits = new ArrayList<Unit>(40);
+		Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
+		// create a list containing all units that needs to be placed on the board
+		for (Unit.UnitType type : unitTypeEnum) {
+			for (int i = 0; i < type.getQuantity(); i++) {
+				availableUnits.add(new Unit(type, playerID));
+			}
+		}
+		return availableUnits;
+	}
+
 	public void reset() {
+		reseted = true;
+		player1 = null;
+		player2 = null;
+		player1FinishedSetup = false;
+		player2FinishedSetup = false;
 		gameOver = false;
+		finishedSetup = false;
+		states.clear();
+		states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
+		current = states.get(0);
+		moves.clear();
+		winner = null;
+		defeatedUnitsPlayer1.clear();
+		defeatedUnitsPlayer2.clear();
+		this.setupClusters = new Setup[10];
 		lastConsecutiveMoves.put(PlayerID.PLAYER_1, new ArrayList<Move>());
 		lastConsecutiveMoves.put(PlayerID.PLAYER_2, new ArrayList<Move>());
+		clearUnits(PlayerID.PLAYER_1);
+		clearUnits(PlayerID.PLAYER_2);
+	}
+
+	private void clearUnits(PlayerID playerID) {
+		List<Unit> units = (playerID == PlayerID.PLAYER_1) ? player1Units : player2Units;
+		for (Unit unit : units) {
+			unit.setRevealedInTurn(UNREVEALED);
+		}
 	}
 
 	public boolean validateMove(Move move) {
@@ -497,6 +529,7 @@ public class Game {
 											   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
 			activeGameView = player1.getGameView();
 		}
+		reseted = false;
 		log.info("PLAYER_1 is asked to setup.");
 		player1.startSetup();
 		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
@@ -506,7 +539,6 @@ public class Game {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				System.out.println("Waiting");
 			}
 		}
 		log.info("PLAYER_2 is asked to setup.");

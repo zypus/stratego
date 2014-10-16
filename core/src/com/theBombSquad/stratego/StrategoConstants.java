@@ -70,4 +70,6 @@ public class StrategoConstants {
 	public static final int LISTEN_TIMEOUT = 0;     // in milliseconds
 	public static final int RETRY_DELAY = 2000;     // in milliseconds
 
+	public static final String SETUP_PATH = "setups/";
+
 }

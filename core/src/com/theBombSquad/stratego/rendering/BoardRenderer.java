@@ -62,49 +62,55 @@ public class BoardRenderer extends Renderer {
 
 	@Override
 	public void render(SpriteBatch batch) {
-		GameView view = game.getActiveGameView();
-		GameBoard board = view.getCurrentState();
-		float gridX = GRID_POSITION_X*getScale();
-		float gridY = GRID_POSITION_Y*getScale();
-		float size = POINT_TILE_SIZE*getScale();
-		//Draw Core Board (Without lakes)
-		boolean tileFlag = true;
-		for(int cy=0; cy<GRID_HEIGHT; cy++){
-			for(int cx=0; cx<GRID_WIDTH; cx++){
-				TextureRegion tile = (tileFlag) ? white : black;
+		if (!game.isReseted()) {
+			GameView view = game.getActiveGameView();
+			GameBoard board = view.getCurrentState();
+			float gridX = GRID_POSITION_X * getScale();
+			float gridY = GRID_POSITION_Y * getScale();
+			float size = POINT_TILE_SIZE * getScale();
+			//Draw Core Board (Without lakes)
+			boolean tileFlag = true;
+			for (int cy = 0; cy < GRID_HEIGHT; cy++) {
+				for (int cx = 0; cx < GRID_WIDTH; cx++) {
+					TextureRegion tile = (tileFlag) ? white : black;
+					tileFlag = !tileFlag;
+					drawTile(tile, batch, cx, cy, size, gridX, gridY);
+				}
 				tileFlag = !tileFlag;
-				drawTile(tile, batch, cx, cy, size, gridX, gridY);
 			}
-			tileFlag = !tileFlag;
-		}
-		//Draw Lakes
-		for(int cy=0; cy<board.getHeight(); cy++){
-			for(int cx=0; cx<board.getWidth(); cx++){
-				if(board.getUnit(cx, cy) == Unit.LAKE){
-					drawTile(water, batch, cx, cy, size, gridX, gridY);
-				}
-			}
-		}
-		//Draws Lakes Properly
-		for(int cy=0; cy<board.getHeight(); cy++){
-			for(int cx=0; cx<board.getWidth(); cx++){
-				if(board.getUnit(cx, cy) == Unit.LAKE && board.getUnit(cx+1, cy) == Unit.LAKE && board.getUnit(cx, cy+1) == Unit.LAKE && board.getUnit(cx+1, cy+1) == Unit.LAKE){
-					batch.draw(water, gridX + cx*POINT_TILE_SIZE*getScale(), gridY + (GRID_HEIGHT-cy-1-1)*POINT_TILE_SIZE*getScale(), size*2, size*2);
-				}
-			}
-		}
-		//Draw Units
-		for(int cy=0; cy<board.getHeight(); cy++){
-			for(int cx=0; cx<board.getWidth(); cx++){
-				Unit unit = view.getUnit(cx, cy);
-				int unitRank = unit.getType().getRank();
-				if(unitRank != -1){
-					int player = (view.getUnit(cx, cy).getOwner().equals(PlayerID.PLAYER_1)?0:1);
-					if(!unit.isUnknown()){
-						drawTile(rUnits[player][unitRank], batch, cx, cy, size, gridX, gridY);
+			//Draw Lakes
+			for (int cy = 0; cy < board.getHeight(); cy++) {
+				for (int cx = 0; cx < board.getWidth(); cx++) {
+					if (board.getUnit(cx, cy) == Unit.LAKE) {
+						drawTile(water, batch, cx, cy, size, gridX, gridY);
 					}
-					else{
-						drawTile(unitBacks[player], batch, cx, cy, size, gridX, gridY);
+				}
+			}
+			//Draws Lakes Properly
+			for (int cy = 0; cy < board.getHeight(); cy++) {
+				for (int cx = 0; cx < board.getWidth(); cx++) {
+					if (board.getUnit(cx, cy) == Unit.LAKE && board.getUnit(cx + 1, cy) == Unit.LAKE
+						&& board.getUnit(cx, cy + 1) == Unit.LAKE && board.getUnit(cx + 1, cy + 1) == Unit.LAKE) {
+						batch.draw(water,
+								   gridX + cx * POINT_TILE_SIZE * getScale(),
+								   gridY + (GRID_HEIGHT - cy - 1 - 1) * POINT_TILE_SIZE * getScale(),
+								   size * 2,
+								   size * 2);
+					}
+				}
+			}
+			//Draw Units
+			for (int cy = 0; cy < board.getHeight(); cy++) {
+				for (int cx = 0; cx < board.getWidth(); cx++) {
+					Unit unit = view.getUnit(cx, cy);
+					int unitRank = unit.getType().getRank();
+					if (unitRank != -1) {
+						int player = (view.getUnit(cx, cy).getOwner().equals(PlayerID.PLAYER_1) ? 0 : 1);
+						if (!unit.isUnknown()) {
+							drawTile(rUnits[player][unitRank], batch, cx, cy, size, gridX, gridY);
+						} else {
+							drawTile(unitBacks[player], batch, cx, cy, size, gridX, gridY);
+						}
 					}
 				}
 			}
