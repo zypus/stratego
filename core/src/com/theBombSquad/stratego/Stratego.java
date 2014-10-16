@@ -338,6 +338,8 @@ public class Stratego extends ApplicationAdapter {
 							strategoInstance.startGame();
 						}
 					}).start();
+				} else if (game.isBlind()) {
+					game.setBlind(false);
 				}
 			}
 			return super.keyDown(keycode);

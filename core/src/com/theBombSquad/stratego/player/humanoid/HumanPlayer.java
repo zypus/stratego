@@ -260,7 +260,7 @@ public class HumanPlayer extends Player {
 			this.yMouseOver = yMouseOver;
 		}
 	}
-	
+
 	public void saveSetup() {
 		if (setUpPhase) {
 			Setup setUp = new Setup(10, 4);
@@ -284,7 +284,7 @@ public class HumanPlayer extends Player {
 			JFileChooser fileChooser = new JFileChooser(SETUP_PATH);
 			if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(null)) {
 				File file = fileChooser.getSelectedFile();
-				Setup setup = Setup.readFromFile(file, gameView.getAvailableUnits());
+				Setup setup = Setup.readFromFile(file, new ArrayList<Unit>(gameView.getAvailableUnits()));
 				//Remove All Units
 				for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
 					for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {

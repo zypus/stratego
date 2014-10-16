@@ -22,6 +22,8 @@ import static java.lang.Math.*;
 @RequiredArgsConstructor
 public class Move implements Serializable {
 
+	public static String[] xRep = new String[]{"A","B","C","D","E","F","G","H","J","K"};
+
 	// set by player
 	private final int fromX;
 	private final int fromY;
@@ -160,5 +162,17 @@ public class Move implements Serializable {
 
 	private String playerName(PlayerID id){
 		return (id==StrategoConstants.PlayerID.PLAYER_1)?"Pl 1":"Pl 2";
+	}
+
+	public String moveFromRepresentaion() {
+		return locationRepresentaion(fromX, fromY);
+	}
+
+	public String moveToRepresentation() {
+		return locationRepresentaion(toX, toY);
+	}
+
+	public String locationRepresentaion(int x, int y) {
+		return xRep[x]+y;
 	}
 }

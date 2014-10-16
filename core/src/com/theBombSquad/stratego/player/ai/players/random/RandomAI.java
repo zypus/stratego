@@ -44,14 +44,7 @@ public class RandomAI extends AI {
 
 	@Override protected Setup setup() {
 		Setup setup = new Setup(10,4);
-		List<Unit> availableUnits = new ArrayList<Unit>(40);
-		Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
-		// create a list containing all units that needs to be placed on the board
-		for (Unit.UnitType type : unitTypeEnum) {
-			for (int i = 0; i < type.getQuantity(); i++) {
-				availableUnits.add(new Unit(type, gameView.getPlayerID()));
-			}
-		}
+		List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
 		// shuffle the list containing all available units
 		Collections.shuffle(availableUnits);
 		//go through the list and place them on the board as the units appear in the randomly shuffled list
