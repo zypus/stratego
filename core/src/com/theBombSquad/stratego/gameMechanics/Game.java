@@ -11,10 +11,12 @@ import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,7 @@ public class Game {
 	private GameView activeGameView;
 	private boolean gameOver;
 	private boolean reseted = true;
+	@Setter private boolean blind = false;
 
 	private List<Unit> player1Units;
 	private List<Unit> player2Units;
@@ -64,8 +67,8 @@ public class Game {
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 
-		player1Units = createUnitsForPlayer(PlayerID.PLAYER_1);
-		player2Units = createUnitsForPlayer(PlayerID.PLAYER_2);
+		player1Units = Collections.unmodifiableList(createUnitsForPlayer(PlayerID.PLAYER_1));
+		player2Units = Collections.unmodifiableList(createUnitsForPlayer(PlayerID.PLAYER_2));
 
 		reset();
 	}
@@ -429,6 +432,7 @@ public class Game {
 						}
 					}
 					log.info("It is PLAYER_1s move.");
+					becomeBlind();
 					player1.startMove();
 					player2.startIdle();
 				}
@@ -449,6 +453,7 @@ public class Game {
 						}
 					}
 					log.info("It is PLAYER_2s move.");
+					becomeBlind();
 					player2.startMove();
 					player1.startIdle();
 				}
@@ -457,6 +462,19 @@ public class Game {
 			// stop the game!
 			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
 			revealBoard();
+		}
+	}
+
+	private void becomeBlind() {
+		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
+			blind = true;
+			while (blind) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -542,6 +560,7 @@ public class Game {
 			}
 		}
 		log.info("PLAYER_2 is asked to setup.");
+		becomeBlind();
 		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
 											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
 			activeGameView = player2.getGameView();
