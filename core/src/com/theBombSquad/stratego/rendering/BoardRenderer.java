@@ -6,11 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import com.theBombSquad.stratego.StrategoConstants.*;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
-import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
@@ -23,6 +21,7 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
  */
 public class BoardRenderer extends Renderer {
 
+	public static final float MOVE_SPEED = 0.5f;
 	private Game game;
 
 	private TextureRegion white;
@@ -34,8 +33,6 @@ public class BoardRenderer extends Renderer {
 	/** Textures of Units's backs that have been defeated, in the order they will be drawn from top to bottom */
 	private TextureRegion[] unitBacks;
 	private BitmapFont font;
-	private PlayerID playerID;
-	private AtlasRegion eye;
 
 	public BoardRenderer(Game game){
 		this.game = game;
@@ -53,7 +50,6 @@ public class BoardRenderer extends Renderer {
 
 	/** Initializes the Texture Regions that represent the Units */
 	private void initUnitImages() {
-		eye = super.renderData.getAtlas().findRegion("eye");
 		rUnits = new TextureRegion[2][12];
 		Array<AtlasRegion> units = super.renderData.getAtlas().findRegions("unit");
 		Array<AtlasRegion> units2 = super.renderData.getAtlas().findRegions("unit2");
@@ -107,109 +103,12 @@ public class BoardRenderer extends Renderer {
 					}
 				}
 			}
-			//Draw Units
-			for (int cy = 0; cy < board.getHeight(); cy++) {
-				for (int cx = 0; cx < board.getWidth(); cx++) {
-					Unit unit = view.getUnit(cx, cy);
-					int unitRank = unit.getType().getRank();
-					if (unitRank != -1) {
-						int player = (view.getUnit(cx, cy).getOwner().equals(PlayerID.PLAYER_1) ? 0 : 1);
-						if (!unit.isUnknown() && !game.isBlind()) {
-							if (!game.isGameOver() && game.isFinishedSetup() && game.getActiveGameView().getPlayerID()==unit.getOwner() &&  game.getActiveGameView().getPlayerID() != game.getCurrentPlayer()) {
-								batch.setColor(new Color(0.8f,0.8f,0.8f,1));
-							}
-							drawTile(rUnits[player][unitRank], batch, cx, cy, size, gridX, gridY);
-							if (!game.isGameOver() && unit.getOwner() == game.getActiveGameView().getPlayerID() && unit.getRevealedInTurn() != UNREVEALED
-								&& game.getCurrentTurn() >= unit.getRevealedInTurn()) {
-								batch.setColor(new Color(1, 1, 1, 0.75f));
-								drawTile(eye, batch, cx, cy, size, gridX, gridY);
-							}
-							batch.setColor(Color.WHITE);
-						} else {
-							drawTile(unitBacks[player], batch, cx, cy, size, gridX, gridY);
-						}
-					}
-				}
-			}
-			font.setScale(1);
-			font.setColor(new Color(1,1,1,0.8f));
-			drawXAxis(batch);
-			drawYAxis(batch);
 		}
 	}
 
 	/** Draws specified tile onto grid, starting in upper left corner */
-	private void drawTile(TextureRegion tile, SpriteBatch batch, int x, int y, float size, float relGridX, float relGridY) {
+	private void drawTile(TextureRegion tile, SpriteBatch batch, float x, float y, float size, float relGridX, float relGridY) {
 		batch.draw(tile, relGridX + x*POINT_TILE_SIZE*getScale(), relGridY + (GRID_HEIGHT-y-1)*POINT_TILE_SIZE*getScale(), size, size);
 	}
-
-	private void drawXAxis(SpriteBatch batch) {
-		float gridX = GRID_POSITION_X * getScale();
-		float gridY = GRID_POSITION_Y * getScale();
-		float size = POINT_TILE_SIZE * getScale();
-		PlayerID player;
-		if (game.isFinishedSetup()) {
-			player = game.getActiveGameView().getPlayerID();
-		} else {
-			if (!game.isPlayer1FinishedSetup()) {
-				player = PlayerID.PLAYER_1;
-			} else {
-				player = PlayerID.PLAYER_2;
-			}
-		}
-
-		if (player == PlayerID.PLAYER_1) {
-			for (int i = 0; i < Move.xRep.length; i++) {
-				String text = Move.xRep[i];
-				BitmapFont.TextBounds bounds = font.getBounds(text);
-				font.draw(batch, text,
-						  gridX + i*size + size/2 - bounds.width/2,
-						  gridY - bounds.height/2);
-			}
-		} else {
-			for (int i = Move.xRep.length-1; i >= 0; i--) {
-				String text = Move.xRep[i];
-				BitmapFont.TextBounds bounds = font.getBounds(text);
-				font.draw(batch, text,
-						  gridX + (Move.xRep.length - 1-i) * size + size / 2 - bounds.width / 2,
-						  gridY - bounds.height / 2);
-			}
-		}
-	}
-
-	private void drawYAxis(SpriteBatch batch) {
-		float gridX = GRID_POSITION_X * getScale();
-		float gridY = GRID_POSITION_Y * getScale();
-		float size = POINT_TILE_SIZE * getScale();
-		PlayerID player;
-		if (game.isFinishedSetup()) {
-			player = game.getActiveGameView().getPlayerID();
-		} else {
-			if (!game.isPlayer1FinishedSetup()) {
-				player = PlayerID.PLAYER_1;
-			} else {
-				player = PlayerID.PLAYER_2;
-			}
-		}
-
-		if (player == PlayerID.PLAYER_2) {
-			for (int i = 0; i < GRID_HEIGHT; i++) {
-				String text = ""+i;
-				BitmapFont.TextBounds bounds = font.getBounds(text);
-				font.draw(batch, text,
-						  gridX + GRID_WIDTH * size + bounds.height/2,
-						  gridY + i * size + size / 2 + bounds.height / 2);
-			}
-		} else {
-			for (int i = GRID_HEIGHT- 1; i >= 0; i--) {
-				String text = ""+i;
-				BitmapFont.TextBounds bounds = font.getBounds(text);
-				font.draw(batch, text,
-						  gridX - bounds.height,
-						  gridY + (GRID_HEIGHT - 1 - i) * size + size / 2 + bounds.height / 2);
-			}
-		}
-	}
-
 
 }

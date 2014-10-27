@@ -1,12 +1,15 @@
 package com.theBombSquad.stratego.rendering;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
+import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
 
@@ -28,6 +31,7 @@ public class DefeatedUnitRenderer extends Renderer {
 
 	/** Reference to Game */
 	private Game game;
+	public static final float Y_START = 1.5f * POINT_TILE_SIZE;
 
 	public DefeatedUnitRenderer(Game game){
 		this.game = game;
@@ -59,9 +63,8 @@ public class DefeatedUnitRenderer extends Renderer {
 	public void render(SpriteBatch batch) {
 		if (!game.isReseted()) {
 			float size = POINT_TILE_SIZE * getScale();
-			float yStart = 1.5f * POINT_TILE_SIZE;
 			font.setScale(getScale());
-			drawUnits(batch, size, yStart);
+			drawUnits(batch, size, Y_START);
 		}
 	}
 
@@ -78,6 +81,15 @@ public class DefeatedUnitRenderer extends Renderer {
 				font.draw(batch, ""+calcDead(cu, cp), realX+POINT_TILE_SIZE*getScale()*0.7f, realY+font.getCapHeight()*1.5f);
 			}
 		}
+	}
+
+	public static Vector2 getGridPositionForUnit(Unit unit) {
+		float scale = (float) Gdx.graphics.getWidth() / (float) ASSUMED_WINDOW_WIDTH;
+		int cp = (unit.getOwner().equals(PlayerID.PLAYER_1)) ? 0 : 1;
+		int cu = unit.getType().getRank()-1;
+		float x = ((ASSUMED_WINDOW_WIDTH - (POINT_TILE_SIZE * 1.5f)) * cp + POINT_TILE_SIZE * 0.25f) * scale;
+		float y = (((float) ASSUMED_WINDOW_HEIGHT - Y_START) - (cu * POINT_TILE_SIZE)) * scale;
+		return new Vector2(x, y);
 	}
 
 	/** Returns the amount of Units of given type and player that have already died */

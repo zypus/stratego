@@ -297,6 +297,9 @@ public class GameView {
 
 		// TODO Check if the turns start at 0
 		// TODO Check if the turn number is out of bounds.
+		if (turn >= getMoves().size()) {
+			return null;
+		}
 		return getMoves().get(turn);
 	}
 
