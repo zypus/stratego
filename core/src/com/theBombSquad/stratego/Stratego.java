@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteListeningPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import com.theBombSquad.stratego.rendering.AtlasPacker;
@@ -18,6 +19,7 @@ import com.theBombSquad.stratego.rendering.BoardRenderer;
 import com.theBombSquad.stratego.rendering.DefeatedUnitRenderer;
 import com.theBombSquad.stratego.rendering.InformationRenderer;
 import com.theBombSquad.stratego.rendering.LayerRenderer;
+import com.theBombSquad.stratego.rendering.PlayerRenderer;
 import com.theBombSquad.stratego.rendering.RenderData;
 import com.theBombSquad.stratego.rendering.Renderer;
 import com.theBombSquad.stratego.rendering.humanRenderer.HumanUIRenderer;
@@ -127,12 +129,19 @@ public class Stratego extends ApplicationAdapter {
 			JComboBox comboBox1 = new JComboBox(StrategoConstants.PlayerType.values());
 			JComboBox comboBox2 = new JComboBox(StrategoConstants.PlayerType.values());
 			Object[] message = new Object[] { "Player 1", comboBox1, "Player 2", comboBox2 };
-			JOptionPane pane = new JOptionPane(message,
+			final JButton startButton = new JButton("Start");
+			startButton.addActionListener(new ActionListener() {
+				@Override public void actionPerformed(ActionEvent e) {
+					JOptionPane pane = getOptionPane((JComponent) e.getSource());
+					pane.setValue(startButton);
+				}
+			});
+			final JOptionPane pane = new JOptionPane(message,
 											   JOptionPane.QUESTION_MESSAGE,
-											   JOptionPane.YES_NO_OPTION, null, new Object[]{"Start"});
+											   JOptionPane.YES_NO_OPTION, null, new Object[]{startButton}, startButton);
 			JDialog dialog = pane.createDialog(null, "Game Setup");
-			dialog.setAlwaysOnTop(true);
-			dialog.setAutoRequestFocus(true);
+//			dialog.setAlwaysOnTop(true);
+//			dialog.setAutoRequestFocus(true);
 			dialog.setVisible(true);
 
 			return new GameSetting(true, (StrategoConstants.PlayerType)comboBox1.getSelectedItem(),
@@ -215,10 +224,10 @@ public class Stratego extends ApplicationAdapter {
 
 			JOptionPane pane = new JOptionPane(message,
 											   JOptionPane.QUESTION_MESSAGE,
-											   JOptionPane.YES_NO_OPTION, null, new Object[] { startButton });
+											   JOptionPane.YES_NO_OPTION, null, new Object[] { startButton }, startButton);
 			final JDialog dialog = pane.createDialog(null, "Game Setup");
-			dialog.setAlwaysOnTop(true);
-			dialog.setAutoRequestFocus(true);
+//			dialog.setAlwaysOnTop(true);
+//			dialog.setAutoRequestFocus(true);
 			dialog.setVisible(true);
 
 			return new GameSetting(false, (StrategoConstants.PlayerType)comboBox1.getSelectedItem(), null, host.isSelected(), ipAdress.getText());
@@ -230,13 +239,16 @@ public class Stratego extends ApplicationAdapter {
 		String op1 = "Local";
 		String op2 = "Remote";
 		Object[] options = { op1, op2 };
-		return JOptionPane.showOptionDialog(null,
-											"Do you want a local or remote session?",
-											"Local or Remote",
-											JOptionPane.YES_NO_OPTION,
-											JOptionPane.QUESTION_MESSAGE,
-											null,
-											options, op1) == 0;
+		JOptionPane pane = new JOptionPane("Do you want a local or remote session?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION, null, options, op1);
+		JDialog dialog = pane.createDialog(null, "Local or Remote");
+		dialog.setAlwaysOnTop(true);
+		dialog.setAutoRequestFocus(true);
+		dialog.setVisible(true);
+		if (pane.getValue() == null) {
+			return true;
+		} else {
+			return pane.getValue() == op1;
+		}
 	}
 
 	private void setupGame() {
@@ -285,8 +297,24 @@ public class Stratego extends ApplicationAdapter {
 		Renderer info = new InformationRenderer(game);
 		Renderer ui = new HumanUIRenderer(game);
 		ArrayList<Renderer> rendererList = new ArrayList<Renderer>();
-		rendererList.add(board);
 		rendererList.add(death);
+		rendererList.add(board);
+		boolean noHumanPlayer = true;
+		Player player1 = game.getPlayer1();
+		Player player2 = game.getPlayer2();
+		if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
+											   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
+			rendererList.add(new PlayerRenderer(game, player1.getGameView()));
+			noHumanPlayer = false;
+		}
+		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
+											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
+			rendererList.add(new PlayerRenderer(game, player2.getGameView()));
+			noHumanPlayer = false;
+		}
+		if (noHumanPlayer) {
+			rendererList.add(new PlayerRenderer(game, game.getActiveGameView()));
+		}
 		rendererList.add(info);
 		rendererList.add(ui);
 		this.layerRenderer = new LayerRenderer(rendererList, new RenderData(windowScale, new TextureAtlas(Gdx.files.internal("atlas/atlas.atlas"))));
@@ -333,11 +361,14 @@ public class Stratego extends ApplicationAdapter {
 					// tell the game about the players
 					this.game.setPlayer1(player[0]);
 					this.game.setPlayer2(player[1]);
+					strategoInstance.setupRenderer(game);
 					new Thread(new Runnable() {
 						@Override public void run() {
 							strategoInstance.startGame();
 						}
 					}).start();
+				} else if (game.isWaitingForEndTurn()) {
+					game.setWaitingForEndTurn(false);
 				} else if (game.isBlind()) {
 					game.setBlind(false);
 				}

@@ -34,6 +34,8 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
 @Log
 public class Game {
 
+	int currentTurn = 1;
+
 	private List<GameBoard> states;
 	private static GameBoard current; // to be initialized
 	private List<Move> moves;
@@ -57,6 +59,7 @@ public class Game {
 
 	private List<Unit> player1Units;
 	private List<Unit> player2Units;
+	@Setter private boolean waitingForEndTurn;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -86,6 +89,7 @@ public class Game {
 	}
 
 	public void reset() {
+		currentTurn = 1;
 		reseted = true;
 		player1 = null;
 		player2 = null;
@@ -306,6 +310,8 @@ public class Game {
 				previousMoves.clear();
 			}
 			previousMoves.add(move);
+			waitForEndTurnConfirmation();
+			currentTurn++;
 			nextTurn();
 		}
 
@@ -422,7 +428,8 @@ public class Game {
 					log.info("PLAYER_1 lost.");
 					return;
 				} else {
-					if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer && ((RemoteServingPlayer)player1).getLocalPlayer() instanceof HumanPlayer)) {
+					if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
+														   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
 						activeGameView = player1.getGameView();
 					} else {
 						try {
@@ -462,6 +469,19 @@ public class Game {
 			// stop the game!
 			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
 			revealBoard();
+		}
+	}
+
+	private void waitForEndTurnConfirmation() {
+		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
+			waitingForEndTurn = true;
+			while (waitingForEndTurn) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -570,7 +590,7 @@ public class Game {
 
 	public int getCurrentTurn() {
 
-		return states.size();
+		return currentTurn;
 	}
 
 	public GameBoard getCurrentState() {
@@ -654,7 +674,7 @@ public class Game {
 
 	/** Returns Player ID Of player that is currently active */
 	public PlayerID getCurrentPlayer(){
-		return this.getStates().size()%2==1?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
+		return getCurrentTurn()%2==1?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
 	}
 
 	private boolean twoSquareRuleValidation(Move move) {

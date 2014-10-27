@@ -82,6 +82,9 @@ public class InformationRenderer extends Renderer{
 			PlayerID winner = game.getWinner().getGameView().getPlayerID();
 			PlayerID current = game.getActiveGameView().getPlayerID();
 			String string = (winner==current) ? "VICTORY" : "DEFEAT";
+			if (current.equals(PlayerID.NEMO)) {
+				string = "FINISHED";
+			}
 			BitmapFont.TextBounds bounds = font.getBounds(string);
 			font.draw(batch, string, ASSUMED_WINDOW_WIDTH*getScale()/2-bounds.width/2, ASSUMED_WINDOW_HEIGHT*getScale()/2+bounds.height/2);
 		}
