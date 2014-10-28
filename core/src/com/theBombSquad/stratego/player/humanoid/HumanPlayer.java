@@ -116,8 +116,8 @@ public class HumanPlayer extends Player {
 		}
 		Move returnableMove = moveToSend;
 		this.moveToSend = null;
-		gameView.performMove(returnableMove);
 		movePhase = false;
+		gameView.performMove(returnableMove);
 		return returnableMove;
 	}
 
@@ -241,18 +241,22 @@ public class HumanPlayer extends Player {
 	}
 
 	public void setxMouseOver(int xMouseOver) {
-		if (xMouseOver < 0 || xMouseOver > GRID_WIDTH-1) {
-			this.xMouseOver = -1;
-		} else {
-			this.xMouseOver = xMouseOver;
+		if (setUpPhase || movePhase) {
+			if (xMouseOver < 0 || xMouseOver > GRID_WIDTH - 1) {
+				this.xMouseOver = -1;
+			} else {
+				this.xMouseOver = xMouseOver;
+			}
 		}
 	}
 
 	public void setyMouseOver(int yMouseOver) {
-		if (yMouseOver < 0 || yMouseOver > GRID_WIDTH - 1) {
-			this.yMouseOver = -1;
-		} else {
-			this.yMouseOver = yMouseOver;
+		if (setUpPhase || movePhase) {
+			if (yMouseOver < 0 || yMouseOver > GRID_WIDTH - 1) {
+				this.yMouseOver = -1;
+			} else {
+				this.yMouseOver = yMouseOver;
+			}
 		}
 	}
 
