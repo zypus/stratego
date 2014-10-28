@@ -1,6 +1,5 @@
 package com.theBombSquad.stratego.gameMechanics;
 
-import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.*;
 import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
@@ -22,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
+import static com.theBombSquad.stratego.rendering.StrategoUtil.*;
 
 /**
  * TODO Add description
@@ -50,6 +51,8 @@ public class Game {
 	private boolean finishedSetup = false;
 	@Getter
 	private Player winner;
+	private int player1ChaseBegin = 0;
+	private int player2ChaseBegin = 0;
 
 	/** The Setups both players committed thus far */
 	private Setup[] setupClusters;
@@ -72,8 +75,8 @@ public class Game {
 		defeatedUnitsPlayer1 = new ArrayList<Unit>();
 		defeatedUnitsPlayer2 = new ArrayList<Unit>();
 
-		player1Units = Collections.unmodifiableList(createUnitsForPlayer(PlayerID.PLAYER_1));
-		player2Units = Collections.unmodifiableList(createUnitsForPlayer(PlayerID.PLAYER_2));
+		player1Units = Collections.unmodifiableList(createUnitsForPlayer(PLAYER_1));
+		player2Units = Collections.unmodifiableList(createUnitsForPlayer(PLAYER_2));
 
 		reset();
 	}
@@ -98,6 +101,8 @@ public class Game {
 			player2 = null;
 			player1FinishedSetup = false;
 			player2FinishedSetup = false;
+			player1ChaseBegin = 0;
+			player2ChaseBegin = 0;
 			gameOver = false;
 			finishedSetup = false;
 			states.clear();
@@ -108,15 +113,15 @@ public class Game {
 			defeatedUnitsPlayer1.clear();
 			defeatedUnitsPlayer2.clear();
 			this.setupClusters = new Setup[10];
-			lastConsecutiveMoves.put(PlayerID.PLAYER_1, new ArrayList<Move>());
-			lastConsecutiveMoves.put(PlayerID.PLAYER_2, new ArrayList<Move>());
-			clearUnits(PlayerID.PLAYER_1);
-			clearUnits(PlayerID.PLAYER_2);
+			lastConsecutiveMoves.put(PLAYER_1, new ArrayList<Move>());
+			lastConsecutiveMoves.put(PLAYER_2, new ArrayList<Move>());
+			clearUnits(PLAYER_1);
+			clearUnits(PLAYER_2);
 		}
 	}
 
 	private void clearUnits(PlayerID playerID) {
-		List<Unit> units = (playerID == PlayerID.PLAYER_1) ? player1Units : player2Units;
+		List<Unit> units = (playerID == PLAYER_1) ? player1Units : player2Units;
 		for (Unit unit : units) {
 			unit.setRevealedInTurn(UNREVEALED);
 		}
@@ -261,8 +266,8 @@ public class Game {
 		 */
 		moves.add(move);
 
-		if ((states.size() % 2 == 1 && move.getPlayerID() == PlayerID.PLAYER_1)
-				|| (states.size() % 2 == 0 && move.getPlayerID() == PlayerID.PLAYER_2)) {
+		if ((states.size() % 2 == 1 && move.getPlayerID() == PLAYER_1)
+				|| (states.size() % 2 == 0 && move.getPlayerID() == PLAYER_2)) {
 			GameBoard nextState = current.duplicate();
 			states.add(nextState);
 			current = nextState;
@@ -293,7 +298,7 @@ public class Game {
 				Unit[] loosers = encounter.getDefeatedUnits();
 				for (int i = 0; i < loosers.length; i++) {
 					Unit looser = loosers[i];
-					if (looser.getOwner() == PlayerID.PLAYER_1) {
+					if (looser.getOwner() == PLAYER_1) {
 						defeatedUnitsPlayer1.add(looser);
 					} else {
 						defeatedUnitsPlayer2.add(looser);
@@ -392,7 +397,7 @@ public class Game {
 		 * puts setup to the main grid depending on a player player 1 on the
 		 * bottom player 2 on the top
 		 */
-		if (playerID == PlayerID.PLAYER_1) {
+		if (playerID == PLAYER_1) {
 			//Set Setup Cluster for Player 1
 			this.setupClusters[0] = setup;
 			player1FinishedSetup = true;
@@ -483,9 +488,9 @@ public class Game {
 	}
 
 	public void finishedCleanup(PlayerID playerID) {
-		if (playerID == PlayerID.PLAYER_1) {
+		if (playerID == PLAYER_1) {
 			player1FinishedCleanup = true;
-		} else if (playerID == PlayerID.PLAYER_2) {
+		} else if (playerID == PLAYER_2) {
 			player2FinishedCleanup = true;
 		}
 	}
@@ -536,7 +541,7 @@ public class Game {
 				if (current.getUnit(i, j).getType().getRank() != -1) {
 					if (current.getUnit(i, j).getType().getRank() != 0
 						&& current.getUnit(i, j).getType().getRank() != 11) {
-						if (current.getUnit(i, j).getOwner() == PlayerID.PLAYER_1) {
+						if (current.getUnit(i, j).getOwner() == PLAYER_1) {
 							UnitsP1.add(new Point(i, j));
 						} else {
 							UnitsP2.add(new Point(i, j));
@@ -546,11 +551,11 @@ public class Game {
 			}
 		}
 
-		if (!checkIfHasMoves(UnitsP1, PlayerID.PLAYER_1)) {
+		if (!checkIfHasMoves(UnitsP1, PLAYER_1)) {
 			winner = player2;
 			return true;
 		}
-		if (!checkIfHasMoves(UnitsP2, PlayerID.PLAYER_2)) {
+		if (!checkIfHasMoves(UnitsP2, PLAYER_2)) {
 			if (winner == player2) {
 				winner = null;
 			} else {
@@ -679,7 +684,7 @@ public class Game {
 	/** Returns number of units of given type and given player that have been defeated thus far */
 	public int getNumberOfDefeatedUnits(int unitRank, PlayerID playerId){
 		List<Unit> defeatedUnits;
-		if(playerId==StrategoConstants.PlayerID.PLAYER_1){
+		if(playerId== PLAYER_1){
 			defeatedUnits = this.defeatedUnitsPlayer1;
 		}
 		else{
@@ -696,7 +701,7 @@ public class Game {
 
 	/** Returns Player ID Of player that is currently active */
 	public PlayerID getCurrentPlayer(){
-		return getCurrentTurn()%2==1?StrategoConstants.PlayerID.PLAYER_1:StrategoConstants.PlayerID.PLAYER_2;
+		return getCurrentTurn()%2==1? PLAYER_1: PLAYER_2;
 	}
 
 	private boolean twoSquareRuleValidation(Move move) {
@@ -734,7 +739,71 @@ public class Game {
 
 	private boolean chaseRuleValidation(Move move) {
 
-		return true;
+		PlayerID player = move.getPlayerID();
+		List<Move> previousMoves = lastConsecutiveMoves.get(player);
+		List<Move> previousOpponentMoves = lastConsecutiveMoves.get((player == PLAYER_1) ? PLAYER_2 : PLAYER_1);
+		Unit unitInQuestion = current.getUnit(move.getFromX(), move.getFromY());
+		if (previousMoves.isEmpty()) {
+			resetChase(player);
+			return true;
+		} else if (unitInQuestion != previousMoves.get(0).getMovedUnit()) {
+			resetChase(player);
+			return true;
+		} else {
+			if (previousMoves.size()-getChase(player) < 4 || previousOpponentMoves.size()-getChase(player) < 4) {
+				return true;
+			} else {
+				Move lastOpponentMove = previousOpponentMoves.get(previousOpponentMoves.size() - 1);
+				if (manhattanDistance(move.getToX(), move.getToY(), lastOpponentMove.getToX(), lastOpponentMove.getToY()) > 1) {
+					setChase(player, previousMoves.size());
+					return true;
+				} else {
+					boolean repeatedMoveAttempt = false;
+					// check if an identical move was performed during the chase
+					for (int i = getChase(player) ; i < previousMoves.size(); i++) {
+						Move previous = previousMoves.get(i);
+						if (previous.isSameMovementAs(move)) {
+							repeatedMoveAttempt = true;
+							break;
+						}
+					}
+					if (repeatedMoveAttempt) {
+						// back and forth movement is allowed as long the two-square rule is satisfied.
+						if (previousMoves.get(previousMoves.size() - 2).isSameMovementAs(move)) {
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						return true;
+					}
+				}
+			}
+		}
+	}
+
+	private int getChase(PlayerID player) {
+		if (player == PLAYER_1) {
+			return player1ChaseBegin;
+		} else {
+			return player2ChaseBegin;
+		}
+	}
+
+	private void setChase(PlayerID player, int turns) {
+		if (player == PLAYER_1) {
+			player1ChaseBegin = turns;
+		} else {
+			player2ChaseBegin = turns;
+		}
+	}
+
+	private void resetChase(PlayerID player) {
+		if (player == PLAYER_1) {
+			player1ChaseBegin = 0;
+		} else {
+			player2ChaseBegin = 0;
+		}
 	}
 
 	private void revealBoard() {
@@ -751,7 +820,7 @@ public class Game {
 											   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
 			activeGameView = player1.getGameView();
 		} else if (player2 != null) {
-			activeGameView = new GameView(this, PlayerID.NEMO);
+			activeGameView = new GameView(this, NEMO);
 		}
 	}
 
@@ -761,7 +830,7 @@ public class Game {
 											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
 			activeGameView = player2.getGameView();
 		} else if (player1 != null) {
-			activeGameView = new GameView(this, PlayerID.NEMO);
+			activeGameView = new GameView(this, NEMO);
 		}
 	}
 
