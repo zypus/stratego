@@ -350,7 +350,7 @@ public class Stratego extends ApplicationAdapter {
 
 		@Override public boolean keyDown(int keycode) {
 			if (keycode == Input.Keys.SPACE) {
-				if (this.game.isGameOver()) {
+				if (this.game.isGameOver() && game.isPlayer1FinishedCleanup() && game.isPlayer2FinishedCleanup()) {
 					InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
 					inputMultiplexer.clear();
 					inputMultiplexer.addProcessor(this);

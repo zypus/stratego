@@ -38,6 +38,12 @@ public class StrategoConstants {
 		NEMO
 	}
 
+	public static enum GameResult {
+		WIN,
+		DEFEAT,
+		DRAW
+	}
+
 	public static enum PlayerType {
 		HUMAN(HumanPlayer.class),
 		RANDOM(RandomAI.class);

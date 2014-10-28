@@ -14,7 +14,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
  * @author Flo
  */
 public abstract class Player {
-	
+
 	@Getter
 	protected final GameView gameView;
 
@@ -54,6 +54,16 @@ public abstract class Player {
 		currentAction.start();
 	}
 
+	public void startCleanup() {
+		stopAction();
+		currentAction = new Thread(new Runnable() {
+			@Override public void run() {
+				cleanup();
+			}
+		});
+		currentAction.start();
+	}
+
 	private void stopAction() {
 		if (currentAction != null && currentAction.isAlive()) {
 			currentAction.interrupt();
@@ -67,7 +77,13 @@ public abstract class Player {
 	 */
 	protected abstract Move move();
 	protected abstract Setup setup();
-	protected abstract void idle();
+	protected void idle() {
+
+	}
+
+	protected void cleanup() {
+		gameView.finishedCleanup();
+	}
 
 	/**
 	 * Method to call the move() method directly. Primarily used by the remote players to access there underlying local player instance
