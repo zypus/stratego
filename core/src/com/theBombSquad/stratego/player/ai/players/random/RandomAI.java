@@ -59,7 +59,4 @@ public class RandomAI extends AI {
 		return setup;
 	}
 
-	@Override protected void idle() {
-
-	}
 }

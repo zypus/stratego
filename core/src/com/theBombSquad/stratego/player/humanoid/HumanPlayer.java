@@ -136,11 +136,6 @@ public class HumanPlayer extends Player {
 		return returnableSetup;
 	}
 
-	@Override
-	protected void idle() {
-
-	}
-
 	public boolean getSetUpPhase() {
 		return setUpPhase;
 	}

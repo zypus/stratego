@@ -45,6 +45,8 @@ public class Game {
 	private Player player2 = null;
 	private boolean player1FinishedSetup = false;
 	private boolean player2FinishedSetup = false;
+	private boolean player1FinishedCleanup = true;
+	private boolean player2FinishedCleanup = true;
 	private boolean finishedSetup = false;
 	@Getter
 	private Player winner;
@@ -89,26 +91,28 @@ public class Game {
 	}
 
 	public void reset() {
-		currentTurn = 1;
-		reseted = true;
-		player1 = null;
-		player2 = null;
-		player1FinishedSetup = false;
-		player2FinishedSetup = false;
-		gameOver = false;
-		finishedSetup = false;
-		states.clear();
-		states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
-		current = states.get(0);
-		moves.clear();
-		winner = null;
-		defeatedUnitsPlayer1.clear();
-		defeatedUnitsPlayer2.clear();
-		this.setupClusters = new Setup[10];
-		lastConsecutiveMoves.put(PlayerID.PLAYER_1, new ArrayList<Move>());
-		lastConsecutiveMoves.put(PlayerID.PLAYER_2, new ArrayList<Move>());
-		clearUnits(PlayerID.PLAYER_1);
-		clearUnits(PlayerID.PLAYER_2);
+		if (player1FinishedCleanup && player2FinishedCleanup) {
+			currentTurn = 1;
+			reseted = true;
+			player1 = null;
+			player2 = null;
+			player1FinishedSetup = false;
+			player2FinishedSetup = false;
+			gameOver = false;
+			finishedSetup = false;
+			states.clear();
+			states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
+			current = states.get(0);
+			moves.clear();
+			winner = null;
+			defeatedUnitsPlayer1.clear();
+			defeatedUnitsPlayer2.clear();
+			this.setupClusters = new Setup[10];
+			lastConsecutiveMoves.put(PlayerID.PLAYER_1, new ArrayList<Move>());
+			lastConsecutiveMoves.put(PlayerID.PLAYER_2, new ArrayList<Move>());
+			clearUnits(PlayerID.PLAYER_1);
+			clearUnits(PlayerID.PLAYER_2);
+		}
 	}
 
 	private void clearUnits(PlayerID playerID) {
@@ -310,7 +314,9 @@ public class Game {
 				previousMoves.clear();
 			}
 			previousMoves.add(move);
-			waitForEndTurnConfirmation();
+			if (!move.hasEncounter() || move.getEncounter().getDefeatedUnits()[0].getType() != Unit.UnitType.FLAG) {
+				waitForEndTurnConfirmation();
+			}
 			currentTurn++;
 			nextTurn();
 		}
@@ -469,6 +475,18 @@ public class Game {
 			// stop the game!
 			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
 			revealBoard();
+			player1FinishedCleanup = false;
+			player2FinishedCleanup = false;
+			player1.startCleanup();
+			player2.startCleanup();
+		}
+	}
+
+	public void finishedCleanup(PlayerID playerID) {
+		if (playerID == PlayerID.PLAYER_1) {
+			player1FinishedCleanup = true;
+		} else if (playerID == PlayerID.PLAYER_2) {
+			player2FinishedCleanup = true;
 		}
 	}
 
@@ -533,7 +551,11 @@ public class Game {
 			return true;
 		}
 		if (!checkIfHasMoves(UnitsP2, PlayerID.PLAYER_2)) {
-			winner = player1;
+			if (winner == player2) {
+				winner = null;
+			} else {
+				winner = player1;
+			}
 			return true;
 		}
 		return false;

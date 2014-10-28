@@ -514,4 +514,10 @@ public class GameView {
 		return (playerID == PLAYER_1) ? game.getPlayer1Units() : game.getPlayer2Units();
 	}
 
+	public void finishedCleanup() {
+		if (playerID != NEMO) {
+			game.finishedCleanup(playerID);
+		}
+	}
+
 }
