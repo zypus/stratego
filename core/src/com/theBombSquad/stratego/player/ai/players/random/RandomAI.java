@@ -1,6 +1,5 @@
 package com.theBombSquad.stratego.player.ai.players.random;
 
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
@@ -9,6 +8,8 @@ import com.theBombSquad.stratego.player.ai.AI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * TODO Add description

@@ -1,7 +1,5 @@
 package com.theBombSquad.stratego.player.ai;
 
-
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
@@ -9,6 +7,8 @@ import com.theBombSquad.stratego.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * Abstract AI class which gives access to several utility stuff.

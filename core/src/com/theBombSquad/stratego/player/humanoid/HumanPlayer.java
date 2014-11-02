@@ -3,7 +3,6 @@ package com.theBombSquad.stratego.player.humanoid;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.theBombSquad.stratego.StrategoConstants.*;
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
@@ -18,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * TODO Add description
