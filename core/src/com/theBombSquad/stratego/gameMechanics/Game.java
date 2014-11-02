@@ -9,8 +9,8 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
 
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
@@ -32,7 +33,7 @@ import static com.theBombSquad.stratego.rendering.StrategoUtil.*;
  * @author Flo
  * @author Mateusz Garbacz
  */
-@Getter
+@Getter(AccessLevel.PRIVATE)
 @Log
 public class Game {
 
@@ -43,29 +44,28 @@ public class Game {
 	private List<Move> moves;
 	private List<Unit> defeatedUnitsPlayer1;
 	private List<Unit> defeatedUnitsPlayer2;
-	private Player player1 = null;
-	private Player player2 = null;
-	private boolean player1FinishedSetup = false;
-	private boolean player2FinishedSetup = false;
-	private boolean player1FinishedCleanup = true;
-	private boolean player2FinishedCleanup = true;
-	private boolean finishedSetup = false;
+	@Getter private Player player1 = null;
+	@Getter private Player player2 = null;
+	@Getter private boolean player1FinishedSetup = false;
+	@Getter private boolean player2FinishedSetup = false;
+	@Getter private boolean player1FinishedCleanup = true;
+	@Getter private boolean player2FinishedCleanup = true;
+	@Getter private boolean finishedSetup = false;
 	@Getter
 	private Player winner;
 	private int player1ChaseBegin = 0;
 	private int player2ChaseBegin = 0;
 
 	/** The Setups both players committed thus far */
-	private Setup[] setupClusters;
 	private Map<PlayerID, List<Move>> lastConsecutiveMoves = new HashMap<PlayerID, List<Move>>();
-	private GameView activeGameView;
-	private boolean gameOver;
-	private boolean reseted = true;
-	@Setter private boolean blind = false;
+	@Getter private GameView activeGameView;
+	@Getter private boolean gameOver;
+	@Getter private boolean reseted = true;
+	@Getter @Setter private boolean blind = false;
 
-	private List<Unit> player1Units;
-	private List<Unit> player2Units;
-	@Setter private boolean waitingForEndTurn;
+	@Getter private List<Unit> player1Units;
+	@Getter private List<Unit> player2Units;
+	@Getter @Setter private boolean waitingForEndTurn;
 
 	public Game() {
 		states = new ArrayList<GameBoard>();
@@ -113,7 +113,6 @@ public class Game {
 			winner = null;
 			defeatedUnitsPlayer1.clear();
 			defeatedUnitsPlayer2.clear();
-			this.setupClusters = new Setup[10];
 			lastConsecutiveMoves.put(PLAYER_1, new ArrayList<Move>());
 			lastConsecutiveMoves.put(PLAYER_2, new ArrayList<Move>());
 			clearUnits(PLAYER_1);
@@ -236,22 +235,6 @@ public class Game {
 			return false;
 		}
 		return validScoutMove;
-	}
-
-	// checks if moves are the same but switched directions
-	private boolean switchedMove(Move move, Move move2) {
-		return move2.getFromX() == move.getToX()
-				&& move2.getFromY() == move.getToY()
-				&& move2.getToX() == move.getFromX()
-				&& move2.getToY() == move.getFromY();
-	}
-
-	// checks if the moves are the same
-	private boolean sameMove(Move move, Move move2) {
-		return move2.getFromX() == move.getFromX()
-				&& move2.getFromY() == move.getFromY()
-				&& move2.getToX() == move.getToX()
-				&& move2.getToY() == move.getToY();
 	}
 
 	private void discoverSpy() {
@@ -399,29 +382,23 @@ public class Game {
 		 * bottom player 2 on the top
 		 */
 		if (playerID == PLAYER_1) {
-			//Set Setup Cluster for Player 1
-			this.setupClusters[0] = setup;
-			player1FinishedSetup = true;
-			if (player1 instanceof HumanPlayer) {
-				((HumanPlayer) player1).setSetUpPhase(false);
-			}
-		} else {
-			//Set Setup Cluster for Player 2
-			this.setupClusters[1] = setup;
-			// MIGHT BE WRONG !!
-			// I DIDNT FLIP THE SETUP BEFORE PUTTING INTO ARRAY
-			player2FinishedSetup = true;
-			if (player2 instanceof HumanPlayer) {
-				((HumanPlayer) player2).setSetUpPhase(false);
-			}
-		}
-		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+			//Set Setup for Player 1
 			for (int i = 0; i < setup.getWidth(); i++) {
 				for (int j = 0; j < setup.getHeight(); j++) {
-					current.setUnit(i, j+6, this.setupClusters[0].getUnit(i,j));
-					current.setUnit(i, j, this.setupClusters[1].getUnit(i, j));
+					current.setUnit(i, j + 6, setup.getUnit(i, j));
 				}
 			}
+			player1FinishedSetup = true;
+		} else {
+			//Set Setup for Player 2
+			for (int i = 0; i < setup.getWidth(); i++) {
+				for (int j = 0; j < setup.getHeight(); j++) {
+					current.setUnit(i, j, setup.getUnit(i, j));
+				}
+			}
+			player2FinishedSetup = true;
+		}
+		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
 			finishedSetup = true;
 			nextTurn();
 		}
@@ -833,10 +810,9 @@ public class Game {
 	 * @log - skeleton 					10.09.2014
 	 * - implementation & documentation 	13.09.2014
 	 */
-	@RequiredArgsConstructor
-	@Log
 	public static class GameView {
 
+		private static final Logger log = Logger.getLogger(GameView.class.getName());
 		private final Game game;
 		/**
 		 * Reference to the game.
@@ -845,9 +821,26 @@ public class Game {
 		/**
 		 * PlayerID which defines this views perspective
 		 */
-		private final List<Move> cashedRotatedMoves = new ArrayList<Move>();    /** List of moves which acts as a cache for rotated move for
+		private final List<Move> cashedRotatedMoves = new ArrayList<Move>();
+
+		@java.beans.ConstructorProperties({ "game", "playerID" }) public GameView(Game game, PlayerID playerID) {
+			this.game = game;
+			this.playerID = playerID;
+		}
+
+		/** List of moves which acts as a cache for rotated move for
 		 the PLAYER_2 to avoid unnecessary recalculations of move
 		 rotations at the cost of additional memory costs. */
+
+		public Player getPlayer() {
+			if (playerID == PLAYER_1) {
+				return game.getPlayer1();
+			} else if (playerID == PLAYER_2) {
+				return game.getPlayer2();
+			} else {
+				return null;
+			}
+		}
 
 		/**
 		 * Validates the move.
@@ -1299,52 +1292,10 @@ public class Game {
 		}
 
 		/**
-		 * sets all the units on the top of the board so we can start making the setup
-		 */
-		public void startSetup() {
-			for (int cy = 0; cy < getCurrentState().getHeight(); cy++) {
-				for (int cx = 0; cx < getCurrentState().getWidth(); cx++) {
-					if (game.getCurrentState().getUnit(cx, cy).getType().getRank() >= 0) {
-						game.getCurrentState().setUnit(cx, cy, Unit.AIR);
-					}
-				}
-			}
-			GameBoard board = game.getCurrentState();
-			List<Unit> units = getAvailableUnits();
-			int counter = 0;
-			for (int i = 0; i < board.getWidth(); i++) {
-				for (int j = 0; j < 4; j++) {
-					Point coords1 = conditionalCoordinateRotation(i, j);
-					board.setUnit(coords1.x, coords1.y, units.get(counter));
-					counter++;
-				}
-			}
-		}
-
-		/**
 		 * Returns whether the given X|Y is legal to be moved to
 		 */
 		public boolean walkable(int x, int y) {
 			return game.getCurrentState().isInBounds(x, y) && (isEnemy(x, y) || isAir(x, y));
-		}
-
-		/**
-		 * Swaps around two units on the map (Only to be used in Setup) (Does not consider board flipping)
-		 */
-		public void hardSwapUnits(int x1, int y1, int x2, int y2) {
-			//Get Relative Position
-			Point coords1 = conditionalCoordinateRotation(x1, y1);
-			Point coords2 = conditionalCoordinateRotation(x2, y2);
-			//Store one unit
-			Unit helpUnit = getUnit(x1, y1);
-			//Actually Swaps Units
-			setUnit(x1, y1, getUnit(x2, y2));
-			setUnit(x2, y2, helpUnit);
-		}
-
-		public void setUnit(int x, int y, Unit unit) {
-			Point coords1 = conditionalCoordinateRotation(x, y);
-			game.getCurrentState().setUnit(coords1.x, coords1.y, unit);
 		}
 
 		public List<Unit> getAvailableUnits() {

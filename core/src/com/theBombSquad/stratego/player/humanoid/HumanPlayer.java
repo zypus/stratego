@@ -3,6 +3,7 @@ package com.theBombSquad.stratego.player.humanoid;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.theBombSquad.stratego.StrategoConstants.*;
+import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
@@ -36,6 +37,8 @@ public class HumanPlayer extends Player {
 	private PlayerID playerID = gameView.getPlayerID();
 	private boolean setUpPhase = false;
 	private boolean movePhase = false;
+	@Getter private Setup unitPallet = new Setup(10, 4);
+	@Getter private Setup currentSetup = new Setup(10, 4);
 	@Getter private int xSelected = -1;
 	@Getter private int ySelected = -1;
 
@@ -159,7 +162,7 @@ public class HumanPlayer extends Player {
 				xSelected = -1;
 				ySelected = -1;
 			} else if (xSelected == -1 && ySelected == -1
-										  && gameView.getUnit(x, y).getOwner() == gameView.getPlayerID()) {
+										  && getUnit(x, y).getOwner() == gameView.getPlayerID()) {
 				// select piece
 				xSelected = x;
 				ySelected = y;
@@ -171,7 +174,7 @@ public class HumanPlayer extends Player {
 				ySelected = -1;
 			} else if (xSelected != -1 && ySelected != -1){
 				// SWITCH AROUND
-				gameView.hardSwapUnits(xSelected, ySelected, x, y);
+				swap(xSelected, ySelected, x, y);
 				// deselect(xSelected, ySelected)
 				xSelected = -1;
 				ySelected = -1;
@@ -179,24 +182,39 @@ public class HumanPlayer extends Player {
 		}
 	}
 
+	private Unit getUnit(int x, int y) {
+		GameBoard board;
+		if (y < 4) {
+			board = unitPallet;
+		} else {
+			board = currentSetup;
+			y -= 6;
+		}
+		return board.getUnit(x, y);
+	}
+
+	private void setUnit(int x, int y, Unit unit) {
+		GameBoard board;
+		if (y < 4) {
+			board = unitPallet;
+		} else {
+			board = currentSetup;
+			y -= 6;
+		}
+		board.setUnit(x, y, unit);
+	}
+
+	private void swap(int x1, int y1, int x2, int y2) {
+		Unit u1 = getUnit(x1, y1);
+		Unit u2 = getUnit(x2, y2);
+		setUnit(x1, y1, u2);
+		setUnit(x2, y2, u1);
+	}
+
 	public void submitSetUp() {
 		if(setUpPhase){
-			Setup setUp = new Setup(10,4);
-			for (int i = 0; i < 10; i++) {
-				for (int j = 0; j < 4; j++) {
-					setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
-				}
-			}
-			if (gameView.validateSetup(setUp)) {
-				//Remove All Units
-				for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
-					for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {
-						if (gameView.getCurrentState().getUnit(cx, cy).getType().getRank() >= 0) {
-							gameView.setUnit(cx, cy, Unit.AIR);
-						}
-					}
-				}
-				setSetup(setUp);
+			if (gameView.validateSetup(currentSetup)) {
+				setSetup(currentSetup);
 			}
 		}
 	}
@@ -207,35 +225,44 @@ public class HumanPlayer extends Player {
 
 	public void resetSetup() {
 		if(setUpPhase){
-			gameView.startSetup();
+			// clear the current setup
+			for (int cy = 0; cy < currentSetup.getHeight(); cy++) {
+				for (int cx = 0; cx < currentSetup.getWidth(); cx++) {
+						currentSetup.setUnit(cx, cy, Unit.AIR);
+				}
+			}
+			// refill the unit pallet
+			List<Unit> units = gameView.getAvailableUnits();
+			int counter = 0;
+			for (int i = 0; i < unitPallet.getWidth(); i++) {
+				for (int j = 0; j < unitPallet.getHeight(); j++) {
+					unitPallet.setUnit(i, j, units.get(counter));
+					counter++;
+				}
+			}
 		}
 	}
 
 	protected void randomSetup() {
 		if(setUpPhase){
-			Setup setup = new Setup(10,4);
 			List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
 			//shuffle the list containing all available units
 			Collections.shuffle(availableUnits);
-			//go through the list and place them on the board as the units appear in the randomly shuffled list
+			//go through the list and place them int the setup as the units appear in the randomly shuffled list
 			for (int y = 0; y < 4; y++) {
 				for (int x = 0; x < 10; x++) {
-					setup.setUnit(x,y,availableUnits.get(y * 10 + x));
+					currentSetup.setUnit(x,y,availableUnits.get(y * 10 + x));
 				}
 			}
-			//Remove All Units
-			for(int cy=0; cy<gameView.getCurrentState().getHeight(); cy++){
-				for(int cx=0; cx<gameView.getCurrentState().getWidth(); cx++){
-					if(!gameView.getCurrentState().getUnit(cx, cy).isLake()){
-						gameView.setUnit(cx, cy, Unit.AIR);
-					}
-				}
-			}
-			//Add Setup
-			for(int cy=0; cy<4; cy++){
-				for(int cx=0; cx<10; cx++){
-					gameView.setUnit(cx, cy+6, availableUnits.get(cy * 10 + cx));
-				}
+			clearUnitPallet();
+		}
+	}
+
+	private void clearUnitPallet() {
+		//Remove All Units from unit pallet
+		for(int cy=0; cy<unitPallet.getHeight(); cy++){
+			for(int cx=0; cx< unitPallet.getWidth(); cx++){
+				unitPallet.setUnit(cx, cy, Unit.AIR);
 			}
 		}
 	}
@@ -262,17 +289,11 @@ public class HumanPlayer extends Player {
 
 	public void saveSetup() {
 		if (setUpPhase) {
-			Setup setUp = new Setup(10, 4);
-			for (int i = 0; i < 10; i++) {
-				for (int j = 0; j < 4; j++) {
-					setUp.setUnit(i, j, gameView.getUnit(i, 6 + j));
-				}
-			}
-			if (gameView.validateSetup(setUp)) {
+			if (gameView.validateSetup(currentSetup)) {
 				JFileChooser fileChooser = new JFileChooser(SETUP_PATH);
 				if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(null)) {
 					File file = fileChooser.getSelectedFile();
-					Setup.writeToFile(file, setUp);
+					Setup.writeToFile(file, currentSetup);
 				}
 			}
 		}
@@ -283,21 +304,8 @@ public class HumanPlayer extends Player {
 			JFileChooser fileChooser = new JFileChooser(SETUP_PATH);
 			if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(null)) {
 				File file = fileChooser.getSelectedFile();
-				Setup setup = Setup.readFromFile(file, new ArrayList<Unit>(gameView.getAvailableUnits()));
-				//Remove All Units
-				for (int cy = 0; cy < gameView.getCurrentState().getHeight(); cy++) {
-					for (int cx = 0; cx < gameView.getCurrentState().getWidth(); cx++) {
-						if (!gameView.getCurrentState().getUnit(cx, cy).isLake()) {
-							gameView.setUnit(cx, cy, Unit.AIR);
-						}
-					}
-				}
-				//Add Setup
-				for (int cy = 0; cy < 4; cy++) {
-					for (int cx = 0; cx < 10; cx++) {
-						gameView.setUnit(cx, cy + 6, setup.getUnit(cx,cy));
-					}
-				}
+				currentSetup = Setup.readFromFile(file, new ArrayList<Unit>(gameView.getAvailableUnits()));
+				clearUnitPallet();
 			}
 		}
 	}

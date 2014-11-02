@@ -12,6 +12,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 public class InformationRenderer extends Renderer{
 
@@ -95,12 +96,13 @@ public class InformationRenderer extends Renderer{
 		float gridY = GRID_POSITION_Y * getScale();
 		float size = POINT_TILE_SIZE * getScale();
 		float inverseScaler = 1 - scaler;
-		if(game.getMoves().size()>=1){
-			renderMove(batch, game.getMoves().get(game.getMoves().size() - 1), (int)(gridX+size + size * inverseScaler / 2), (int)(gridY+GRID_HEIGHT*size+size* inverseScaler/2));
+		GameView gameView = game.getActiveGameView();
+		if(gameView.getMoves().size()>=1){
+			renderMove(batch, gameView.getMoves().get(gameView.getMoves().size() - 1), (int)(gridX+size + size * inverseScaler / 2), (int)(gridY+GRID_HEIGHT*size+size* inverseScaler/2));
 		}
-		if(game.getMoves().size()>=2){
+		if(gameView.getMoves().size()>=2){
 			renderMove(batch,
-					   game.getMoves().get(game.getMoves().size() - 2),
+					   gameView.getMoves().get(gameView.getMoves().size() - 2),
 					   (int) (gridX+ GRID_WIDTH/2*size + size + size * inverseScaler / 2),
 					   (int) (gridY + GRID_HEIGHT * size + size * inverseScaler / 2));
 		}
@@ -115,7 +117,8 @@ public class InformationRenderer extends Renderer{
 		Unit movedUnit = move.getMovedUnit();
 		int unitRank = movedUnit.getType().getRank();
 		int player = (movedUnit.getOwner().equals(PlayerID.PLAYER_1) ? 0 : 1);
-		TextureRegion movedTile = (!game.isBlind() && (currentID == movedUnit.getOwner() || (movedUnit.getRevealedInTurn() != UNREVEALED && game.getCurrentTurn() >= movedUnit.getRevealedInTurn()))) ? rUnits[player][unitRank] : unitBacks[player];
+		GameView gameView = game.getActiveGameView();
+		TextureRegion movedTile = (!game.isBlind() && (currentID == movedUnit.getOwner() || (movedUnit.getRevealedInTurn() != UNREVEALED && gameView.getCurrentTurn() >= movedUnit.getRevealedInTurn()))) ? rUnits[player][unitRank] : unitBacks[player];
 		Color tint = new Color(1f, 1f, 1f, 1f);
 		if (move.hasEncounter()) {
 			Encounter encounter = move.getEncounter();
@@ -124,7 +127,7 @@ public class InformationRenderer extends Renderer{
 			int player2 = (attackedUnit.getOwner().equals(PlayerID.PLAYER_1) ? 0 : 1);
 			TextureRegion
 					attackedTile =
-					( !game.isBlind() && (currentID == attackedUnit.getOwner() || (attackedUnit.getRevealedInTurn() != UNREVEALED && game.getCurrentTurn() >= attackedUnit.getRevealedInTurn()))) ?
+					( !game.isBlind() && (currentID == attackedUnit.getOwner() || (attackedUnit.getRevealedInTurn() != UNREVEALED && gameView.getCurrentTurn() >= attackedUnit.getRevealedInTurn()))) ?
 					rUnits[player2][unitRank2] :
 					unitBacks[player2];
 			//moved unit
@@ -216,7 +219,8 @@ public class InformationRenderer extends Renderer{
 		float gridX = GRID_POSITION_X * getScale();
 		float gridY = GRID_POSITION_Y * getScale();
 		float size = POINT_TILE_SIZE * getScale();
-		int ply = game.getCurrentTurn();
+		GameView gameView = game.getActiveGameView();
+		int ply = gameView.getCurrentTurn();
 		String plyText = ""+ply;
 		BitmapFont.TextBounds bounds = font.getBounds(plyText);
 		font.draw(batch, plyText,

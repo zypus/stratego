@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.theBombSquad.stratego.gameMechanics.Game;
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteListeningPlayer;
@@ -49,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * Entry point for the stratego game. Setups everything and establishes remote connections if necessary.

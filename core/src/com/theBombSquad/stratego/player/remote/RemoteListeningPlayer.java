@@ -5,7 +5,6 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
 import com.badlogic.gdx.net.Socket;
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
@@ -14,10 +13,8 @@ import lombok.extern.java.Log;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import static com.theBombSquad.stratego.StrategoConstants.LISTEN_TIMEOUT;
-import static com.theBombSquad.stratego.StrategoConstants.PORT_PLAYER1;
-import static com.theBombSquad.stratego.StrategoConstants.PORT_PLAYER2;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * TODO Add description

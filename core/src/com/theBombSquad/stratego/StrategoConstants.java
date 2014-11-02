@@ -1,11 +1,12 @@
 package com.theBombSquad.stratego;
 
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
-import java.awt.*;
+import java.awt.Rectangle;
+
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * TODO Add description
