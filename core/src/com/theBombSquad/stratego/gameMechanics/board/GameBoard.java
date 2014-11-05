@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class GameBoard implements Serializable {
 
-	private Unit[][] board; // board[y][x]
+	protected Unit[][] board; // board[y][x]
 
 	protected GameBoard() {
 	}
@@ -47,7 +47,9 @@ public class GameBoard implements Serializable {
 	public int getHeight() {
 		return board.length;
 	}
-
+	public Unit[][] getBoard(){
+		return board;
+	}
 	public GameBoard duplicate() {
 		GameBoard clonedBoard = new GameBoard(getWidth(), getHeight());
 		for (int y = 0; y < getWidth(); y++) {

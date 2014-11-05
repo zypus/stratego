@@ -93,5 +93,7 @@ public class Setup extends GameBoard implements Serializable {
 		}
 		return stringBuilder.toString();
 	}
-
+	public Unit[][] getBoard(){
+		return board;
+	}
 }

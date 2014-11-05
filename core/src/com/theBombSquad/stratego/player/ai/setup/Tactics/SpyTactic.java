@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+import com.theBombSquad.stratego.player.ai.setup.AISetup;
 import com.theBombSquad.stratego.player.ai.setup.Tactic;
 import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
 
@@ -19,8 +20,21 @@ public class SpyTactic extends Tactic {
 	private int nineX;
 	private int nineY;
 
-	public SpyTactic(Setup setup) {
+	public SpyTactic(AISetup setup) {
 		super(setup);
+		proceed();
+	}
+
+	public SpyTactic() {
+		super();
+	}
+
+	public void addSetup(AISetup setup) {
+		this.setup = setup;
+		proceed();
+	}
+
+	public void proceed() {
 		spyX = -1;
 		spyY = -1;
 		nineX = -1;
@@ -41,52 +55,52 @@ public class SpyTactic extends Tactic {
 
 	private void placeNineNextToSpy() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		if (spyX+1<4 && super.isFree(spyX+1, spyY)) {
+		if (spyX + 1 < 4 && super.isFree(spyX + 1, spyY)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL,
-					spyX+1, spyY, spyBehindTheLakeWeight));
+					spyX + 1, spyY, spyBehindTheLakeWeight));
 		}
-		if (spyX-1>=0 && super.isFree(spyX-1, spyY)) {
+		if (spyX - 1 >= 0 && super.isFree(spyX - 1, spyY)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL,
-					spyX-1, spyY, spyBehindTheLakeWeight));
+					spyX - 1, spyY, spyBehindTheLakeWeight));
 		}
-		if (spyY+1<10 && super.isFree(spyX, spyY+1)) {
-			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL,
-					spyX, spyY+1, spyBehindTheLakeWeight));
+		if (spyY + 1 < 10 && super.isFree(spyX, spyY + 1)) {
+			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL, spyX,
+					spyY + 1, spyBehindTheLakeWeight));
 		}
-		if (spyY-1>=0 && super.isFree(spyX, spyY-1)) {
-			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL,
-					spyX, spyY-1, spyBehindTheLakeWeight));
+		if (spyY - 1 >= 0 && super.isFree(spyX, spyY - 1)) {
+			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL, spyX,
+					spyY - 1, spyBehindTheLakeWeight));
 		}
-		if(possiblePlacements.size()!=0){
-			UnitPlacement toPut=super.randomizeUnitPlacement();
-			nineX=toPut.getX();
-			nineY=toPut.getY();
+		if (possiblePlacements.size() != 0) {
+			UnitPlacement toPut = super.randomizeUnitPlacement();
+			nineX = toPut.getX();
+			nineY = toPut.getY();
 			super.placeUnit(toPut);
 		}
 	}
 
 	private void placeSpyNextToNine() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		if (nineX+1<4 && super.isFree(nineX+1, nineY)) {
-			possiblePlacements.add(new UnitPlacement(UnitType.SPY,
-					nineX+1, nineY, 1));
+		if (nineX + 1 < 4 && super.isFree(nineX + 1, nineY)) {
+			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX + 1,
+					nineY, 1));
 		}
-		if (nineX-1>=0 && super.isFree(nineX-1, nineY)) {
-			possiblePlacements.add(new UnitPlacement(UnitType.SPY,
-					nineX-1, nineY, 1));
+		if (nineX - 1 >= 0 && super.isFree(nineX - 1, nineY)) {
+			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX - 1,
+					nineY, 1));
 		}
-		if (nineY+1<10 && super.isFree(nineX, nineY+1)) {
-			possiblePlacements.add(new UnitPlacement(UnitType.SPY,
-					nineX, nineY+1, 1));
+		if (nineY + 1 < 10 && super.isFree(nineX, nineY + 1)) {
+			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX,
+					nineY + 1, 1));
 		}
-		if (nineY-1>=0 && super.isFree(nineX, nineY-1)) {
-			possiblePlacements.add(new UnitPlacement(UnitType.SPY,
-					nineX, nineY-1, 1));
+		if (nineY - 1 >= 0 && super.isFree(nineX, nineY - 1)) {
+			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX,
+					nineY - 1, 1));
 		}
-		if(possiblePlacements.size()!=0){
-			UnitPlacement toPut=super.randomizeUnitPlacement();
-			spyX=toPut.getX();
-			spyY=toPut.getY();
+		if (possiblePlacements.size() != 0) {
+			UnitPlacement toPut = super.randomizeUnitPlacement();
+			spyX = toPut.getX();
+			spyY = toPut.getY();
 			super.placeUnit(toPut);
 		}
 	}
@@ -103,7 +117,7 @@ public class SpyTactic extends Tactic {
 					}
 				}
 				// if in third row
-				if (i == 2) {
+				else if (i == 2) {
 					if (super.isFree(i, j)) {
 						possiblePlacements.add(new UnitPlacement(UnitType.SPY,
 								i, j, spyThirdRowWeight));
@@ -116,10 +130,10 @@ public class SpyTactic extends Tactic {
 				}
 			}
 		}
-		
-		UnitPlacement toPut=super.randomizeUnitPlacement();
-		spyX=toPut.getX();
-		spyY=toPut.getY();
+
+		UnitPlacement toPut = super.randomizeUnitPlacement();
+		spyX = toPut.getX();
+		spyY = toPut.getY();
 		super.placeUnit(toPut);
 	}
 

@@ -6,14 +6,17 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
 public class Tactic {
-	protected Setup setup;
+	protected AISetup setup;
 	protected ArrayList<UnitPlacement> possiblePlacements;
 
-	public Tactic(Setup setup) {
+	public Tactic(AISetup setup) {
 		this.setup = setup;
 	}
 
-	public Tactic() {
+	public Tactic(){
+	}
+	public void addSetup(AISetup setup){
+		this.setup=setup;
 	}
 
 	// checks if the spot in the setup is free
@@ -48,4 +51,9 @@ public class Tactic {
 			break;
 		}
 	}
+	public AISetup getSetup(){
+		return setup;
+	}
+
+
 }

@@ -11,11 +11,11 @@ public class FlagTactic extends Tactic{
 	public FlagTactic(){
 		super();
 	}
-	public FlagTactic(Setup setup){
+	public FlagTactic(AISetup setup){
 		super(setup);
 		this.setup=setup;
 	}
-	public Setup getSetup(){
+	public AISetup getSetup(){
 		return setup;
 	}
 	public ArrayList<Strategy> getStrategies(){

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+import com.theBombSquad.stratego.player.ai.setup.AISetup;
 import com.theBombSquad.stratego.player.ai.setup.Tactic;
 import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
 
@@ -14,7 +15,7 @@ public class SapperTactic extends Tactic {
 	private final int sapperFourthRowWeight = 3;
 	private final int sapperElseWeight = 1;
 
-	public SapperTactic(Setup setup) {
+	public SapperTactic(AISetup setup) {
 		super(setup);
 		proceed();
 	}
@@ -23,7 +24,7 @@ public class SapperTactic extends Tactic {
 		super();
 	}
 
-	public void addSetup(Setup setup) {
+	public void addSetup(AISetup setup) {
 		this.setup = setup;
 		proceed();
 	}
