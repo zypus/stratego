@@ -13,6 +13,9 @@ public class Tactic {
 		this.setup = setup;
 	}
 
+	public Tactic() {
+	}
+
 	// checks if the spot in the setup is free
 	public boolean isFree(int i, int j) {
 		if (this.setup.getUnit(i, j).getType() == UnitType.AIR) {
