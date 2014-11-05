@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import static com.theBombSquad.stratego.StrategoConstants.FIRST_TURN;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID;
-import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
+import static com.theBombSquad.stratego.StrategoConstants.*;
 
 /**
  * TODO Add description
@@ -19,7 +20,8 @@ import static com.theBombSquad.stratego.StrategoConstants.UNREVEALED;
  */
 public class Unit implements Serializable {
 
-	private static int idCounter = 1;
+	private static List<Integer> ids = new ArrayList<Integer>();
+	private static Random random = new Random();
 
 	public static final Unit AIR = new Air();
 	public static final Unit LAKE = new Lake();
@@ -30,6 +32,8 @@ public class Unit implements Serializable {
 	protected final PlayerID owner;
 	@Getter @Setter
 	protected int revealedInTurn = UNREVEALED;
+	@Getter @Setter
+	protected int movedInTurn = UNMOVED;
 	@Getter
 	private final int id;
 
@@ -42,8 +46,12 @@ public class Unit implements Serializable {
 	public Unit(UnitType type, PlayerID owner) {
 		this.type = type;
 		this.owner = owner;
-		int baseID = owner.ordinal()+100;
-		this.id = baseID+idCounter++;
+		int nextId;
+		do {
+			nextId = owner.ordinal() * 1000 + random.nextInt(1000);
+		} while (ids.contains(nextId));
+		ids.add(nextId);
+		this.id = nextId;
 	}
 
 	public Unit(UnitType type, PlayerID owner, int specificID) {
@@ -62,6 +70,14 @@ public class Unit implements Serializable {
 
 	public boolean isUnknown() {
 		return type == UnitType.UNKNOWN;
+	}
+
+	public boolean wasMoved(int turn) {
+		return turn >= movedInTurn;
+	}
+
+	public boolean wasRevealed(int turn) {
+		return revealedInTurn != UNREVEALED && turn >= revealedInTurn;
 	}
 
 	public static enum UnitType {

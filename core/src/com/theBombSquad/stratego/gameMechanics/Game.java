@@ -258,6 +258,9 @@ public class Game {
 			Unit movedUnit = current.getUnit(move.getFromX(), move.getFromY());
 			move.setTurn(getCurrentTurn());
 			move.setMovedUnit(movedUnit);
+			if (movedUnit.getMovedInTurn() == UNMOVED) {
+				movedUnit.setMovedInTurn(getCurrentTurn());
+			}
 			// if moved to air just set the air to unit
 			if (current.getUnit(move.getToX(), move.getToY()).getType() == Unit.UnitType.AIR) {
 				current.setUnit(move.getToX(), move.getToY(), movedUnit);
@@ -818,6 +821,7 @@ public class Game {
 		 * Reference to the game.
 		 */
 		@Getter private final PlayerID playerID;
+		@Getter private final PlayerID opponentID;
 		/**
 		 * PlayerID which defines this views perspective
 		 */
@@ -826,6 +830,13 @@ public class Game {
 		@java.beans.ConstructorProperties({ "game", "playerID" }) public GameView(Game game, PlayerID playerID) {
 			this.game = game;
 			this.playerID = playerID;
+			if (playerID == PLAYER_1) {
+				this.opponentID = PLAYER_2;
+			} else if (playerID == PLAYER_2) {
+				this.opponentID = PLAYER_1;
+			} else {
+				this.opponentID = null;
+			}
 		}
 
 		/** List of moves which acts as a cache for rotated move for
@@ -1306,6 +1317,14 @@ public class Game {
 			if (playerID != NEMO) {
 				game.finishedCleanup(playerID);
 			}
+		}
+
+		public int getNumberOfOwnDefeatedUnits(Unit.UnitType unitType) {
+			return game.getNumberOfDefeatedUnits(unitType.getRank(), playerID);
+		}
+
+		public int getNumberOfOpponentDefeatedUnits(Unit.UnitType unitType) {
+			return game.getNumberOfDefeatedUnits(unitType.getRank(),opponentID);
 		}
 
 	}

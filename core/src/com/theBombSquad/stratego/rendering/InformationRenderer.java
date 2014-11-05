@@ -66,6 +66,7 @@ public class InformationRenderer extends Renderer{
 			if (game.isFinishedSetup()) {
 				drawPly(batch);
 			}
+//			drawBlindIndication(batch);
 		}
 	}
 
@@ -226,6 +227,21 @@ public class InformationRenderer extends Renderer{
 		font.draw(batch, plyText,
 				  gridX + GRID_WIDTH/2*size - bounds.width/2,
 				  gridY + GRID_HEIGHT*size + 0.5f*size + bounds.height/2);
+	}
+
+	private void drawBlindIndication(SpriteBatch batch) {
+		if (game.isBlind()) {
+			font.setScale(2f);
+			font.setColor(Color.WHITE);
+			float gridX = GRID_POSITION_X * getScale();
+			float gridY = GRID_POSITION_Y * getScale();
+			float size = POINT_TILE_SIZE * getScale();
+			String plyText = "Press space";
+			BitmapFont.TextBounds bounds = font.getBounds(plyText);
+			font.draw(batch, plyText,
+					  gridX + GRID_WIDTH / 2 * size - bounds.width / 2,
+					  gridY + GRID_HEIGHT / 2 * size + bounds.height / 2);
+		}
 	}
 
 }
