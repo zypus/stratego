@@ -8,6 +8,9 @@ public class FlagTactic extends Tactic{
 	
 	//this just stores the setup changed by extending it flag tactics 
 	// extending it class have to state whether it might be offensive def or middle
+	public FlagTactic(){
+		super();
+	}
 	public FlagTactic(Setup setup){
 		super(setup);
 		this.setup=setup;
