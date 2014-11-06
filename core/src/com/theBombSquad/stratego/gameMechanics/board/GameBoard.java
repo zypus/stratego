@@ -47,9 +47,7 @@ public class GameBoard implements Serializable {
 	public int getHeight() {
 		return board.length;
 	}
-	public Unit[][] getBoard(){
-		return board;
-	}
+	
 	public GameBoard duplicate() {
 		GameBoard clonedBoard = new GameBoard(getWidth(), getHeight());
 		for (int y = 0; y < getWidth(); y++) {

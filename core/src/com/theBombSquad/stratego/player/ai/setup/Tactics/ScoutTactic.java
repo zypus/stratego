@@ -2,25 +2,24 @@ package com.theBombSquad.stratego.player.ai.setup.Tactics;
 
 import java.util.ArrayList;
 
-import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 import com.theBombSquad.stratego.player.ai.setup.Tactic;
 import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
 
-public class SapperTactic extends Tactic {
+public class ScoutTactic extends Tactic {
 
-	private final int sapperBehindTheLakeWeight = 2;
-	private final int sapperThirdRowWeight = 4;
-	private final int sapperFourthRowWeight = 3;
-	private final int sapperElseWeight = 1;
+	private final int ScoutFirstRowWeight = 4;
+	private final int ScoutSecondRowWeight = 3;
+	private final int ScoutThirdRowWeight = 2;
+	private final int ScoutFourthRowWeight = 1;
 
-	public SapperTactic(AISetup setup) {
+	public ScoutTactic(AISetup setup) {
 		super(setup);
 		proceed();
 	}
 
-	public SapperTactic() {
+	public ScoutTactic() {
 		super();
 	}
 
@@ -30,57 +29,54 @@ public class SapperTactic extends Tactic {
 	}
 
 	public void proceed() {
-		int numOfSappersToPut = findNumOfSappersToPut();
+		int numOfScoutsToPut = findNumOfScoutsToPut();
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		if (numOfSappersToPut > 0) {
+		if (numOfScoutsToPut > 0) {
 			// finding possible placements
 			for (int i = 0; i < setup.getHeight(); i++) {
 				for (int j = 0; j < setup.getWidth(); j++) {
-					// if behind the lake
-					if (i < 2 && ((j > 1 && j < 4) || (j > 5 && j < 8))) {
+					if (i == 0) {
 						if (super.isFree(i, j)) {
 							possiblePlacements.add(new UnitPlacement(
-									UnitType.SAPPER, i, j,
-									sapperBehindTheLakeWeight));
+									UnitType.SCOUT, i, j, ScoutFirstRowWeight ));
+						}
+					} else if (i == 1) {
+						if (super.isFree(i, j)) {
+							possiblePlacements.add(new UnitPlacement(
+									UnitType.SCOUT, i, j, ScoutSecondRowWeight ));
 						}
 					}
 					// if in third row
 					else if (i == 2) {
 						if (super.isFree(i, j)) {
-							possiblePlacements
-									.add(new UnitPlacement(UnitType.SAPPER, i,
-											j, sapperThirdRowWeight));
-						}
-					} else if (i == 3) {
-						if (super.isFree(i, j)) {
 							possiblePlacements.add(new UnitPlacement(
-									UnitType.SAPPER, i, j,
-									sapperFourthRowWeight));
+									UnitType.SCOUT, i, j, ScoutThirdRowWeight));
 						}
 					} else {
 						if (super.isFree(i, j)) {
-							possiblePlacements.add(new UnitPlacement(
-									UnitType.SAPPER, i, j, sapperElseWeight));
+							possiblePlacements
+									.add(new UnitPlacement(UnitType.SCOUT, i,
+											j, ScoutFourthRowWeight));
 						}
-					}
+					} 
 				}
 			}
-			for (int i = 0; i < numOfSappersToPut; i++) {
+			for (int i = 0; i < numOfScoutsToPut; i++) {
 				UnitPlacement toPut = super.randomizeUnitPlacement();
 				super.placeUnit(toPut);
 			}
 		}
 	}
 
-	private int findNumOfSappersToPut() {
-		int numOfSappers=5;
+	private int findNumOfScoutsToPut() {
+		int numOfScouts = 5;
 		for (int i = 0; i < setup.getHeight(); i++) {
 			for (int j = 0; j < setup.getWidth(); j++) {
-				if (setup.getUnit(i, j).getType() == UnitType.SAPPER) {
-					numOfSappers--;
+				if (setup.getUnit(i, j).getType() == UnitType.SCOUT) {
+					numOfScouts--;
 				}
 			}
 		}
-		return numOfSappers;
+		return numOfScouts;
 	}
 }

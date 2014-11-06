@@ -14,14 +14,15 @@ public class AISetup extends Setup{
 		pickFlagTactic();
 		executeTactics();
 	}
-
+	//executing the strategy step by step
 	private void executeTactics() {
-		for(int i = 0; i < strategy.getTactics().size(); i++){
+		for(int i = 0; i < strategy.getTactics().size();i=i){
 			strategy.getTactics().get(i).addSetup(this);
 			this.board=strategy.getTactics().get(i).getSetup().getBoard();
+			strategy.getTactics().remove(i);
 		}
 	}
-
+	//picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {
 		ArrayList<FlagTactic> tactics= new ArrayList<FlagTactic>();
 		tactics.add(new FlagTactic());

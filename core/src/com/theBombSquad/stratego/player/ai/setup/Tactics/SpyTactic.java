@@ -110,7 +110,7 @@ public class SpyTactic extends Tactic {
 		for (int i = 0; i < setup.getHeight(); i++) {
 			for (int j = 0; j < setup.getWidth(); j++) {
 				// if behind the lake
-				if (i < 2 && ((j > 1 && j < 4) || (j > 4 && j < 7))) {
+				if (i < 2 && ((j > 1 && j < 4) || (j > 5 && j < 8))) {
 					if (super.isFree(i, j)) {
 						possiblePlacements.add(new UnitPlacement(UnitType.SPY,
 								i, j, spyBehindTheLakeWeight));

@@ -13,10 +13,11 @@ public class Tactic {
 		this.setup = setup;
 	}
 
-	public Tactic(){
+	public Tactic() {
 	}
-	public void addSetup(AISetup setup){
-		this.setup=setup;
+
+	public void addSetup(AISetup setup) {
+		this.setup = setup;
 	}
 
 	// checks if the spot in the setup is free
@@ -46,14 +47,29 @@ public class Tactic {
 
 	public void placeUnit(UnitPlacement toPut) {
 		for (int i = 0; i < setup.getView().getAvailableUnits().size(); i++) {
-			if(setup.getView().getAvailableUnits().get(i).getType()==toPut.getUnitType())
-			setup.setUnit(toPut.getX(), toPut.getY(), setup.getView().getAvailableUnits().get(i));
-			break;
+			if (setup.getView().getAvailableUnits().get(i).getType() == toPut
+					.getUnitType()) {
+				setup.setUnit(toPut.getX(), toPut.getY(), setup.getView()
+						.getAvailableUnits().get(i));
+				setup.getView().getAvailableUnits().remove(i);
+				break;
+			}
 		}
 	}
-	public AISetup getSetup(){
+
+	public AISetup getSetup() {
 		return setup;
 	}
 
+	public boolean hasAvailable(UnitType type) {
+		for (int i = 0; i < setup.getHeight(); i++) {
+			for (int j = 0; j < setup.getWidth(); j++) {
+				if (setup.getUnit(i, j).getType() == type) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }
