@@ -9,7 +9,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
 import lombok.Getter;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -24,7 +24,7 @@ import static com.theBombSquad.stratego.gameMechanics.Game.*;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-@Log
+@Log4j2
 public class RemoteServingPlayer
 		extends Player {
 

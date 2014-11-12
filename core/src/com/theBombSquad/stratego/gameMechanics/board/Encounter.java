@@ -81,8 +81,8 @@ public class Encounter implements Serializable {
 				   && attacker == UnitType.SPY) {
 			return VICTORIOUS_ATTACK;
 		} else {
-			int defendingRank = attacker.getRank();
-			int attackingRank = defender.getRank();
+			int attackingRank = attacker.getRank();
+			int defendingRank = defender.getRank();
 			if (attackingRank > defendingRank) {
 				return VICTORIOUS_ATTACK;
 			} else if (attackingRank == defendingRank) {

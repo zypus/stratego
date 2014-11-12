@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.*;
 
 /**
@@ -44,6 +45,17 @@ public class AIGameState {
 
 	public int getHeight() {
 		return aiUnits.length;
+	}
+
+	public PlayerInformation getPlayerInformation(PlayerID playerID) {
+		if (playerID == NEMO) {
+			return null;
+		}
+		else if (playerID == currentPlayer) {
+			return own;
+		} else {
+			return opponent;
+		}
 	}
 
 	public void swap(Move move) {

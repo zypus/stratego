@@ -12,7 +12,7 @@ import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
@@ -34,7 +33,7 @@ import static com.theBombSquad.stratego.rendering.StrategoUtil.*;
  * @author Mateusz Garbacz
  */
 @Getter(AccessLevel.PRIVATE)
-@Log
+@Log4j2
 public class Game {
 
 	int currentTurn = 1;
@@ -815,7 +814,6 @@ public class Game {
 	 */
 	public static class GameView {
 
-		private static final Logger log = Logger.getLogger(GameView.class.getName());
 		private final Game game;
 		/**
 		 * Reference to the game.
@@ -863,7 +861,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.severe("Non player tried to validate move.");
+				log.fatal("Non player tried to validate move.");
 				return false;
 			}
 			// Translates the move from player space to game space.
@@ -887,7 +885,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.severe("Non player tried to perform move.");
+				log.fatal("Non player tried to perform move.");
 				return;
 			}
 			// Translates the move from player space to game space.
@@ -922,7 +920,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.severe("Non player tried to set setup.");
+				log.fatal("Non player tried to set setup.");
 				return;
 			}
 			// Translates the setup from player space to game space.
@@ -1160,7 +1158,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.severe("Non player tried to get 'his' defeated units.");
+				log.fatal("Non player tried to get 'his' defeated units.");
 				return null;
 			}
 			List<Unit> units = playerID.equals(PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
@@ -1175,7 +1173,7 @@ public class Game {
 		public List<Unit> getOpponentsDefeatedUnits() {
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.severe("Non player tried to get 'his opponents' defeated units.");
+				log.fatal("Non player tried to get 'his opponents' defeated units.");
 				return null;
 			}
 			List<Unit> units = playerID.equals(PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();

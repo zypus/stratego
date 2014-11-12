@@ -57,6 +57,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile fileTree(dir: '../libs', include: '*.jar')
         provided "org.projectlombok:lombok:1.14.6"
+        compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
     }
 }
 

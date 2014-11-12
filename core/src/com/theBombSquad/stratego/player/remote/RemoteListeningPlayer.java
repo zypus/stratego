@@ -8,7 +8,7 @@ import com.badlogic.gdx.net.Socket;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,7 +22,7 @@ import static com.theBombSquad.stratego.gameMechanics.Game.*;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-@Log
+@Log4j2
 public class RemoteListeningPlayer
 		extends Player {
 
@@ -77,7 +77,7 @@ public class RemoteListeningPlayer
 			gameView.performMove(move);
 			return move;
 		} else {
-			log.severe("Unrecognized object received. Objects class is: "+receivedObject.getClass());
+			log.fatal("Unrecognized object received. Objects class is: "+receivedObject.getClass());
 			return null;
 		}
 	}
@@ -96,7 +96,7 @@ public class RemoteListeningPlayer
 
 			return setup;
 		} else {
-			log.severe("Unrecognized object received. Objects class is: " + receivedObject.getClass());
+			log.fatal("Unrecognized object received. Objects class is: " + receivedObject.getClass());
 			return null;
 		}
 	}
