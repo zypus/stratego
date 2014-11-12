@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+import com.theBombSquad.stratego.player.ai.setup.Strategies.Defensive;
+import com.theBombSquad.stratego.player.ai.setup.Strategies.Middle;
+import com.theBombSquad.stratego.player.ai.setup.Strategies.Ofensive;
 
 public class FlagTactic extends Tactic {
 	protected ArrayList<Strategy> strategies;
@@ -46,13 +49,10 @@ public class FlagTactic extends Tactic {
 		return UnitType.SERGEANT;
 
 	}
-
-	/*
-	 * strategy1: move(0, 0, 6 ,10);
-	 * 
-	 * make new method to place?
-	 * 
-	 * UnitPlacement toPut = new UnitPlacement(UnitType.FLAG, 6, 10, 10);
-	 * super.placeUnit(toPut);
-	 */
+	protected void addStrategies() {
+		strategies= new ArrayList<Strategy>(); 
+		strategies.add(new Defensive());
+		strategies.add(new Ofensive());
+		strategies.add(new Middle());
+	}
 }

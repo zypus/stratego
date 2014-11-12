@@ -15,7 +15,7 @@ public class Tactic {
 	public Tactic() {
 	}
 
-	public void addSetup(AISetup setup) {
+	public void addSetup(AISetup setup){
 		this.setup = setup;
 	}
 

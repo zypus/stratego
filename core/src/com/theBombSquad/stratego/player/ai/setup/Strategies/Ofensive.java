@@ -6,8 +6,8 @@ import com.theBombSquad.stratego.player.ai.setup.Strategy;
 import com.theBombSquad.stratego.player.ai.setup.Tactic;
 import com.theBombSquad.stratego.player.ai.setup.Tactics.*;
 
-public class Offensive extends Strategy{
-	public Offensive(){
+public class Ofensive extends Strategy{
+	public Ofensive(){
 		super();
 		super.tactics= new ArrayList<Tactic>();
 		tactics.add(new MarshalTactic());
