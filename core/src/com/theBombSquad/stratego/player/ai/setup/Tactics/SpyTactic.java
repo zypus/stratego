@@ -135,6 +135,8 @@ public class SpyTactic extends Tactic {
 		spyX = toPut.getX();
 		spyY = toPut.getY();
 		super.placeUnit(toPut);
+		possiblePlacements.remove(toPut);
+
 	}
 
 	private boolean spyPlaced() {

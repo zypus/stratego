@@ -64,6 +64,7 @@ public class ScoutTactic extends Tactic {
 			for (int i = 0; i < numOfScoutsToPut; i++) {
 				UnitPlacement toPut = super.randomizeUnitPlacement();
 				super.placeUnit(toPut);
+				possiblePlacements.remove(toPut);
 			}
 		}
 	}

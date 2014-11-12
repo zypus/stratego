@@ -57,9 +57,11 @@ public class StrongUnitTactic extends Tactic {
 	//randomize places and place units to the board
 	for(int i =0; i<toPut.size();i++){
 	UnitPlacement UnitToPut = super.randomizeUnitPlacement();
-	possiblePlacements.remove(UnitToPut);
 	UnitToPut.setUnitType(toPut.get(i).getType());
 	super.placeUnit(UnitToPut);
+	UnitToPut.setUnitType(null);
+	possiblePlacements.remove(UnitToPut);
+
 	}
 }
 }

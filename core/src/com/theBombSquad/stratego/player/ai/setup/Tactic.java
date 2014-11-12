@@ -2,7 +2,6 @@ package com.theBombSquad.stratego.player.ai.setup;
 
 import java.util.ArrayList;
 
-import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
 public class Tactic {

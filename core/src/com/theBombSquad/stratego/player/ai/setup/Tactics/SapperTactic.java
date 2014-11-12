@@ -68,6 +68,7 @@ public class SapperTactic extends Tactic {
 			for (int i = 0; i < numOfSappersToPut; i++) {
 				UnitPlacement toPut = super.randomizeUnitPlacement();
 				super.placeUnit(toPut);
+				possiblePlacements.remove(toPut);
 			}
 		}
 	}
