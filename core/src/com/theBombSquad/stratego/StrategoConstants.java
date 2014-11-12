@@ -1,11 +1,12 @@
 package com.theBombSquad.stratego;
 
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
-import java.awt.*;
+import java.awt.Rectangle;
+
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * TODO Add description
@@ -28,6 +29,7 @@ public class StrategoConstants {
 	public static double scale = 1;
 
 	public static final int UNREVEALED = -42;
+	public static final int UNMOVED = 9999999;
 	public static final int FIRST_TURN = 0;
 
 	public static final int AI_DELAY = 200;
@@ -35,7 +37,17 @@ public class StrategoConstants {
 	public static enum PlayerID {
 		PLAYER_1,
 		PLAYER_2,
-		NEMO
+		NEMO;
+
+		public PlayerID getOpponent() {
+			if (this == PLAYER_1) {
+				return PLAYER_2;
+			} else if (this == PLAYER_2) {
+				return PLAYER_1;
+			} else {
+				return null;
+			}
+		}
 	}
 
 	public static enum GameResult {

@@ -16,17 +16,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * TODO Add description
@@ -110,7 +112,7 @@ public class PlayerRenderer
 	@Override
 	public void render(SpriteBatch batch) {
 		if (!game.isReseted()) {
-			if (game.getActiveGameView() == gameView) {
+			if (game.getActiveGameView() == gameView || (gameView.getPlayer() instanceof HumanPlayer && ((HumanPlayer) gameView.getPlayer()).getSetUpPhase())) {
 				float gridX = GRID_POSITION_X * getScale();
 				float gridY = GRID_POSITION_Y * getScale();
 				float size = POINT_TILE_SIZE * getScale();
@@ -119,8 +121,33 @@ public class PlayerRenderer
 				drawXAxis(batch);
 				drawYAxis(batch);
 				//Draw Units
-				if (!game.isFinishedSetup() || game.isBlind()) {
-					GameBoard board = (!game.isFinishedSetup() || game.getCurrentTurn() < 2) ? gameView.getCurrentState() : gameView.getState(game.getCurrentTurn()-1);
+				if (!game.isFinishedSetup() && gameView.getPlayer() instanceof HumanPlayer && ((HumanPlayer) gameView.getPlayer()).getSetUpPhase()) {
+					HumanPlayer player = (HumanPlayer) gameView.getPlayer();
+					int playerOrdinal = gameView.getPlayerID().ordinal();
+					Setup unitPallet = player.getUnitPallet();
+					Setup setup = player.getCurrentSetup();
+					for (int cy = 0; cy < unitPallet.getHeight(); cy++) {
+						for (int cx = 0; cx < unitPallet.getWidth(); cx++) {
+							Unit unit = unitPallet.getUnit(cx, cy);
+							int unitRank = unit.getType().getRank();
+							if (unitRank != -1) {
+								drawTile(rUnits[playerOrdinal][unitRank], batch, cx, cy, size, gridX, gridY);
+							}
+						}
+					}
+					for (int cy = 0; cy < setup.getHeight(); cy++) {
+						for (int cx = 0; cx < setup.getWidth(); cx++) {
+							Unit unit = setup.getUnit(cx, cy);
+							int unitRank = unit.getType().getRank();
+							if (unitRank != -1) {
+								drawTile(rUnits[playerOrdinal][unitRank], batch, cx, cy + 6, size, gridX, gridY);
+							}
+						}
+					}
+				} else if (!game.isFinishedSetup()) {
+					// do nothing
+				} else if (game.isBlind()) {
+					GameBoard board = gameView.getState((gameView.getCurrentTurn() > 1) ? gameView.getCurrentTurn()-1 : gameView.getCurrentTurn());
 					for (int cy = 0; cy < board.getHeight(); cy++) {
 						for (int cx = 0; cx < board.getWidth(); cx++) {
 							Unit unit = board.getUnit(cx, cy);
@@ -137,7 +164,7 @@ public class PlayerRenderer
 									drawTile(rUnits[player][unitRank], batch, cx, cy, size, gridX, gridY);
 									if (!game.isGameOver() && unit.getOwner() == activePlayer
 										&& unit.getRevealedInTurn() != UNREVEALED
-										&& game.getCurrentTurn() >= unit.getRevealedInTurn()) {
+										&& gameView.getCurrentTurn() >= unit.getRevealedInTurn()) {
 										batch.setColor(new Color(1, 1, 1, 0.75f));
 										drawTile(eye, batch, cx, cy, size, gridX, gridY);
 									}
@@ -164,7 +191,7 @@ public class PlayerRenderer
 						}
 						isSetup = true;
 					}
-					while (lastPly < game.getMoves().size()) {
+					while (lastPly < gameView.getMoves().size()) {
 						final Move move = gameView.getMove(lastPly);
 						lastPly++;
 						final Unit movedUnit = move.getMovedUnit();
@@ -178,67 +205,67 @@ public class PlayerRenderer
 						if (move.hasEncounter()) {
 							Timeline tl = Timeline.createSequence();
 							if (move.getDistance() > 1) {
-								float xa = x + (xf-x)/ (move.getDistance());
-								float ya = y + (yf-y) / (move.getDistance());
+								float xa = x + (xf - x) / (move.getDistance());
+								float ya = y + (yf - y) / (move.getDistance());
 								tl.push(Tween.to(tile, UnitTile.UnitTileAccessor.POSITION, MOVE_TIME * 0.8f * (move.getDistance() - 1))
 											 .target(xa, ya));
 							}
 							float first = 1.5f;
 							float max = 2f;
-							float second = max-first;
+							float second = max - first;
 							tl.beginParallel()
-								.beginSequence()
-									.pushPause(MOVE_TIME * first)
-									.push(Tween.to(tile, UnitTile.UnitTileAccessor.POSITION, MOVE_TIME * second)
-											   .target(x, y))
-								.end()
-								.beginSequence()
-									.push(Tween.to(tile, UnitTile.UnitTileAccessor.SCALE, MOVE_TIME * first)
-											   .target(1.3f))
-									.push(Tween.to(tile, UnitTile.UnitTileAccessor.SCALE, MOVE_TIME * second)
-											   .target(1f))
-								.end()
-							.end();
+							  .beginSequence()
+							  .pushPause(MOVE_TIME * first)
+							  .push(Tween.to(tile, UnitTile.UnitTileAccessor.POSITION, MOVE_TIME * second)
+										 .target(x, y))
+							  .end()
+							  .beginSequence()
+							  .push(Tween.to(tile, UnitTile.UnitTileAccessor.SCALE, MOVE_TIME * first)
+										 .target(1.3f))
+							  .push(Tween.to(tile, UnitTile.UnitTileAccessor.SCALE, MOVE_TIME * second)
+										 .target(1f))
+							  .end()
+							  .end();
 							timeline.push(tl);
 						} else {
 							Tween tw = Tween.to(tile, UnitTile.UnitTileAccessor.POSITION, MOVE_TIME * move.getDistance())
-											 .target(x, y);
+											.target(x, y);
 							timeline.push(tw);
 						}
 
 						timeline.push(Tween.call(new TweenCallback() {
-									@Override public void onEvent(int i, BaseTween<?> baseTween) {
-										if (move.hasEncounter()) {
-											Encounter encounter = move.getEncounter();
-											Timeline killedTimeline = Timeline.createParallel();
-											for (final Unit killedUnit : encounter.getDefeatedUnits()) {
-												final UnitTile unitTile = unitTileMap.get(killedUnit.getId());
-												movingUnits.put(killedUnit.getId(), unitTile);
-												if (!killedUnit.getType().equals(Unit.UnitType.FLAG)) {
-													Vector2 position = DefeatedUnitRenderer.getGridPositionForUnit(killedUnit);
-													Timeline t = Timeline.createSequence()
-																		 .push(Tween.to(unitTile,
-																						UnitTile.UnitTileAccessor.POSITION,
-																						0.75f).target(position.x, position.y).ease(
-																				 TweenEquations.easeOutQuad))
-																		 .push(Tween.call(new TweenCallback() {
-																			 @Override public void onEvent(int i, BaseTween<?> baseTween) {
-																				 movingUnits.remove(killedUnit.getId());
-																				 unitTile.setKilled(true);
-																			 }
-																		 }));
-													killedTimeline.push(t);
-												} else {
-													unitTile.setKilled(true);
-													movingUnits.remove(killedUnit.getId());
-												}
-											}
-											manager.add(killedTimeline);
+							@Override public void onEvent(int i, BaseTween<?> baseTween) {
+								if (move.hasEncounter()) {
+									Encounter encounter = move.getEncounter();
+									Timeline killedTimeline = Timeline.createParallel();
+									for (final Unit killedUnit : encounter.getDefeatedUnits()) {
+										final UnitTile unitTile = unitTileMap.get(killedUnit.getId());
+										movingUnits.put(killedUnit.getId(), unitTile);
+										if (!killedUnit.getType().equals(Unit.UnitType.FLAG)) {
+											Vector2 position = DefeatedUnitRenderer.getGridPositionForUnit(killedUnit);
+											Timeline t = Timeline.createSequence()
+																 .push(Tween.to(unitTile,
+																				UnitTile.UnitTileAccessor.POSITION,
+																				0.75f).target(position.x, position.y).ease(
+																		 TweenEquations.easeOutQuad))
+																 .push(Tween.call(new TweenCallback() {
+																	 @Override public void onEvent(int i, BaseTween<?> baseTween) {
+																		 movingUnits.remove(killedUnit.getId());
+																		 unitTile.setKilled(true);
+																	 }
+																 }));
+											killedTimeline.push(t);
 										} else {
-											movingUnits.remove(movedUnit.getId());
+											unitTile.setKilled(true);
+											movingUnits.remove(killedUnit.getId());
 										}
 									}
-								}));
+									manager.add(killedTimeline);
+								} else {
+									movingUnits.remove(movedUnit.getId());
+								}
+							}
+						}));
 						manager.add(timeline);
 					}
 					manager.update(Gdx.graphics.getDeltaTime());
@@ -273,7 +300,7 @@ public class PlayerRenderer
 		float y = unitTile.getPosition().y;
 		Unit unit = unitTile.getUnit();
 		int player = (unit.getOwner().equals(PlayerID.PLAYER_1) ? 0 : 1);
-		boolean unknown = !gameView.getPlayerID().equals(PlayerID.NEMO) && !unit.getOwner().equals(gameView.getPlayerID()) &&  (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > ((game.isWaitingForEndTurn()) ? game.getCurrentTurn()+1 : game.getCurrentTurn()));
+		boolean unknown = !gameView.getPlayerID().equals(PlayerID.NEMO) && !unit.getOwner().equals(gameView.getPlayerID()) &&  (unit.getRevealedInTurn() == UNREVEALED || unit.getRevealedInTurn() > ((game.isWaitingForEndTurn()) ? gameView.getCurrentTurn()+1 : gameView.getCurrentTurn()));
 		if (!unknown) {
 			if (!game.isGameOver() && game.isFinishedSetup()
 				&& game.getActiveGameView().getPlayerID() == unit.getOwner()

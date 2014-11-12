@@ -5,6 +5,9 @@ import lombok.Getter;
 
 import java.io.Serializable;
 
+import static com.theBombSquad.stratego.gameMechanics.board.Encounter.CombatResult.*;
+import static com.theBombSquad.stratego.gameMechanics.board.Unit.*;
+
 /**
  * TODO Add description
  *
@@ -27,26 +30,7 @@ public class Encounter implements Serializable {
 	public Encounter(Unit attackingUnit, Unit defendingUnit) {
 		this.attackingUnit=attackingUnit;
 		this.defendingUnit=defendingUnit;
-		if (defendingUnit.getType() == Unit.UnitType.BOMB) {
-			if (attackingUnit.getType() == Unit.UnitType.SAPPER) {
-				result=CombatResult.VICTORIOUS_ATTACK;
-			} else {
-				result=CombatResult.VICTORIOUS_DEFENSE;
-			}
-		} else if (defendingUnit.getType() == Unit.UnitType.MARSHAL
-				&& attackingUnit.getType() == Unit.UnitType.SPY) {
-			result=CombatResult.VICTORIOUS_ATTACK;
-		} else {
-			int defendingRank = defendingUnit.getType().getRank();
-			int attackingRank = attackingUnit.getType().getRank();
-			if (attackingRank > defendingRank) {
-				result=CombatResult.VICTORIOUS_ATTACK;
-			} else if (attackingRank == defendingRank) {
-				result=CombatResult.MUTUAL_DEFEAT;
-			} else {
-				result=CombatResult.VICTORIOUS_DEFENSE;
-			}
-		}
+		result = resolveFight(attackingUnit.getType(), defendingUnit.getType());
 	}
 
 	public Unit getVictoriousUnit() {
@@ -64,7 +48,7 @@ public class Encounter implements Serializable {
 	}
 
 	public boolean mutualDefeat() {
-		return result.equals(CombatResult.MUTUAL_DEFEAT);
+		return result.equals(MUTUAL_DEFEAT);
 	}
 
 	public Unit[] getDefeatedUnits() {
@@ -84,6 +68,29 @@ public class Encounter implements Serializable {
 
 	public static enum CombatResult {
 		VICTORIOUS_ATTACK, VICTORIOUS_DEFENSE, MUTUAL_DEFEAT
+	}
+
+	public static CombatResult resolveFight(UnitType attacker, UnitType defender) {
+		if (defender == UnitType.BOMB) {
+			if (attacker == UnitType.SAPPER) {
+				return VICTORIOUS_ATTACK;
+			} else {
+				return VICTORIOUS_DEFENSE;
+			}
+		} else if (defender == UnitType.MARSHAL
+				   && attacker == UnitType.SPY) {
+			return VICTORIOUS_ATTACK;
+		} else {
+			int attackingRank = attacker.getRank();
+			int defendingRank = defender.getRank();
+			if (attackingRank > defendingRank) {
+				return VICTORIOUS_ATTACK;
+			} else if (attackingRank == defendingRank) {
+				return MUTUAL_DEFEAT;
+			} else {
+				return VICTORIOUS_DEFENSE;
+			}
+		}
 	}
 
 }

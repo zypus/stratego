@@ -1,10 +1,10 @@
 package com.theBombSquad.stratego.player;
 
-import lombok.Getter;
-
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
+import lombok.Getter;
+
+import static com.theBombSquad.stratego.gameMechanics.Game.*;
 
 /**
  * Abstract player class which performs each player action (setup,move,idle).
