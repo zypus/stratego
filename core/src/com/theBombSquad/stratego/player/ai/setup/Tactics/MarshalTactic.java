@@ -23,6 +23,7 @@ public class MarshalTactic extends Tactic {
 	}
 
 	public void addSetup(AISetup setup) {
+
 		this.setup = setup;
 		proceed();
 	}
@@ -30,8 +31,8 @@ public class MarshalTactic extends Tactic {
 	public void proceed() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
 		if (super.hasAvailable(UnitType.MARSHAL)) {
-			for (int i = 0; i < setup.getHeight(); i++) {
-				for (int j = 0; j < setup.getWidth(); j++) {
+			for (int j = 0; j < setup.getHeight(); j++) {
+				for (int i = 0; i < setup.getWidth(); i++) {
 					// if behind the lake
 					if (i < 2 && ((j > 1 && j < 4) || (j > 5 && j < 8))) {
 						if (super.isFree(i, j)) {

@@ -28,7 +28,7 @@ public class StrongUnitTactic extends Tactic {
 	}
 	
 	private void proceed() {
-	List<Unit> toPut=setup.getView().getAvailableUnits();
+	List<Unit> toPut=setup.getAvailableUnits();
 	possiblePlacements= new ArrayList<UnitPlacement>();
 	// finding units to put only those higher ranked than 5
 	for(int i =0; i<toPut.size();i++){
@@ -38,8 +38,8 @@ public class StrongUnitTactic extends Tactic {
 		}
 	}
 	//assigning weights
-	for (int i = 0; i < setup.getHeight(); i++) {
-		for (int j = 0; j < setup.getWidth(); j++) {
+	for (int j = 0; j < setup.getHeight(); j++) {
+		for (int i = 0; i < setup.getWidth(); i++) {
 			// if in third row
 			if (i == 0||i==1) {
 				if (super.isFree(i, j)) {

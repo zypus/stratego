@@ -25,47 +25,49 @@ public class FlagTactic1 extends FlagTactic {
 	private void proceed() {
 
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		for (int j = 1; j < setup.getWidth() - 1; j++) {
-			possiblePlacements.add(new UnitPlacement(UnitType.FLAG, 3, j, 1));
+		for (int j = 1; j < 10- 1; j++) {
+			possiblePlacements.add(new UnitPlacement(UnitType.FLAG, j, 3, 1));
 		}
 		UnitPlacement toPut = super.randomizeUnitPlacement();
 		place(toPut);
-		for (int j = 1; j < setup.getWidth() - 1; j++) {
-			if (super.isFree(3, j - 1) && super.isFree(3, j + 1)) {
-				possiblePlacements.add(new UnitPlacement(UnitType.SCOUT, 3, j,
+		possiblePlacements = new ArrayList<UnitPlacement>();
+		for (int j = 1; j < 10 - 1; j++) {
+			if (super.isFree(j-1, 3) && super.isFree(j + 1,3)) {
+				possiblePlacements.add(new UnitPlacement(UnitType.SCOUT, j, 3,
 						1));
 				possiblePlacements.add(new UnitPlacement(super.randomizeSL(),
-						3, j, 1));
+						j, 3, 1));
 
 			}
 		}
 		toPut = super.randomizeUnitPlacement();
 		place(toPut);
-		addStrategies();
+	
 	}
 
 
 
 	public void place(UnitPlacement toPut) {
 		// Flag/Scout
+		System.out.println("here");
 		super.placeUnit(toPut);
 		// left bomb
-		toPut.setY(toPut.getY() - 1);
+		toPut.setX(toPut.getX() - 1);
 		toPut.setUnitType(UnitType.BOMB);
 		super.placeUnit(toPut);
 		// Up bomb
-		toPut.setY(toPut.getY() + 1);
-		toPut.setX(toPut.getX() - 1);
+		toPut.setX(toPut.getX() + 1);
+		toPut.setY(toPut.getY() - 1);
 		super.placeUnit(toPut);
 		// right bomb
-		toPut.setX(toPut.getX() + 1);
 		toPut.setY(toPut.getY() + 1);
+		toPut.setX(toPut.getX() + 1);
 		super.placeUnit(toPut);
 		// 4/5
-		toPut.setX(toPut.getX() + 1);
+		toPut.setY(toPut.getY() - 1);
 		toPut.setUnitType(super.randomizeSL());
 		super.placeUnit(toPut);
-		toPut.setY(toPut.getY() - 2);
+		toPut.setX(toPut.getX() - 2);
 		toPut.setUnitType(super.randomizeSL());
 		super.placeUnit(toPut);
 	}

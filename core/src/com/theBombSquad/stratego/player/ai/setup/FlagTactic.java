@@ -16,11 +16,13 @@ public class FlagTactic extends Tactic {
 	// middle
 	public FlagTactic() {
 		super();
+		addStrategies();
 	}
 
 	public FlagTactic(AISetup setup) {
 		super(setup);
 		this.setup = setup;
+		addStrategies();
 	}
 
 	public AISetup getSetup() {
@@ -34,15 +36,15 @@ public class FlagTactic extends Tactic {
 	public UnitType randomizeSL() {
 		double random = Math.random();
 		if (random <= 0.5) {
-			for (int i = 0; i < setup.getView().getAvailableUnits().size(); i++) {
-				if (setup.getView().getAvailableUnits().get(i).getType() == UnitType.SERGEANT) {
+			for (int i = 0; i < setup.getAvailableUnits().size(); i++) {
+				if (setup.getAvailableUnits().get(i).getType() == UnitType.SERGEANT) {
 					return UnitType.SERGEANT;
 				}
 			}
 			return UnitType.LIEUTENANT;
 		}
-		for (int i = 0; i < setup.getView().getAvailableUnits().size(); i++) {
-			if (setup.getView().getAvailableUnits().get(i).getType() == UnitType.LIEUTENANT) {
+		for (int i = 0; i < setup.getAvailableUnits().size(); i++) {
+			if (setup.getAvailableUnits().get(i).getType() == UnitType.LIEUTENANT) {
 				return UnitType.LIEUTENANT;
 			}
 		}
@@ -50,7 +52,7 @@ public class FlagTactic extends Tactic {
 
 	}
 	protected void addStrategies() {
-		strategies= new ArrayList<Strategy>(); 
+		strategies= new ArrayList<Strategy>();
 		strategies.add(new Defensive());
 		strategies.add(new Ofensive());
 		strategies.add(new Middle());

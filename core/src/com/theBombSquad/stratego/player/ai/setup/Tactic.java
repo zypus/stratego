@@ -35,25 +35,30 @@ public class Tactic {
 		}
 		int random = ((int) (Math.random() * totalWeight));
 		for (int i = 0; i < possiblePlacements.size(); i++) {
-			if (random - possiblePlacements.get(i).getWeight() < 0) {
+			if (random - possiblePlacements.get(i).getWeight() >= 0) {
 				random = random - possiblePlacements.get(i).getWeight();
 			} else {
 				return possiblePlacements.get(i);
 			}
 		}
+		System.out.println("Error");
 		return null;
 	}
 
-	public void placeUnit(UnitPlacement toPut) {
-		for (int i = 0; i < setup.getView().getAvailableUnits().size(); i++) {
-			if (setup.getView().getAvailableUnits().get(i).getType() == toPut
+	public boolean placeUnit(UnitPlacement toPut) {
+		for (int i = 0; i < setup.getAvailableUnits().size(); i++) {
+			if (setup.getAvailableUnits().get(i).getType() == toPut
 					.getUnitType()) {
-				setup.setUnit(toPut.getX(), toPut.getY(), setup.getView()
+				setup.setUnit( toPut.getX(),toPut.getY(), setup
 						.getAvailableUnits().get(i));
-				setup.getView().getAvailableUnits().remove(i);
-				break;
+				setup.getAvailableUnits().remove(i);
+				
+				return true;
 			}
 		}
+		//if(setup.getAvailableUnits().size()==5){
+		System.out.println("error"+ setup.getAvailableUnits().size()+setup.getView().getPlayerID());//}
+		return false;
 	}
 
 	public AISetup getSetup() {
@@ -61,12 +66,10 @@ public class Tactic {
 	}
 
 	public boolean hasAvailable(UnitType type) {
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
-				if (setup.getUnit(i, j).getType() == type) {
+		for (int i = 0; i < setup.getAvailableUnits().size(); i++) {
+				if (setup.getAvailableUnits().get(i).getType() == type) {
 					return true;
 				}
-			}
 		}
 		return false;
 	}

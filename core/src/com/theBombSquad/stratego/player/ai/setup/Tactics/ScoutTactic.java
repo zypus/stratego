@@ -33,8 +33,8 @@ public class ScoutTactic extends Tactic {
 		possiblePlacements = new ArrayList<UnitPlacement>();
 		if (numOfScoutsToPut > 0) {
 			// finding possible placements
-			for (int i = 0; i < setup.getHeight(); i++) {
-				for (int j = 0; j < setup.getWidth(); j++) {
+			for (int j = 0; j < setup.getHeight(); j++) {
+				for (int i = 0; i < setup.getWidth(); i++) {
 					if (i == 0) {
 						if (super.isFree(i, j)) {
 							possiblePlacements.add(new UnitPlacement(
@@ -70,12 +70,10 @@ public class ScoutTactic extends Tactic {
 	}
 
 	private int findNumOfScoutsToPut() {
-		int numOfScouts = 5;
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
-				if (setup.getUnit(i, j).getType() == UnitType.SCOUT) {
-					numOfScouts--;
-				}
+		int numOfScouts = 0;
+		for(int i =0; i<setup.getAvailableUnits().size();i++){
+			if(setup.getAvailableUnits().get(i).getType()==UnitType.SCOUT){
+				numOfScouts++;
 			}
 		}
 		return numOfScouts;

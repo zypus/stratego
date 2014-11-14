@@ -19,15 +19,12 @@ import com.theBombSquad.stratego.gameMechanics.GameView;
  * @created $(DATE)
  */
 public class Setup extends GameBoard implements Serializable {
-	@Getter
-	private GameView view;
 
 	protected Setup() {
 		super();
 	}
-	protected Setup(GameView view) {
-		super();
-		this.view=view;
+	protected Setup(int width, int height) {
+		super(width, height);
 	}
 
 	public Setup(int width, int height, Rectangle... lakes) {

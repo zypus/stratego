@@ -26,11 +26,11 @@ public class ElseUnitTactic extends Tactic {
 	}
 
 	private void proceed() {
-		List<Unit> toPut = setup.getView().getAvailableUnits();
+		List<Unit> toPut = setup.getAvailableUnits();
 		possiblePlacements = new ArrayList<UnitPlacement>();
 		// assigning weights
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
+		for (int j = 0; j < setup.getHeight(); j++) {
+			for (int i = 0; i < setup.getWidth(); i++) {
 				// if in third row
 				if (super.isFree(i, j)) {
 					possiblePlacements.add(new UnitPlacement(null, i, j,

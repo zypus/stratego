@@ -42,6 +42,7 @@ public class SetupAI extends AI {
 	@Override
 	protected AISetup setup() {
 		AISetup setup = new AISetup(gameView);
+		gameView.setSetup(setup);
 		return setup;
 	}
 

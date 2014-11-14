@@ -107,8 +107,8 @@ public class SpyTactic extends Tactic {
 
 	private void placeSpy() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
+		for (int j = 0; j < setup.getHeight(); j++) {
+			for (int i = 0; i < setup.getWidth(); i++) {
 				// if behind the lake
 				if (i < 2 && ((j > 1 && j < 4) || (j > 5 && j < 8))) {
 					if (super.isFree(i, j)) {
@@ -143,8 +143,8 @@ public class SpyTactic extends Tactic {
 		if (spyX != -1 && spyY != -1) {
 			return true;
 		}
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
+		for (int j = 0; j < setup.getHeight(); j++) {
+			for (int i = 0; i < setup.getWidth(); i++) {
 				if (setup.getUnit(i, j).getType() == UnitType.SPY) {
 					spyX = i;
 					spyY = j;
@@ -159,8 +159,8 @@ public class SpyTactic extends Tactic {
 		if (nineX != -1 && nineY != -1) {
 			return true;
 		}
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
+		for (int j = 0; j < setup.getHeight(); j++) {
+			for (int i = 0; i < setup.getWidth(); i++) {
 				if (setup.getUnit(i, j).getType() == UnitType.GENERAL) {
 					nineX = i;
 					nineY = j;

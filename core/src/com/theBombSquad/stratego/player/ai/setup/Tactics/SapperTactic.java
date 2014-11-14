@@ -34,8 +34,8 @@ public class SapperTactic extends Tactic {
 		possiblePlacements = new ArrayList<UnitPlacement>();
 		if (numOfSappersToPut > 0) {
 			// finding possible placements
-			for (int i = 0; i < setup.getHeight(); i++) {
-				for (int j = 0; j < setup.getWidth(); j++) {
+			for (int j = 0; j < setup.getHeight(); j++) {
+				for (int i = 0; i < setup.getWidth(); i++) {
 					// if behind the lake
 					if (i < 2 && ((j > 1 && j < 4) || (j > 5 && j < 8))) {
 						if (super.isFree(i, j)) {
@@ -74,12 +74,10 @@ public class SapperTactic extends Tactic {
 	}
 
 	private int findNumOfSappersToPut() {
-		int numOfSappers=5;
-		for (int i = 0; i < setup.getHeight(); i++) {
-			for (int j = 0; j < setup.getWidth(); j++) {
-				if (setup.getUnit(i, j).getType() == UnitType.SAPPER) {
-					numOfSappers--;
-				}
+		int numOfSappers = 0;
+		for(int i =0; i<setup.getAvailableUnits().size();i++){
+			if(setup.getAvailableUnits().get(i).getType()==UnitType.SAPPER){
+				numOfSappers++;
 			}
 		}
 		return numOfSappers;

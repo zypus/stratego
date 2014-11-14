@@ -19,5 +19,4 @@ public class UnitPlacement {
 	private	int y;
 	private int weight;
 	
-	
 }
