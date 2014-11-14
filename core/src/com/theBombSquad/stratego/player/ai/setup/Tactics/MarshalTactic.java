@@ -64,8 +64,6 @@ public class MarshalTactic extends Tactic {
 			}
 			UnitPlacement toPut = super.randomizeUnitPlacement();
 			super.placeUnit(toPut);
-			possiblePlacements.remove(toPut);
-
 		}
 	}
 }

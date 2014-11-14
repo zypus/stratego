@@ -2,11 +2,13 @@ package com.theBombSquad.stratego.player.ai.setup;
 
 import java.util.ArrayList;
 
+import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
 public class Tactic {
 	protected AISetup setup;
 	protected ArrayList<UnitPlacement> possiblePlacements;
+	private static int counter=1;
 
 	public Tactic(AISetup setup) {
 		this.setup = setup;
@@ -51,6 +53,10 @@ public class Tactic {
 					.getUnitType()) {
 				setup.setUnit( toPut.getX(),toPut.getY(), setup
 						.getAvailableUnits().get(i));
+				if(setup.getView().getPlayerID()==PlayerID.PLAYER_1){
+					System.out.println(setup.getAvailableUnits().get(i).getType().getRank()+" "+ counter+" " +setup.getAvailableUnits().size());
+					counter++;
+				}
 				setup.getAvailableUnits().remove(i);
 				
 				return true;

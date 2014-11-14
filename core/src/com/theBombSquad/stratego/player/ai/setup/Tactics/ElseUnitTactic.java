@@ -45,9 +45,8 @@ public class ElseUnitTactic extends Tactic {
 			UnitToPut.setUnitType(toPut.get(i).getType());
 			super.placeUnit(UnitToPut);
 			UnitToPut.setUnitType(null);
-			possiblePlacements.remove(UnitToPut);
-			
-			
+			i--;
+
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import lombok.Getter;
 
+import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
@@ -38,11 +39,22 @@ public class AISetup extends Setup{
 	//executing the strategy step by step
 	private void executeTactics() {
 		tactic.addSetup(this);
-		for(int i = 0; i < strategy.getTactics().size();i=i){
+		for(int i = 0; i < strategy.getTactics().size();i++){
 			strategy.getTactics().get(i).addSetup(this);
 			this.board=strategy.getTactics().get(i).getSetup().getBoard();
 			strategy.getTactics().remove(i);
-		}
+			i--;
+			/*if(view.getPlayerID()==PlayerID.PLAYER_1){
+			for(int h =0; h<10;h++){
+				System.out.println();
+				for(int j=0;j<4;j++){
+					System.out.print(board[j][h].getType().getRank());
+				}
+			}
+			System.out.println();
+			System.out.println();
+
+		}*/}
 	}
 	//picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {
