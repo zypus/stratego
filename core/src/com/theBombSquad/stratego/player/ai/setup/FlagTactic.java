@@ -51,10 +51,29 @@ public class FlagTactic extends Tactic {
 		return UnitType.SERGEANT;
 
 	}
+
 	protected void addStrategies() {
-		strategies= new ArrayList<Strategy>();
+		strategies = new ArrayList<Strategy>();
 		strategies.add(new Defensive());
 		strategies.add(new Ofensive());
 		strategies.add(new Middle());
+	}
+
+	protected void empty() {
+		possiblePlacements = new ArrayList<UnitPlacement>();
+	}
+
+	protected ArrayList<UnitType> giveOrder(ArrayList<UnitType> units) {
+		ArrayList<UnitType> order = new ArrayList<UnitType>();
+		for(int i =0; i< units.size();i=i){
+			UnitType toAdd=randomizeUnit(units);
+			order.add(toAdd);
+			units.remove(toAdd);
+		}
+		return order;
+	}
+
+	private UnitType randomizeUnit(ArrayList<UnitType> units) {
+		return units.get((int)(Math.random()*units.size()));
 	}
 }

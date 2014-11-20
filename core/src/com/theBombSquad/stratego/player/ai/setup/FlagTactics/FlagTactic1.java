@@ -25,13 +25,13 @@ public class FlagTactic1 extends FlagTactic {
 	private void proceed() {
 
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		for (int j = 1; j < 10- 1; j++) {
+		for (int j = 1; j < setup.getWidth()- 1; j++) {
 			possiblePlacements.add(new UnitPlacement(UnitType.FLAG, j, 3, 1));
 		}
 		UnitPlacement toPut = super.randomizeUnitPlacement();
 		place(toPut);
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		for (int j = 1; j < 10 - 1; j++) {
+		for (int j = 1; j < setup.getWidth() - 1; j++) {
 			if (super.isFree(j-1, 3) && super.isFree(j + 1,3)) {
 				possiblePlacements.add(new UnitPlacement(UnitType.SCOUT, j, 3,
 						1));

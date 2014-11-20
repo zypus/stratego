@@ -10,6 +10,7 @@ import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic1;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.*;
 
 public class AISetup extends Setup{
 	FlagTactic tactic;
@@ -70,7 +71,7 @@ public class AISetup extends Setup{
 	//picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {
 		ArrayList<FlagTactic> tactics= new ArrayList<FlagTactic>();
-		tactics.add(new FlagTactic1());
+		tactics.add(new FlagTactic11());
 		// add them all one by one
 		int random= (int)(Math.random()*tactics.size());
 		tactic=tactics.get(random);

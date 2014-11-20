@@ -23,9 +23,10 @@ public class Tactic {
 
 	// checks if the spot in the setup is free
 	public boolean isFree(int i, int j) {
+		if(i>=0&&i<10&&j>=0&&j<4){
 		if (this.setup.getUnit(i, j).getType() == UnitType.AIR) {
 			return true;
-		}
+		}}
 		return false;
 	}
 
@@ -62,7 +63,7 @@ public class Tactic {
 				return true;
 			}
 		}
-		//if(setup.getAvailableUnits().size()==5){
+		
 		System.out.println("error"+ setup.getAvailableUnits().size()+setup.getView().getPlayerID());//}
 		return false;
 	}

@@ -55,19 +55,19 @@ public class SpyTactic extends Tactic {
 
 	private void placeNineNextToSpy() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		if (spyX + 1 < 4 && super.isFree(spyX + 1, spyY)) {
+		if (spyY + 1 < 4 && super.isFree(spyY,spyX + 1 )) {
 			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL,
 					spyX + 1, spyY, spyBehindTheLakeWeight));
 		}
-		if (spyX - 1 >= 0 && super.isFree(spyX - 1, spyY)) {
+		if (spyY - 1 >= 0 && super.isFree( spyY,spyX - 1)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL,
 					spyX - 1, spyY, spyBehindTheLakeWeight));
 		}
-		if (spyY + 1 < 10 && super.isFree(spyX, spyY + 1)) {
+		if (spyX + 1 < 10 && super.isFree(spyY + 1,spyX)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL, spyX,
 					spyY + 1, spyBehindTheLakeWeight));
 		}
-		if (spyY - 1 >= 0 && super.isFree(spyX, spyY - 1)) {
+		if (spyX - 1 >= 0 && super.isFree(spyY - 1,spyX)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.GENERAL, spyX,
 					spyY - 1, spyBehindTheLakeWeight));
 		}
@@ -81,19 +81,19 @@ public class SpyTactic extends Tactic {
 
 	private void placeSpyNextToNine() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
-		if (nineX + 1 < 4 && super.isFree(nineX + 1, nineY)) {
+		if (nineY + 1 < 4 && super.isFree( nineY,nineX + 1)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX + 1,
 					nineY, 1));
 		}
-		if (nineX - 1 >= 0 && super.isFree(nineX - 1, nineY)) {
+		if (nineY - 1 >= 0 && super.isFree( nineY,nineX - 1)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX - 1,
 					nineY, 1));
 		}
-		if (nineY + 1 < 10 && super.isFree(nineX, nineY + 1)) {
+		if (nineX + 1 < 10 && super.isFree( nineY + 1,nineX)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX,
 					nineY + 1, 1));
 		}
-		if (nineY - 1 >= 0 && super.isFree(nineX, nineY - 1)) {
+		if (nineX - 1 >= 0 && super.isFree(nineY - 1,nineX)) {
 			possiblePlacements.add(new UnitPlacement(UnitType.SPY, nineX,
 					nineY - 1, 1));
 		}
