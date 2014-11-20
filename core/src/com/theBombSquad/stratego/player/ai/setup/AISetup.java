@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.ai.setup;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Getter;
 
@@ -26,14 +27,17 @@ public class AISetup extends Setup{
 		executeTactics();
 	}
 	private void initAvailableUnits() {
-		availableUnits= new ArrayList<Unit>();
-		Unit.UnitType[] unitTypeEnum = Unit.UnitType.values();
-		// create a list containing all units that needs to be placed on the board
-		for (Unit.UnitType type : unitTypeEnum) {
-			for (int i = 0; i < type.getQuantity(); i++) {
-				availableUnits.add(new Unit(type, view.getPlayerID()));
-			}
-		}
+//		availableUnits= new ArrayList<Unit>();
+//		Unit.UnitType[] unitTypeEnum = {Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL};//Unit.UnitType.values();
+//		// create a list containing all units that needs to be placed on the board
+//		for (Unit.UnitType type : unitTypeEnum) {
+//			if(type!=Unit.UnitType.AIR && type!=Unit.UnitType.LAKE && type!=Unit.UnitType.UNKNOWN){
+//				for (int i = 0; i < type.getQuantity(); i++) {
+//					availableUnits.add(new Unit(type, view.getPlayerID()));
+//				}
+//			}
+//		}
+		this.availableUnits = new ArrayList<Unit>(view.getAvailableUnits());
 	}
 	
 	//executing the strategy step by step
@@ -54,7 +58,14 @@ public class AISetup extends Setup{
 			System.out.println();
 			System.out.println();
 
-		}*/}
+		}*/
+		}
+//		for(int cy=0; cy<this.getHeight(); cy++){
+//			for(int cx=0; cx<this.getWidth(); cx++){
+//				System.out.print(this.getBoard()[cy][cx].getType()+" ");
+//			}
+//			System.out.println();
+//		}
 	}
 	//picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {

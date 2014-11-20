@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="0.0" y="345.0">com.theBombSquad.stratego.gameMechanics.GameView</node>
+    <node x="168.5" y="822.0">com.theBombSquad.stratego.player.Player</node>
+    <node x="121.5" y="0.0">com.theBombSquad.stratego.gameMechanics.Game</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.theBombSquad.stratego.gameMechanics.GameView" target="com.theBombSquad.stratego.gameMechanics.Game">
+      <point x="0.0" y="-213.5" />
+      <point x="0.0" y="147.5" />
+    </edge>
+    <edge source="com.theBombSquad.stratego.player.Player" target="com.theBombSquad.stratego.gameMechanics.GameView">
+      <point x="-56.25" y="-59.0" />
+      <point x="224.75" y="797.0" />
+      <point x="140.5" y="797.0" />
+      <point x="-140.5" y="213.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.7604166666666666" x="281.0" y="470.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>public</VISIBILITY>
+</Diagram>
+

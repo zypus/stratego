@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SetupAI extends AI {
-	public SetupAI(GameView gameView) {
+public class SetupPlayerAI extends AI {
+	public SetupPlayerAI(GameView gameView) {
 		super(gameView);
 	}
 
@@ -40,9 +40,10 @@ public class SetupAI extends AI {
 	}
 
 	@Override
-	protected AISetup setup() {
+	protected Setup setup() {
 		AISetup setup = new AISetup(gameView);
 		gameView.setSetup(setup);
+		System.out.println(gameView.getPlayerID());
 		return setup;
 	}
 

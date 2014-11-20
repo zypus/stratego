@@ -9,7 +9,7 @@ import com.theBombSquad.stratego.player.ai.setup.Tactic;
 import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
 
 public class SpyTactic extends Tactic {
-	private final double spyNextToNineChance = 0.4;
+	private final double spyNextToNineChance = 0;
 
 	private final int spyBehindTheLakeWeight = 3;
 	private final int spyThirdRowWeight = 2;
