@@ -13,9 +13,6 @@ public class GameBoard implements Serializable {
 
 	private Unit[][] board; // board[y][x]
 
-	protected GameBoard() {
-	}
-
 	public GameBoard(int width, int height, Rectangle ... lakes) {
 		board = new Unit[height][width];
 		for (int y = 0; y < board.length; y++) {
