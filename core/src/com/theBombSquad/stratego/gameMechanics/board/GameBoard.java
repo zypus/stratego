@@ -3,6 +3,9 @@ package com.theBombSquad.stratego.gameMechanics.board;
 import java.awt.*;
 import java.io.Serializable;
 
+import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+
 /**
  * TODO Add description
  *
@@ -15,6 +18,24 @@ public class GameBoard implements Serializable {
 
 	protected GameBoard() {
 	}
+	
+	public int getAliveUnits(UnitType type, PlayerID id)
+	{
+		int counter=0;
+		for(int i =0; i<getWidth(); i++)
+		{
+			for(int j =0; j<getHeight(); j++)
+			{
+				if(id==board[j][i].getOwner() && type==board[j][i].getType())
+				{
+					counter++;
+				}
+			}
+		}
+		return counter;
+	}
+
+
 
 	public GameBoard(int width, int height, Rectangle ... lakes) {
 		board = new Unit[height][width];

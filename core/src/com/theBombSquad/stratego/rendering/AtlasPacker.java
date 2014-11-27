@@ -9,10 +9,10 @@ public class AtlasPacker {
 	private static final int MAX_SIZE = 1024;
 	
 	public static void pack(){
-		Settings settings = new Settings();
+		/*Settings settings = new Settings();
 		settings.maxWidth = MAX_SIZE;
 		settings.maxHeight = MAX_SIZE;
-		TexturePacker.process(settings, "img", "atlas", "atlas");
+		TexturePacker.process(settings, "img", "atlas", "atlas");*/
 	}
 
 }
