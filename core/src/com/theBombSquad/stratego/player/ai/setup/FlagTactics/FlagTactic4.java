@@ -54,7 +54,6 @@ public class FlagTactic4 extends FlagTactic{
 		super.placeUnit(toPut);
 		
 		//all possible bombplacements
-		
 		int [][] spots = {
 				{y  , x-2, 1},
 				{y-1, x-2, 2},
@@ -72,29 +71,16 @@ public class FlagTactic4 extends FlagTactic{
 		for(int i = 0; i< spots.length ; i++){
 			possiblePlacements.add(new UnitPlacement(UnitType.BOMB  , spots[i][1], spots[i][0], spots[i][2]));
 		}
-		/* Save for if array doesn't work
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x  , y-2, 1));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-1, y-2, 2));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y-2, 1));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y-1, 1));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y  , 2));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y+1, 1));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y+2, 1));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-1, y+2, 2));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x  , y+2, 1));
-		*/
 		
 		//place 1/2/3 bombs
 		int pick = (int)( Math.random()*9);
 		toPut = super.randomizeUnitPlacement();
 		super.placeUnit(toPut);
 		if(pick > 1){
-			System.out.println("here1");
 			toPut = super.randomizeUnitPlacement();
 			super.placeUnit(toPut);
 		}
 		if(pick >4){
-			System.out.println("here2");
 			toPut = super.randomizeUnitPlacement();
 			super.placeUnit(toPut);
 		}
@@ -118,28 +104,5 @@ public class FlagTactic4 extends FlagTactic{
 			toPut = super.randomizeUnitPlacement();
 			super.placeUnit(toPut);
 		}
-		/*
-		if(super.isFree(x, y-2)){
-			possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x  , y-2, 1));
-		}
-		if(super.isFree(x-1, y-2)){ 
-			possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-1, y-2, 2));
-		}
-		if(super.isFree(x-2, y-2)){
-			possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-2, y-2, 1));
-		}
-		if(super.isFree(x-2, y-1)){
-			possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-2, y-1, 1));
-		}
-		if(super.isFree(x-2, y)){
-			possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-2, y  , 2));
-		}
-		if(super.isFree(x-2, y+1))
-		possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-2, y+1, 1));
-		possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-2, y+2, 1));
-		possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x-1, y+2, 2));
-		possiblePlacements.add(new UnitPlacement(super.randomizeSL(), x  , y+2, 2));
-		*/
-		
 	}
 }

@@ -15,8 +15,8 @@ public class FlagTactic10 extends FlagTactic{
 
 	public FlagTactic10() {
 		super();
-
 	}
+	
 	public void addSetup(AISetup setup){
 		super.setup=setup;
 		proceed();
@@ -130,9 +130,7 @@ public class FlagTactic10 extends FlagTactic{
 				toPut.setX(1);
 				super.placeUnit(toPut);
 			}
-
 			super.placeUnit(toPut);
 		}
-		
 	}
 }

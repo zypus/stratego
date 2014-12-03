@@ -75,7 +75,7 @@ public class FlagTactic2 extends FlagTactic{
 		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y-2, 1));
 		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-2, y-3, 1));}
 		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x-1, y-3, 1));
-		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x, y-3, 3));
+		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x  , y-3, 4));
 		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x+1, y-3, 1));
 		if(x+2<=10){
 		possiblePlacements.add(new UnitPlacement(UnitType.BOMB, x+2, y-3, 1));

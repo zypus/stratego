@@ -21,11 +21,6 @@ public class FlagTactic5 extends FlagTactic{
 		proceed();
 	}
 
-	
-	//DOES ISFREE CHECK FOR CORNERS OF THE BOARD???????
-	//!!!!!!!!!!!!!11
-	//!!!!!!!!!!!!!
-	//!!!!!!!!!!!!!1
 	private void proceed() {
 		
 		UnitPlacement toPut = new UnitPlacement(UnitType.FLAG,  0,3, 1);

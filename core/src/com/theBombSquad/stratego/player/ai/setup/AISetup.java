@@ -72,7 +72,7 @@ public class AISetup extends Setup{
 	private void pickFlagTactic() {
 		ArrayList<FlagTactic> tactics= new ArrayList<FlagTactic>();
 		//FLAGTACTIC7 HAS BUGS
-		tactics.add(new FlagTactic7());
+		tactics.add(new FlagTactic4());
 		// add them all one by one
 		int random= (int)(Math.random()*tactics.size());
 		tactic=tactics.get(random);

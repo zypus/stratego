@@ -33,23 +33,16 @@ public class FlagTactic1 extends FlagTactic {
 		possiblePlacements = new ArrayList<UnitPlacement>();
 		for (int j = 1; j < setup.getWidth() - 1; j++) {
 			if (super.isFree(j-1, 3) && super.isFree(j + 1,3)) {
-				possiblePlacements.add(new UnitPlacement(UnitType.SCOUT, j, 3,
-						1));
-				possiblePlacements.add(new UnitPlacement(super.randomizeSL(),
-						j, 3, 1));
-
+				possiblePlacements.add(new UnitPlacement(UnitType.SCOUT, j, 3, 1));
+				possiblePlacements.add(new UnitPlacement(super.randomizeSL(), j, 3, 1));
 			}
 		}
 		toPut = super.randomizeUnitPlacement();
-		place(toPut);
-	
+		place(toPut);	
 	}
-
-
 
 	public void place(UnitPlacement toPut) {
 		// Flag/Scout
-		System.out.println("here");
 		super.placeUnit(toPut);
 		// left bomb
 		toPut.setX(toPut.getX() - 1);
@@ -71,5 +64,4 @@ public class FlagTactic1 extends FlagTactic {
 		toPut.setUnitType(super.randomizeSL());
 		super.placeUnit(toPut);
 	}
-
 }
