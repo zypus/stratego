@@ -69,7 +69,6 @@ public class MctsAI extends AI{
 					float randomRoll = rand.nextFloat();
 					float probsSum = aiUnit.getProbabilitySum();
 					while(!done){
-						System.out.println(probsSum);
 						float base = 0;
 						float nextBase = base;
 						for(int c=0; c<numberOfStillPlaceable.length; c++){
