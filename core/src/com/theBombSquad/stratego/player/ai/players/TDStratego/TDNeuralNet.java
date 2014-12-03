@@ -60,7 +60,10 @@ public class TDNeuralNet implements Serializable {
 	 */
 	public TDNeuralNet(int[] sizes, Function activation, Function prime) {
 		layers = new ArrayList<Matrix>(sizes.length - 1);
+		// Go through all layers and initialize the layers weight appropriately.
 		for (int i = 0; i < sizes.length - 1; i++) {
+			// N = L(i)_size			      M = L(i+1)_size
+			//     L(i) ----{ w(i) = M x N }----> L(i+1)
 			Matrix weights = new Matrix(sizes[i + 1], sizes[i]);
 			Function random = new RandomFunction(sizes[i], sizes[i + 1]);
 			layers.add(map(random, weights));
@@ -73,7 +76,10 @@ public class TDNeuralNet implements Serializable {
 	 * Sets the weights of the complete network to a appropriate random value.
 	 */
 	public void randomizeWeights() {
+		/** Go through all layers and initialize the layers weight appropriately. */
 		for (int i = 0; i < layers.size(); i++) {
+			/** N = L(i)_size			      M = L(i+1)_size */
+			/**     L(i) ----{ w(i) = M x N }----> L(i+1) */
 			Matrix layer = layers.get(i);
 			int in = layer.getColumnDimension();
 			int out = layer.getRowDimension();
@@ -89,13 +95,16 @@ public class TDNeuralNet implements Serializable {
 	 */
 	public NetResult fire(Matrix activations, int layerIndex) {
 
-//		log.info("Activation: " + activations.numRows()+"x"+activations.numCols());
-//		log.info("Layer: " + layers.get(layerIndex)
+//		System.out.println("Activation: " + activations.numRows()+"x"+activations.numCols());
+//		System.out.println("Layer: " + layers.get(layerIndex)
 //								   .numRows() + "x" + layers.get(layerIndex)
-//															.numCols());
+//									.numCols());
+		/** i = layerIndex */
+		/** z = Weights(i) * a(i); */
 		Matrix result = layers.get(layerIndex)
 									.times(activations);
-//		log.info("Result: " + result.numRows() + "x" + result.numCols());
+//		System.out.println("Result: " + result.numRows() + "x" + result.numCols());
+		/** a(i+1) = activationFunction( z ) */
 		Matrix processedResult = map(activationFunction, result);
 		return new NetResult(processedResult, result);
 	}
@@ -110,50 +119,58 @@ public class TDNeuralNet implements Serializable {
 	 * @return The new eligibility trace.
 	 */
 	public List<Matrix> computeEligibilityTraces(List<Matrix> previousTraces, List<Matrix> layerActivations, List<Matrix> unprocessedLayerActivations, float lambda, int k) {
-//		log.info("Begin eligibility trace computation.");
+//		System.out.println("Begin eligibility trace computation.");
 		int size = layerActivations.size();
-//		log.info("Activation layer size: " + size);
+//		System.out.println("Activation layer size: " + size);
 		List<Matrix> nabla = new ArrayList<Matrix>(size-1);
 		int last = size - 1;
-//		log.info("Unprocessed: " + unprocessedLayerActivations.get(last));
+//		System.out.println("Unprocessed: " + unprocessedLayerActivations.get(last));
+		/** delta(last) = activationFunction'( z(last) ) */
 		Matrix delta = map(activationFunctionPrime, unprocessedLayerActivations.get(last));
+		/** Leave only the error of the requested output node non zero, to get the eligibility trace dependent on that node */
 		for (int i = 0; i < delta.getRowDimension(); i++) {
 			if (i != k) {
 				delta.set(i,0, 0);
 			}
 		}
-//		log.info("Delta: " + delta);
-//		log.info("Activation: " + layerActivations.get(last - 1));
+//		System.out.println("Delta: " + delta);
+//		System.out.println("Activation: " + layerActivations.get(last - 1));
+		/** nabla(last) = delta * a(last)^T */
 		nabla.add(delta.times(layerActivations.get(last - 1)
 											  .transpose()));
-//		log.info("Nabla: " + nabla.get(last - 1));
+//		System.out.println("Nabla: " + nabla.get(last - 1));
+		/** Goes backwards through the layers of the network an back-propagates the gradient */
 		for (int i = last-1; i > 0; i--) {
-//			log.info("Iteration: " + i);
+			/** delta(i) = W(i)^T * delta(i+1) .* (activationFunction'(z(i))) */
+//			System.out.println("Iteration: " + i);
 			Matrix z = unprocessedLayerActivations.get(i);
-//			log.info("Unprocessed: " + z);
+//			System.out.println("Unprocessed: " + z);
 			Matrix svp = map(activationFunctionPrime, z);
-//			log.info("Svp: " + svp);
-//			log.info("Layer: " + layers.get(i));
+//			System.out.println("Svp: " + svp);
+//			System.out.println("Layer: " + layers.get(i));
 			delta = layers.get(i)
 						  .transpose()
 						  .times(delta)
 						  .arrayTimes(svp);
-//			log.info("Delta: " + delta);
-//			log.info("Activation: " + layerActivations.get(i - 1));
+//			System.out.println("Delta: " + delta);
+//			System.out.println("Activation: " + layerActivations.get(i - 1));
+			/** nabla(i) = delta * a(i-1)^T */
 			nabla.add(delta.times(layerActivations.get(i - 1)
 												  .transpose()));
-//			log.info(nabla.get(i - 1)
+//			System.out.println(nabla.get(i - 1)
 //						  .toString());
 		}
+		/** To avoid pre-initialisation of the nabla list the values were added in reverse, so to get the correct order of nablas, the list needs to be reversed */
 		Collections.reverse(nabla);
 		List<Matrix> newTraces = new ArrayList<Matrix>(previousTraces.size());
+		/** ET_t+1 = lambda * ET_t + nabla_t+1 */
 		for (int i = 0; i < previousTraces.size(); i++) {
-//			log.info("Trace " + i);
+//			System.out.println("Trace " + i);
 			Matrix trace = previousTraces.get(i);
-//			log.info("Previous trace: " + trace + " Nabla: " + nabla.get(i));
+//			System.out.println("Previous trace: " + trace + " Nabla: " + nabla.get(i));
 			newTraces.add(trace.times(lambda)
 								  .plus(nabla.get(i)));
-//			log.info("New trace: " + newTraces.get(i));
+//			System.out.println("New trace: " + newTraces.get(i));
 		}
 		return newTraces;
 	}
