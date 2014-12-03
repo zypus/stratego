@@ -164,12 +164,12 @@ public class TDNeuralNet implements Serializable {
 	 * @param errors The current error.
 	 * @param alpha The learning rate.
 	 */
-	public void updateWeights(List<List<Matrix>> traces, Matrix errors, float alpha) {
+	public void updateWeights(List<List<Matrix>> traces, Matrix errors, float[] alphas) {
 		for (int i = layers.size() - 1; i >= 0; i--) {
 			Matrix layer = layers.get(i);
 			for (int k = 0; k < errors.getRowDimension(); k++) {
 				Matrix trace = traces.get(k).get(i);
-				layer = layer.plus(trace.times(alpha * errors.get(k, 0)));
+				layer = layer.plus(trace.times(alphas[i] * errors.get(k, 0)));
 			}
 			layers.set(i, layer);
 		}

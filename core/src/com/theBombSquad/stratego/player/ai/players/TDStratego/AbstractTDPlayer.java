@@ -13,17 +13,17 @@ import java.util.List;
  */
 public abstract class AbstractTDPlayer<S> {
 
-	private float lambda;
-	private float learningRate;
-	
-	private TDNeuralNet  net;
-	private                 Matrix       previousResult = null;
-	private List<List<Matrix>> previousEligibilityTraces = new ArrayList<List<Matrix>>();
+	private float 				lambda;
+	private float[] 				learningRates;
 
-	private AbstractTDPlayer(TDNeuralNet net, float lambda, float learningRate) {
+	private TDNeuralNet  		net;
+	private Matrix       		previousResult = null;
+	private List<List<Matrix>> 	previousEligibilityTraces = new ArrayList<List<Matrix>>();
+
+	private AbstractTDPlayer(TDNeuralNet net, float lambda, float[] learningRates) {
 		this.net = net;
 		this.lambda = lambda;
-		this.learningRate = learningRate;
+		this.learningRates = learningRates;
 		eraseTraces();
 	}
 
@@ -105,7 +105,7 @@ public abstract class AbstractTDPlayer<S> {
 			previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), activations, unprocessedActivations, lambda, k));
 		}
 		Matrix error = currentResult.minus(expectation);
-		net.updateWeights(previousEligibilityTraces, error, learningRate);
+		net.updateWeights(previousEligibilityTraces, error, learningRates);
 		return currentResult;
 	}
 
