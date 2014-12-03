@@ -112,6 +112,7 @@ public class InformationRenderer extends Renderer{
 		float size = POINT_TILE_SIZE * getScale() * scaler;
 		float tileSize = POINT_TILE_SIZE * getScale();
 		PlayerID currentID = game.getCurrentPlayer();
+		//TODO: Fix empty movedUnit statement
 		Unit movedUnit = move.getMovedUnit();
 		int unitRank = movedUnit.getType().getRank();
 		int player = (movedUnit.getOwner().equals(PlayerID.PLAYER_1) ? 0 : 1);
