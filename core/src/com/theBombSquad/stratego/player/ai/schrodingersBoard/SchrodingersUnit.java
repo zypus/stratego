@@ -1,5 +1,7 @@
 package com.theBombSquad.stratego.player.ai.schrodingersBoard;
 
+import java.util.ArrayList;
+
 import lombok.Getter;
 
 import com.theBombSquad.stratego.StrategoConstants;
@@ -172,6 +174,22 @@ public class SchrodingersUnit {
 	public void revealedUpdate(UnitType unit, float armySize){
 		probabilities[unit.getRank()] = probabilities[unit.getRank()]-(probSum/armySize);
 		calcProbSum();
+	}
+	
+	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to lose, returns false if it is impossible for it to lose */
+	public boolean combatUpdateLose(SchrodingersUnit known, SchrodingersBoard board){
+		ArrayList<UnitType> weakerThanKnown = new ArrayList<UnitType>();
+		boolean possible = false;
+		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
+			if(known.getKnownUnit().getRank()>unitType.getRank()){
+				weakerThanKnown.add(unitType);
+				if(this.probabilities[unitType.getRank()]>0){
+					possible = true;
+				}
+			}
+		}
+		
+		return false;
 	}
 
 }

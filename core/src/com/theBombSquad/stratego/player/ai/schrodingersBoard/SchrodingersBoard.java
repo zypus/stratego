@@ -10,6 +10,7 @@ import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+import com.theBombSquad.stratego.player.ai.evaluationFunction.EvaluationFunction;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -97,12 +98,14 @@ public class SchrodingersBoard {
 	}
 	
 	/** Creates a new Board in which unit from origin is now at destination */
-	public SchrodingersBoard moveUnit(int originX, int originY, int destX, int destY){
+	public ArrayList<SchrodingersBoard> moveUnit(int originX, int originY, int destX, int destY){
+		ArrayList<SchrodingersBoard> list = new ArrayList<SchrodingersBoard>();
 		SchrodingersBoard newBoard = clone();
 		//Moves onto empty square
 		if(newBoard.getBoard()[destY][destX].isAir()){
 			newBoard.getBoard()[destY][destX] = newBoard.getBoard()[originY][originX];
 			newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+			list.add(newBoard);
 		}
 		//Destination is not empty - i.e. Encounter!
 		else{
@@ -157,7 +160,22 @@ public class SchrodingersBoard {
 				}
 			}
 		}
-		return newBoard;
+		return list;
+	}
+	
+	/** Generates All Possible Boards That Can Follow This Board Given That Given Player Makes A Move */
+	public SchrodingersBoard[] generateAllMoves(PlayerID player){
+		return new SchrodingersBoard[]{this};
+	}
+	
+	/** Evaluates This Board */
+	public float evaluate(EvaluationFunction eval){
+		return 42f;
+	}
+	
+	/** Generates A Random Move Based Upon The Given Player */
+	public SchrodingersBoard generateRandomMove(PlayerID player){
+		return this;
 	}
 	
 	
