@@ -1,8 +1,8 @@
 package com.theBombSquad.stratego.player.ai.players.TDStratego;
 
+import Jama.Matrix;
 import lombok.Getter;
 import lombok.Setter;
-import org.ejml.simple.SimpleMatrix;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -20,12 +20,12 @@ public class TDTestConnectFour {
 	public static void main(String[] args) {
 		TDConnectFour player = new TDConnectFour(true);
 		GameSession gameSession = new GameSession(player, player);
-		for (int i = 0; i < 50000; i++) {
+		for (int i = 0; i < 100000; i++) {
 			System.out.println("Session: "+(i+1));
 			gameSession.startSession();
 		}
 		System.out.println("Attempt to save");
-		TDNeuralNet.saveNeuralNet(player.getNet(), "test/TDConnectFour/test50000seed.net");
+		TDNeuralNet.saveNeuralNet(player.getNet(), "test/TDConnectFour/test100000seed.net");
 		System.out.println("Saved");
 	}
 
@@ -228,17 +228,17 @@ public class TDTestConnectFour {
 		private GameSession session;
 		@Getter @Setter private TDNeuralNet        net;
 		private                 boolean            learning;
-		private                 List<SimpleMatrix> bestActivations;
-		private                 List<SimpleMatrix> bestUnprocessedActivations;
-		private                 SimpleMatrix       previousResult;
+		private                 List<Matrix> bestActivations;
+		private                 List<Matrix> bestUnprocessedActivations;
+		private                 Matrix       previousResult;
 
-		private List<List<SimpleMatrix>> previousEligibilityTraces;
+		private List<List<Matrix>> previousEligibilityTraces;
 
 		public TDConnectFour(boolean learning) {
 			this.learning = learning;
 			sizes = new int[] { 6 * 7 * 2 + 2, 22, 2 };
 			net = new TDNeuralNet(sizes, new Sigmoid(), new SigmoidPrime());
-			previousEligibilityTraces = new ArrayList<List<SimpleMatrix>>();
+			previousEligibilityTraces = new ArrayList<List<Matrix>>();
 			eraseTraces();
 			previousResult = null;
 		}
@@ -246,17 +246,17 @@ public class TDTestConnectFour {
 		private void eraseTraces() {
 			if (previousEligibilityTraces.isEmpty()) {
 				for (int k = 0; k < sizes[sizes.length - 1]; k++) {
-					List<SimpleMatrix> kTraces = new ArrayList<SimpleMatrix>();
+					List<Matrix> kTraces = new ArrayList<Matrix>();
 					for (int i = 0; i < sizes.length - 1; i++) {
-						SimpleMatrix trace = new SimpleMatrix(sizes[i + 1], sizes[i]);
+						Matrix trace = new Matrix(sizes[i + 1], sizes[i]);
 						kTraces.add(trace);
 					}
 					previousEligibilityTraces.add(kTraces);
 				}
 			} else {
-				for (List<SimpleMatrix> traces : previousEligibilityTraces) {
-					for (SimpleMatrix trace : traces) {
-						trace.scale(0);
+				for (List<Matrix> traces : previousEligibilityTraces) {
+					for (Matrix trace : traces) {
+						trace.times(0);
 					}
 				}
 			}
@@ -274,16 +274,16 @@ public class TDTestConnectFour {
 
 		@Override
 		public int getNextMove(int[][] board) {
-//			List<Integer> validMoves = getPossibleMoves(board);
+			//			List<Integer> validMoves = getPossibleMoves(board);
 			int bestMove = -1;
 			float bestScore = -1;
-			SimpleMatrix currentResult = new SimpleMatrix(2, 1);
+			Matrix currentResult = new Matrix(2, 1);
 			for (int m = 0; m < board.length; m++) {
-				if (board[m][board[0].length-1] == 0) {
+				if (board[m][board[0].length - 1] == 0) {
 					int[][] futureBoard = session.getNextBoard(board, m);
-					SimpleMatrix activation = boardToActivation(futureBoard, session.getTurn());
-					List<SimpleMatrix> activations = new ArrayList<SimpleMatrix>();
-					List<SimpleMatrix> unprocessedActivations = new ArrayList<SimpleMatrix>();
+					Matrix activation = boardToActivation(futureBoard, session.getTurn());
+					List<Matrix> activations = new ArrayList<Matrix>();
+					List<Matrix> unprocessedActivations = new ArrayList<Matrix>();
 					unprocessedActivations.add(activation);
 					activations.add(activation);
 					for (int i = 0; i < net.getNumberOfLayers(); i++) {
@@ -308,7 +308,7 @@ public class TDTestConnectFour {
 				for (int k = 0; k < sizes[sizes.length - 1]; k++) {
 					previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), bestActivations, bestUnprocessedActivations, lambda, k));
 				}
-				SimpleMatrix error = currentResult.minus(previousResult);
+				Matrix error = currentResult.minus(previousResult);
 				net.updateWeights(previousEligibilityTraces, error, learningRate);
 			}
 			previousResult = currentResult;
@@ -318,7 +318,7 @@ public class TDTestConnectFour {
 		@Override
 		public void gameFinished(int winner) {
 			if (learning) {
-				SimpleMatrix actualResult = new SimpleMatrix(2, 1);
+				Matrix actualResult = new Matrix(2, 1);
 				if (winner == 1) {
 					actualResult.set(0, 0, 1);
 				} else
@@ -328,7 +328,7 @@ public class TDTestConnectFour {
 				for (int k = 0; k < sizes[sizes.length - 1]; k++) {
 					previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), bestActivations, bestUnprocessedActivations, lambda, k));
 				}
-				SimpleMatrix error = previousResult.minus(actualResult);
+				Matrix error = previousResult.minus(actualResult);
 				net.updateWeights(previousEligibilityTraces, error, learningRate);
 				// erase traces
 				eraseTraces();
@@ -336,8 +336,8 @@ public class TDTestConnectFour {
 			}
 		}
 
-		private SimpleMatrix boardToActivation(int[][] board, int turn) {
-			SimpleMatrix activation = new SimpleMatrix(board.length * board[0].length * 2 + 2, 1);
+		private Matrix boardToActivation(int[][] board, int turn) {
+			Matrix activation = new Matrix(board.length * board[0].length * 2 + 2, 1);
 			for (int i = 0; i < board.length; i++) {
 				for (int j = 0; j < board[0].length; j++) {
 					int offset = (i * board[0].length + j) * 2;
@@ -349,12 +349,12 @@ public class TDTestConnectFour {
 												  : 0);
 				}
 			}
-			if (turn%2==0) {
+			if (turn % 2 == 0) {
 				activation.set(board.length * board[0].length * 2, 0, 1);
-				activation.set(board.length * board[0].length * 2+1, 0, 0);
+				activation.set(board.length * board[0].length * 2 + 1, 0, 0);
 			} else {
 				activation.set(board.length * board[0].length * 2, 0, 0);
-				activation.set(board.length * board[0].length * 2+1, 0, 1);
+				activation.set(board.length * board[0].length * 2 + 1, 0, 1);
 			}
 
 			return activation;
