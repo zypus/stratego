@@ -39,6 +39,20 @@ public class TDNeuralNet implements Serializable {
 	}
 
 	/**
+	 * Gets the number of nodes in the specified layer.
+	 * @param layerIndex The layer number, index starts add 0.
+	 * @return The number of nodes in that layer.
+	 */
+	public int getSizeOfLayer(int layerIndex) {
+		if (layerIndex < getNumberOfLayers() - 1) {
+			return layers.get(layerIndex)
+				  .getColumnDimension();
+		} else {
+			return layers.get(layerIndex-1).getRowDimension();
+		}
+	}
+
+	/**
 	 * Creates a new neural network with the given layer sizes and activation function.
 	 * @param sizes The sizes of the layers. Ie. {100, 20, 2} creates a network with an input layer of size 100, a single hidden layer with size 20 and an output layer of size 2.
 	 * @param activation The function used for the node activation.
@@ -70,16 +84,16 @@ public class TDNeuralNet implements Serializable {
 	/**
 	 * Computes the activation of a single layer.
 	 * @param activations The activation given to the layer.
-	 * @param layerNr The layer number in the network.
+	 * @param layerIndex The layer number in the network.
 	 * @return The resulting activation of that layer.
 	 */
-	public NetResult fire(Matrix activations, int layerNr) {
+	public NetResult fire(Matrix activations, int layerIndex) {
 
 //		log.info("Activation: " + activations.numRows()+"x"+activations.numCols());
-//		log.info("Layer: " + layers.get(layerNr)
-//								   .numRows() + "x" + layers.get(layerNr)
+//		log.info("Layer: " + layers.get(layerIndex)
+//								   .numRows() + "x" + layers.get(layerIndex)
 //															.numCols());
-		Matrix result = layers.get(layerNr)
+		Matrix result = layers.get(layerIndex)
 									.times(activations);
 //		log.info("Result: " + result.numRows() + "x" + result.numCols());
 		Matrix processedResult = map(activationFunction, result);
