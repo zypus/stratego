@@ -177,19 +177,138 @@ public class SchrodingersUnit {
 	}
 	
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to lose, returns false if it is impossible for it to lose */
-	public boolean combatUpdateLose(SchrodingersUnit known, SchrodingersBoard board){
+	public boolean combatUpdateLose(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		boolean unitWasKnown = this.unitIsKnown();
 		ArrayList<UnitType> weakerThanKnown = new ArrayList<UnitType>();
+		ArrayList<UnitType> not = new ArrayList<UnitType>();
 		boolean possible = false;
 		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
-			if(known.getKnownUnit().getRank()>unitType.getRank()){
+			if(known.getKnownUnit().getRank()>unitType.getRank() && !(!offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.SPY.getRank() && unitType.getRank()==Unit.UnitType.MARSHAL.getRank())){
 				weakerThanKnown.add(unitType);
 				if(this.probabilities[unitType.getRank()]>0){
 					possible = true;
 				}
 			}
+			else{
+				not.add(unitType);
+			}
 		}
-		
-		return false;
+		if(!possible){
+			return false;
+		}
+		else{
+			for(int c=0; c<not.size(); c++){
+				this.probabilities[not.get(c).getRank()] = 0;
+			}
+			this.calcProbSum();
+			if(this.unitIsKnown() && !unitWasKnown){
+				//Revealed Update
+				for(int cy=0; cy<board.getHeight(); cy++){
+					for(int cx=0; cx<board.getWidth(); cx++){
+						SchrodingersUnit u = board.getBoard()[cy][cx];
+						if(u.isActualUnit() && u.owner==this.owner){
+							u.revealedUpdate(this.knownUnit, board.getOpponentArmySize());
+						}
+					}
+				}
+			}
+			//Update Death
+			for(int cy=0; cy<board.getHeight(); cy++){
+				for(int cx=0; cx<board.getWidth(); cx++){
+					SchrodingersUnit u = board.getBoard()[cy][cx];
+					if(u.isActualUnit() && u.owner==this.owner){
+						for(int c=0; c<this.probabilities.length; c++){
+							u.deathUpdate(Unit.getUnitTypeOfRank(c), this.probabilities[c], board.getOpponentArmySize());
+						}
+					}
+				}
+			}
+			return true;
+		}
 	}
+	
+	
+	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
+	public boolean combatUpdateDraw(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		boolean unitWasKnown = this.unitIsKnown();
+		boolean possible = this.probabilities[known.getKnownUnit().getRank()]>0;
+		if(!possible){
+			return false;
+		}
+		else{
+			for(int c=0; c<this.probabilities.length; c++){
+				if(c!=known.getKnownUnit().getRank()){
+					this.probabilities[c] = 0;
+				}
+			}
+			this.calcProbSum();
+			if(this.unitIsKnown() && !unitWasKnown){
+				//Revealed Update
+				for(int cy=0; cy<board.getHeight(); cy++){
+					for(int cx=0; cx<board.getWidth(); cx++){
+						SchrodingersUnit u = board.getBoard()[cy][cx];
+						if(u.isActualUnit() && u.owner==this.owner){
+							u.revealedUpdate(this.knownUnit, board.getOpponentArmySize());
+						}
+					}
+				}
+			}
+			//Update Death
+			for(int cy=0; cy<board.getHeight(); cy++){
+				for(int cx=0; cx<board.getWidth(); cx++){
+					SchrodingersUnit u = board.getBoard()[cy][cx];
+					if(u.isActualUnit() && u.owner==this.owner){
+						for(int c=0; c<this.probabilities.length; c++){
+							u.deathUpdate(Unit.getUnitTypeOfRank(c), this.probabilities[c], board.getOpponentArmySize());
+						}
+					}
+				}
+			}
+			return true;
+		}
+	}
+	
+	
+	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
+	public boolean combatUpdateWin(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		boolean unitWasKnown = this.unitIsKnown();
+		ArrayList<UnitType> strongerThanKnown = new ArrayList<UnitType>();
+		ArrayList<UnitType> not = new ArrayList<UnitType>();
+		boolean possible = false;
+		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
+			known.getKnownUnit().getRank();
+			if((known.getKnownUnit().getRank()<unitType.getRank() || (offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.MARSHAL.getRank() && unitType.getRank()==Unit.UnitType.SPY.getRank()) || (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank())) && !(unitType.getRank()==Unit.UnitType.BOMB.getRank() && known.getKnownUnit().getRank()==Unit.UnitType.SAPPER.getRank())){
+				strongerThanKnown.add(unitType);
+				if(this.probabilities[unitType.getRank()]>0){
+					possible = true;
+				}
+			}
+			else{
+				not.add(unitType);
+			}
+		}
+		if(!possible){
+			return false;
+		}
+		else{
+			for(int c=0; c<not.size(); c++){
+				this.probabilities[not.get(c).getRank()] = 0;
+			}
+			this.calcProbSum();
+			if(this.unitIsKnown() && !unitWasKnown){
+				//Revealed Update
+				for(int cy=0; cy<board.getHeight(); cy++){
+					for(int cx=0; cx<board.getWidth(); cx++){
+						SchrodingersUnit u = board.getBoard()[cy][cx];
+						if(u.isActualUnit() && u.owner==this.owner){
+							u.revealedUpdate(this.knownUnit, board.getOpponentArmySize());
+						}
+					}
+				}
+			}
+			return true;
+		}
+	}
+	
 
 }

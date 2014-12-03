@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.ai.schrodingersBoard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.evaluationFunction.EvaluationFunction;
@@ -20,6 +22,14 @@ public class SchrodingersBoard {
 	private int opponentArmySize;
 	private int ownArmySize;
 	private GameView view;
+	
+	public int getHeight(){
+		return board.length;
+	}
+	
+	public int getWidth(){
+		return board[0].length;
+	}
 	
 	/** Constructs New Schrodingers Box Which Is Dependent On A Single (The Current) State */
 	public SchrodingersBoard(GameView view){
@@ -97,64 +107,179 @@ public class SchrodingersBoard {
 		return new SchrodingersBoard(cBoard, ownArmySize, opponentArmySize, view);
 	}
 	
-	/** Creates a new Board in which unit from origin is now at destination */
+	/** Creates a new Board in which unit from origin is now at destination - Also executes Enounters! */
 	public ArrayList<SchrodingersBoard> moveUnit(int originX, int originY, int destX, int destY){
 		ArrayList<SchrodingersBoard> list = new ArrayList<SchrodingersBoard>();
-		SchrodingersBoard newBoard = clone();
+		SchrodingersBoard placeHolder = clone();
+		placeHolder.board[originY][originX].removePossibilityFor(Unit.UnitType.BOMB);
+		placeHolder.board[originY][originX].removePossibilityFor(Unit.UnitType.FLAG);
 		//Moves onto empty square
-		if(newBoard.getBoard()[destY][destX].isAir()){
+		if(getBoard()[destY][destX].isAir()){
+			SchrodingersBoard newBoard = placeHolder.clone();
 			newBoard.getBoard()[destY][destX] = newBoard.getBoard()[originY][originX];
 			newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
 			list.add(newBoard);
 		}
 		//Destination is not empty - i.e. Encounter!
 		else{
-			SchrodingersUnit dest = newBoard.getBoard()[destY][destX];
-			SchrodingersUnit orig = newBoard.getBoard()[originY][originX];
-			if(dest.unitIsKnown() && orig.unitIsKnown()){
-				//Both Units are known
+			SchrodingersUnit dest = getBoard()[destY][destX];
+			SchrodingersUnit orig = getBoard()[originY][originX];
+			SchrodingersUnit analysed = null;
+			SchrodingersUnit helper = null;
+			boolean offensiveNotDefensive = orig.getOwner()==view.getOpponentID();
+			if(orig.getOwner()==view.getOpponentID()){
+				analysed = orig;
+				helper = dest;
 			}
 			else{
-				//Only Player's Unit is known
-				ArrayList<UnitType> weakerUnits = new ArrayList<UnitType>();
-				ArrayList<UnitType> strongerUnits = new ArrayList<UnitType>();
-				ArrayList<UnitType> draws = new ArrayList<UnitType>();
-				if(orig.getOwner()==view.getPlayerID()){
-					//Origin Unit (Controlled By Self) Known
-					UnitType ut = orig.getKnownUnit();
-					for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
-						if(ut.getRank()>unitType.getRank()){
-							weakerUnits.add(unitType);
+				analysed = dest;
+				helper = orig;
+			}
+			//Win With Analyzed
+			SchrodingersBoard win = placeHolder.clone();
+			if(analysed.combatUpdateWin(helper, win, offensiveNotDefensive)){
+				SchrodingersBoard newBoard = win;
+				newBoard.getBoard()[destY][destX] = newBoard.getBoard()[originY][originX];
+				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+				newBoard.ownArmySize = newBoard.ownArmySize-1;
+				list.add(newBoard);
+			}
+			//Draw With Analyzed
+			SchrodingersBoard draw = placeHolder.clone();
+			if(analysed.combatUpdateDraw(helper, draw, offensiveNotDefensive)){
+				SchrodingersBoard newBoard = draw;
+				newBoard.getBoard()[destY][destX] = new SchrodingersUnit(true);
+				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+				newBoard.ownArmySize = newBoard.ownArmySize-1;
+				newBoard.opponentArmySize = newBoard.opponentArmySize-1;
+				list.add(newBoard);
+			}
+			//Lose With Analyzed
+			SchrodingersBoard lose = placeHolder.clone();
+			if(analysed.combatUpdateDraw(helper, lose, offensiveNotDefensive)){
+				SchrodingersBoard newBoard = lose;
+				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+				newBoard.opponentArmySize = newBoard.opponentArmySize-1;
+				list.add(newBoard);
+			}
+		}
+		return list;
+	}
+	
+	/** Generates All Possible Moves That Can Follow This Board Given Player */
+	public List<Move> generateAllMoves(PlayerID player){
+		ArrayList<Move> list = new ArrayList<Move>();
+		for(int cy=0; cy<board.length; cy++){
+			for(int cx=0; cx<board[cy].length; cx++){
+				SchrodingersUnit u = board[cy][cx];
+				if(!u.isAir() && !u.isLake()){
+					if(u.getOwner()==player){
+						boolean canMove = false;
+						for(int c=1; c<11; c++){
+							//Goes Through All Units Not Flag (0) And Not Bomb (11)
+							if(u.getProbabilityFor(Unit.getUnitTypeOfRank(c))>0){
+								canMove = true;
+							}
 						}
-						else if(ut.getRank()==Unit.UnitType.SAPPER.getRank() && unitType.getRank()==Unit.UnitType.BOMB.getRank()){
-							weakerUnits.add(unitType);
-						}
-						else if(ut.getRank()==Unit.UnitType.SPY.getRank() && unitType.getRank()==Unit.UnitType.MARSHAL.getRank()){
-							weakerUnits.add(unitType);
-						}
-						else if(ut.getRank()==unitType.getRank()){
-							draws.add(unitType);
-						}
-						else{
-							strongerUnits.add(unitType);
-						}
-					}
-				}
-				else{
-					//Destination Unit Known (Controlled By Self)
-					UnitType ut = dest.getKnownUnit();
-					for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
-						if(ut.getRank()>unitType.getRank()){
-							weakerUnits.add(unitType);
-						}
-						else if(ut.getRank()==unitType.getRank()){
-							draws.add(unitType);
-						}
-						else if(ut.getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank()){
-							strongerUnits.add(unitType);
-						}
-						else{
-							strongerUnits.add(unitType);
+						if(canMove){
+							int posX = -1;
+							int posY = -1;
+							if(!(board[cy][cx].getProbabilityFor(Unit.UnitType.SCOUT)>0)){
+								posX = cx;
+								posY = cy-1;
+								if(posX>=0 && posY>=0 && posX<board[0].length && posY<board.length){
+									if(board[posY][posX].isAir() || (board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player)){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+								}
+								posX = cx;
+								posY = cy+1;
+								if(posX>=0 && posY>=0 && posX<board[0].length && posY<board.length){
+									if(board[posY][posX].isAir() || (board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player)){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+								}
+								posX = cx-1;
+								posY = cy;
+								if(posX>=0 && posY>=0 && posX<board[0].length && posY<board.length){
+									if(board[posY][posX].isAir() || (board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player)){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+								}
+								posX = cx+1;
+								posY = cy;
+								if(posX>=0 && posY>=0 && posX<board[0].length && posY<board.length){
+									if(board[posY][posX].isAir() || (board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player)){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+								}
+							}
+							else{
+								//Up
+								posX = cx;
+								posY = cy;
+								while(posY>=0+1){
+									posY--;
+									if(board[posY][posX].isAir()){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+									else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player){
+										list.add(new Move(cx, cy, posX, posY));
+										break;
+									}
+									else{
+										break;
+									}
+								}
+								//Right
+								posX = cx;
+								posY = cy;
+								while(posX<board[cy].length-1){
+									posX++;
+									if(board[posY][posX].isAir()){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+									else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player){
+										list.add(new Move(cx, cy, posX, posY));
+										break;
+									}
+									else{
+										break;
+									}
+								}
+								//Down
+								posX = cx;
+								posY = cy;
+								while(posY<board.length-1){
+									posY++;
+									if(board[posY][posX].isAir()){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+									else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player){
+										list.add(new Move(cx, cy, posX, posY));
+										break;
+									}
+									else{
+										break;
+									}
+								}
+								//Left
+								posX = cx;
+								posY = cy;
+								while(posX>=0+1){
+									posX--;
+									if(board[posY][posX].isAir()){
+										list.add(new Move(cx, cy, posX, posY));
+									}
+									else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner()!=player){
+										list.add(new Move(cx, cy, posX, posY));
+										break;
+									}
+									else{
+										break;
+									}
+								}
+							}
 						}
 					}
 				}
@@ -163,18 +288,20 @@ public class SchrodingersBoard {
 		return list;
 	}
 	
-	/** Generates All Possible Boards That Can Follow This Board Given That Given Player Makes A Move */
-	public SchrodingersBoard[] generateAllMoves(PlayerID player){
-		return new SchrodingersBoard[]{this};
+	/** Generates List Of Schrodingers Boards based upon move (Move is assumed to be legal) */
+	public List<SchrodingersBoard> generateFromMove(Move move){
+		return moveUnit(move.getFromX(), move.getFromY(), move.getToX(), move.getToY());
 	}
 	
 	/** Evaluates This Board */
 	public float evaluate(EvaluationFunction eval){
+		//TODO: Make
 		return 42f;
 	}
 	
 	/** Generates A Random Move Based Upon The Given Player */
 	public SchrodingersBoard generateRandomMove(PlayerID player){
+		//TODO: Make
 		return this;
 	}
 	
