@@ -29,8 +29,7 @@ private void proceed() {
 		blockBombs();
 		blockMarshal();
 		blockBombs();
-		blockColonel();
-		
+		blockColonel();	
 	}
 
 	private void blockFlag(){
@@ -59,7 +58,6 @@ private void proceed() {
 		super.placeUnit(toPut);
 		toPut.setX(toPut.getX()+1);
 		super.placeUnit(toPut);
-		
 	}
 	
 	private void blockBombs(){
@@ -84,7 +82,7 @@ private void proceed() {
 			toPut.setX(toPut.getX()-1);
 			super.placeUnit(toPut);
 			//place second one?
-			if(random < 0.6){
+			if(random < 0.7){
 				toPut.setUnitType(super.randomizeSL());
 				toPut.setX(toPut.getX()+1);
 			}
@@ -186,7 +184,6 @@ private void proceed() {
 				}
 			else return;
 		}
-		
 	}
 }
 
