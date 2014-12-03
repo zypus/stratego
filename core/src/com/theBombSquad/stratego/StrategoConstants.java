@@ -1,7 +1,7 @@
 package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.player.Player;
-import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.awt.Rectangle;

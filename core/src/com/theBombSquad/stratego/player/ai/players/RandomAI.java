@@ -1,4 +1,4 @@
-package com.theBombSquad.stratego.player.ai.players.random;
+package com.theBombSquad.stratego.player.ai.players;
 
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
