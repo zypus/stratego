@@ -13,7 +13,7 @@ import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic1;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactics.*;
 
 public class AISetup extends Setup{
-	FlagTactic tactic;
+	FlagTactic flagTactic;
 	Strategy strategy;
 	@Getter
 	private  ArrayList<Unit> availableUnits;
@@ -43,7 +43,7 @@ public class AISetup extends Setup{
 	
 	//executing the strategy step by step
 	private void executeTactics() {
-		tactic.addSetup(this);
+		flagTactic.addSetup(this);
 		for(int i = 0; i < strategy.getTactics().size();i++){
 			strategy.getTactics().get(i).addSetup(this);
 			this.board=strategy.getTactics().get(i).getSetup().getBoard();
@@ -70,14 +70,24 @@ public class AISetup extends Setup{
 	}
 	//picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {
-		ArrayList<FlagTactic> tactics= new ArrayList<FlagTactic>();
-		//FLAGTACTIC7 HAS BUGS
-		tactics.add(new FlagTactic4());
+		ArrayList<FlagTactic> flagTactics= new ArrayList<FlagTactic>();
+		//flagTactics.add(new FlagTactic1());
+		//flagTactics.add(new FlagTactic2());
+		//flagTactics.add(new FlagTactic3());
+		//flagTactics.add(new FlagTactic4());
+		//flagTactics.add(new FlagTactic5());
+		//flagTactics.add(new FlagTactic6());
+		//flagTactics.add(new FlagTactic7());
+		//flagTactics.add(new FlagTactic8());
+		flagTactics.add(new FlagTactic9());
+		//flagTactics.add(new FlagTactic10());
+		//flagTactics.add(new FlagTactic11());
+		
 		// add them all one by one
-		int random= (int)(Math.random()*tactics.size());
-		tactic=tactics.get(random);
-		random= (int)(Math.random()*tactic.getStrategies().size());
-		strategy= tactic.getStrategies().get(random);
+		int random= (int)(Math.random()*flagTactics.size());
+		flagTactic=flagTactics.get(random);
+		random= (int)(Math.random()*flagTactic.getStrategies().size());
+		strategy= flagTactic.getStrategies().get(random);
 	}
 	
 	

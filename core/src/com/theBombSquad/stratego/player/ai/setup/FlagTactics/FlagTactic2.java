@@ -5,22 +5,41 @@ import java.util.ArrayList;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactic;
+import com.theBombSquad.stratego.player.ai.setup.Strategy;
 import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
+import com.theBombSquad.stratego.player.ai.setup.Strategies.Defensive;
+import com.theBombSquad.stratego.player.ai.setup.Strategies.Middle;
+import com.theBombSquad.stratego.player.ai.setup.Strategies.Ofensive;
 
 public class FlagTactic2 extends FlagTactic{
 
 	public FlagTactic2(AISetup setup) {
 		super(setup);
 		proceed();
+		addStrategies();
 	}
 
 	public FlagTactic2() {
 		super();
-
+		addStrategies();
 	}
 	public void addSetup(AISetup setup){
 		super.setup=setup;
 		proceed();
+	}
+
+	protected void addStrategies() {
+		strategies = new ArrayList<Strategy>();
+		strategies.add(new Defensive());
+		strategies.add(new Ofensive());
+		strategies.add(new Middle());
+	}
+
+	protected void addStrategies() {
+		strategies = new ArrayList<Strategy>();
+		strategies.add(new Defensive());
+		strategies.add(new Ofensive());
+		strategies.add(new Middle());
 	}
 
 	private void proceed() {

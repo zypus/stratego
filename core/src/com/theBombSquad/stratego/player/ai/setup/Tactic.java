@@ -24,13 +24,14 @@ public class Tactic {
 	// checks if the spot in the setup is free
 	public boolean isFree(int i, int j) {
 		if(i>=0&&i<10&&j>=0&&j<4){
-		if (this.setup.getUnit(i, j).getType() == UnitType.AIR) {
-			return true;
-		}}
+			if (this.setup.getUnit(i, j).getType() == UnitType.AIR) {
+				return true;
+			}
+		}
 		return false;
 	}
 
-	// fids the Unit to place basing on weights
+	// fits the Unit to place basing on weights
 	public UnitPlacement randomizeUnitPlacement() {
 		int totalWeight = 0;
 		for (int i = 0; i < possiblePlacements.size(); i++) {
@@ -51,19 +52,19 @@ public class Tactic {
 	public boolean placeUnit(UnitPlacement toPut) {
 		for (int i = 0; i < setup.getAvailableUnits().size(); i++) {
 			if(isFree(toPut.getX(),toPut.getY())){
-			if (setup.getAvailableUnits().get(i).getType() == toPut
-					.getUnitType()) {
-				setup.setUnit( toPut.getX(),toPut.getY(), setup
-						.getAvailableUnits().get(i));
-				if(setup.getView().getPlayerID()==PlayerID.PLAYER_1){
-					System.out.println(setup.getAvailableUnits().get(i).getType().getRank()+" "+ counter+" " +setup.getAvailableUnits().size());
-					counter++;
+				if (setup.getAvailableUnits().get(i).getType() == toPut
+						.getUnitType()) {
+					setup.setUnit( toPut.getX(),toPut.getY(), setup
+							.getAvailableUnits().get(i));
+					if(setup.getView().getPlayerID()==PlayerID.PLAYER_1){
+						System.out.println(setup.getAvailableUnits().get(i).getType().getRank()+" "+ counter+" " +setup.getAvailableUnits().size());
+						counter++;
+					}
+					setup.getAvailableUnits().remove(i);
+					
+					return true;
 				}
-				setup.getAvailableUnits().remove(i);
-				
-				return true;
 			}
-		}
 		}
 		System.out.println("error"+ setup.getAvailableUnits().size()+setup.getView().getPlayerID());//}
 		return false;
@@ -81,5 +82,4 @@ public class Tactic {
 		}
 		return false;
 	}
-
 }

@@ -51,13 +51,14 @@ public class FlagTactic extends Tactic {
 		return UnitType.SERGEANT;
 
 	}
-
+	
 	protected void addStrategies() {
 		strategies = new ArrayList<Strategy>();
 		strategies.add(new Defensive());
 		strategies.add(new Ofensive());
 		strategies.add(new Middle());
 	}
+	
 
 	protected void empty() {
 		possiblePlacements = new ArrayList<UnitPlacement>();
