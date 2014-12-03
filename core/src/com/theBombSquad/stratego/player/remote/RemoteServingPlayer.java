@@ -9,7 +9,6 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -24,7 +23,6 @@ import static com.theBombSquad.stratego.gameMechanics.Game.*;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-@Log4j2
 public class RemoteServingPlayer
 		extends Player {
 
@@ -56,9 +54,9 @@ public class RemoteServingPlayer
 				retry = false;
 			}
 			catch (InterruptedException e) {
-				log.info("Sleep got interrupted");
+				System.out.println("Sleep got interrupted");
 			} catch (Exception e) {
-				log.info("Searching again for client in " + RETRY_DELAY + "ms.");
+				System.out.println("Searching again for client in " + RETRY_DELAY + "ms.");
 				retry = true;
 			}
 		}

@@ -12,7 +12,6 @@ import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import static com.theBombSquad.stratego.rendering.StrategoUtil.*;
  * @author Mateusz Garbacz
  */
 @Getter(AccessLevel.PRIVATE)
-@Log4j2
 public class Game {
 
 	int currentTurn = 1;
@@ -416,7 +414,7 @@ public class Game {
 			if (states.size() % 2 == 1) {
 				if (hasLost(player1)) {
 					// TODO: Add Something to clarify Game end
-					log.info("PLAYER_1 lost.");
+					System.out.println("PLAYER_1 lost.");
 					return;
 				} else {
 					if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
@@ -429,7 +427,7 @@ public class Game {
 							e.printStackTrace();
 						}
 					}
-					log.info("It is PLAYER_1s move.");
+					System.out.println("It is PLAYER_1s move.");
 					becomeBlind();
 					player1.startMove();
 					player2.startIdle();
@@ -437,7 +435,7 @@ public class Game {
 			} else {
 				if (hasLost(player2)) {
 					// TODO: Add Something to clarify Game end
-					log.info("PLAYER_2 lost.");
+					System.out.println("PLAYER_2 lost.");
 					return;
 				} else {
 					if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
@@ -450,7 +448,7 @@ public class Game {
 							e.printStackTrace();
 						}
 					}
-					log.info("It is PLAYER_2s move.");
+					System.out.println("It is PLAYER_2s move.");
 					becomeBlind();
 					player2.startMove();
 					player1.startIdle();
@@ -458,7 +456,7 @@ public class Game {
 			}
 		} else {
 			// stop the game!
-			log.info("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
+			System.out.println("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
 			revealBoard();
 			player1FinishedCleanup = false;
 			player2FinishedCleanup = false;
@@ -575,7 +573,7 @@ public class Game {
 			activeGameView = player1.getGameView();
 		}
 		reseted = false;
-		log.info("PLAYER_1 is asked to setup.");
+		System.out.println("PLAYER_1 is asked to setup.");
 		player1.startSetup();
 		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
 			while (!player1FinishedSetup) {
@@ -586,7 +584,7 @@ public class Game {
 				}
 			}
 		}
-		log.info("PLAYER_2 is asked to setup.");
+		System.out.println("PLAYER_2 is asked to setup.");
 		becomeBlind();
 		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
 											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
@@ -861,7 +859,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.fatal("Non player tried to validate move.");
+				System.out.println("Non player tried to validate move.");
 				return false;
 			}
 			// Translates the move from player space to game space.
@@ -885,7 +883,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.fatal("Non player tried to perform move.");
+				System.out.println("Non player tried to perform move.");
 				return;
 			}
 			// Translates the move from player space to game space.
@@ -920,7 +918,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.fatal("Non player tried to set setup.");
+				System.out.println("Non player tried to set setup.");
 				return;
 			}
 			// Translates the setup from player space to game space.
@@ -1158,7 +1156,7 @@ public class Game {
 
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.fatal("Non player tried to get 'his' defeated units.");
+				System.out.println("Non player tried to get 'his' defeated units.");
 				return null;
 			}
 			List<Unit> units = playerID.equals(PLAYER_1) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
@@ -1173,7 +1171,7 @@ public class Game {
 		public List<Unit> getOpponentsDefeatedUnits() {
 			// Return early if the view doesn't belong to a player
 			if (playerID.equals(NEMO)) {
-				log.fatal("Non player tried to get 'his opponents' defeated units.");
+				System.out.println("Non player tried to get 'his opponents' defeated units.");
 				return null;
 			}
 			List<Unit> units = playerID.equals(PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
