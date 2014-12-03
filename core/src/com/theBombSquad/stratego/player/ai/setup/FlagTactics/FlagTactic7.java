@@ -31,7 +31,7 @@ public class FlagTactic7 extends FlagTactic{
 	protected void addStrategies() {
 		strategies = new ArrayList<Strategy>();
 		strategies.add(new Defensive());
-		strategies.add(new Ofensive());
+		//strategies.add(new Ofensive());
 		strategies.add(new Middle());
 	}
 
