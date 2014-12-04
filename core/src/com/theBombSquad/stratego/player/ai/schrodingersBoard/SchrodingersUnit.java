@@ -276,8 +276,11 @@ public class SchrodingersUnit {
 		ArrayList<UnitType> not = new ArrayList<UnitType>();
 		boolean possible = false;
 		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
-			known.getKnownUnit().getRank();
-			if((known.getKnownUnit().getRank()<unitType.getRank() || (offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.MARSHAL.getRank() && unitType.getRank()==Unit.UnitType.SPY.getRank()) || (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank())) && !(unitType.getRank()==Unit.UnitType.BOMB.getRank() && known.getKnownUnit().getRank()==Unit.UnitType.SAPPER.getRank())){
+			known.getKnownUnit().getRank();//TODO: Remove <-- this, it's just for testing
+			if((known.getKnownUnit().getRank()<unitType.getRank() 
+					|| (offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.MARSHAL.getRank() && unitType.getRank()==Unit.UnitType.SPY.getRank()) 
+					|| (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank())) 
+					&& !(unitType.getRank()==Unit.UnitType.BOMB.getRank() && known.getKnownUnit().getRank()==Unit.UnitType.SAPPER.getRank())){
 				strongerThanKnown.add(unitType);
 				if(this.probabilities[unitType.getRank()]>0){
 					possible = true;
