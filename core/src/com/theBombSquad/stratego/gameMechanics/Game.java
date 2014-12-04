@@ -264,7 +264,7 @@ public class Game {
 		/**
 		 * performs move depending on the type of unit, considers also encounter
 		 */
-		moves.add(move);
+		
 
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PLAYER_2)) {
@@ -312,6 +312,7 @@ public class Game {
 			if (movedUnit.getType() == Unit.UnitType.SCOUT && move.getDistance() > 1 && movedUnit.getRevealedInTurn() == UNREVEALED) {
 				movedUnit.setRevealedInTurn(states.size());
 			}
+			moves.add(move);
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			List<Move> previousMoves = lastConsecutiveMoves.get(move.getPlayerID());
