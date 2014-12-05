@@ -34,20 +34,17 @@ public class MctsAI extends AI{
 	/** Performs actual MCTS */
 	private Move mcts(){
 		Random rand = new Random();
+		
+		SchrodingersBoard board = new SchrodingersBoard(this.gameView);
+		for(int c=0; c<20; c++){
+			List<Move> mo = board.generateAllMoves(c%2==0?gameView.getPlayerID():gameView.getOpponentID());
+			List<SchrodingersBoard> boards = board.generateFromMove(mo.get(rand.nextInt(mo.size())));
+			board = boards.get(rand.nextInt(boards.size()));
+		}
+		
+		//Return Random Move
 		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
 		List<Move> moves = b.generateAllMoves(gameView.getPlayerID());
-		//While Check
-		Move m = moves.get(rand.nextInt(moves.size()));
-		List<SchrodingersBoard> board = new ArrayList<SchrodingersBoard>();
-		List<Move> hypMoves = new ArrayList<Move>();
-		boolean self = false;
-		for(int c=0; c<5; c++){
-			board = b.generateFromMove(m);
-			hypMoves = board.get(rand.nextInt(board.size())).generateAllMoves((PlayerID)(self==true?gameView.getPlayerID():gameView.getOpponentID()));
-			m = hypMoves.get(rand.nextInt(hypMoves.size()));
-			self = !self;
-		}
-		//Return Random Move
 		return moves.get(rand.nextInt(moves.size()));
 	}
 	
