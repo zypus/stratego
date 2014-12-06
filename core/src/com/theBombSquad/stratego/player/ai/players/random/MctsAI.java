@@ -62,7 +62,8 @@ public class MctsAI extends AI{
 		
 		//then check what move would give opponent least chance to decrease your evaluation
 		//	so take move that decreases evaluation least after opponent move.
-		//	so for every move take five best opponent moves.
+		//	so for every move take five best opponent moves, then take the move
+		//	with the worst average evaluation for the opponent
 		PlayerID opponent = StrategoConstants.PlayerID.PLAYER_1;
 		if(opponent==gameView.getPlayerID()){
 			opponent = StrategoConstants.PlayerID.PLAYER_2;
@@ -112,7 +113,7 @@ public class MctsAI extends AI{
 			board = b.generateFromMove(moves.get(i));
 			//Evaluate all possible boards for move:
 			for(int j = 0; j < board.size(); j++){
-				float eval = (simpleEvaluationFunction.evaluate(board.get(j), player))*(board.get(j).getProbability());
+				float eval = (SimpleEvaluationFunction.evaluate(board.get(j), player))*(board.get(j).getProbability());
 				boolean changed = false;
 				//Check if new evaluation is higher than any we already had
 				for( int k = 0; k < evals.length; k++){
