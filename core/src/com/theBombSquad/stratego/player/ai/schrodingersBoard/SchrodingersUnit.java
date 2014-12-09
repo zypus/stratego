@@ -65,6 +65,7 @@ public class SchrodingersUnit {
 		for(int c=0; c<this.probabilities.length; c++){
 			this.probabilities[c] = 0;
 		}
+		this.knownUnit = airNotLake?Unit.UnitType.AIR:Unit.UnitType.LAKE;
 	}
 	
 	/** Constructs new Schrodinger Unit, probabilities' indexes = Units' ranks, array has to be 12 long */
@@ -144,7 +145,7 @@ public class SchrodingersUnit {
 				calcProbSum();
 			}
 		}
-		else{
+		else if(this.getKnownUnit().getRank()==unit.getRank()){
 			//TODO: Throw something
 			System.out.println("Cannot Remove The Possibility For Unit To Be Of Type "+unit+", Only Possibility Left.");
 		}
@@ -182,11 +183,13 @@ public class SchrodingersUnit {
 		ArrayList<UnitType> weakerThanKnown = new ArrayList<UnitType>();
 		ArrayList<UnitType> not = new ArrayList<UnitType>();
 		boolean possible = false;
+		float probs = 0;
 		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
 			if(known.getKnownUnit().getRank()>unitType.getRank() && !(!offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.SPY.getRank() && unitType.getRank()==Unit.UnitType.MARSHAL.getRank())){
 				weakerThanKnown.add(unitType);
 				if(this.probabilities[unitType.getRank()]>0){
 					possible = true;
+					probs += this.probabilities[unitType.getRank()];
 				}
 			}
 			else{
@@ -223,6 +226,7 @@ public class SchrodingersUnit {
 					}
 				}
 			}
+			board.setRelativeProbability(probs);
 			return true;
 		}
 	}
@@ -231,7 +235,8 @@ public class SchrodingersUnit {
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
 	public boolean combatUpdateDraw(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
 		boolean unitWasKnown = this.unitIsKnown();
-		boolean possible = this.probabilities[known.getKnownUnit().getRank()]>0;
+		float probs = this.probabilities[known.getKnownUnit().getRank()];
+		boolean possible = probs>0;
 		if(!possible){
 			return false;
 		}
@@ -264,6 +269,7 @@ public class SchrodingersUnit {
 					}
 				}
 			}
+			board.setRelativeProbability(probs);
 			return true;
 		}
 	}
@@ -275,15 +281,16 @@ public class SchrodingersUnit {
 		ArrayList<UnitType> strongerThanKnown = new ArrayList<UnitType>();
 		ArrayList<UnitType> not = new ArrayList<UnitType>();
 		boolean possible = false;
+		float probs = 0;
 		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
-			known.getKnownUnit().getRank();//TODO: Remove <-- this, it's just for testing
-			if((known.getKnownUnit().getRank()<unitType.getRank() 
+			if(((known.getKnownUnit().getRank()<unitType.getRank() 
 					|| (offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.MARSHAL.getRank() && unitType.getRank()==Unit.UnitType.SPY.getRank()) 
-					|| (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank())) 
-					&& !(unitType.getRank()==Unit.UnitType.BOMB.getRank() && known.getKnownUnit().getRank()==Unit.UnitType.SAPPER.getRank())){
+					|| (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank()))) 
+					&& !(!offensiveNotDefensive && unitType.getRank()==Unit.UnitType.BOMB.getRank() && known.getKnownUnit().getRank()==Unit.UnitType.SAPPER.getRank())){
 				strongerThanKnown.add(unitType);
 				if(this.probabilities[unitType.getRank()]>0){
 					possible = true;
+					probs += this.probabilities[unitType.getRank()];
 				}
 			}
 			else{
@@ -309,6 +316,7 @@ public class SchrodingersUnit {
 					}
 				}
 			}
+			board.setRelativeProbability(probs);
 			return true;
 		}
 	}
