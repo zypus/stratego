@@ -247,7 +247,6 @@ public class Game {
 		/**
 		 * performs move depending on the type of unit, considers also encounter
 		 */
-		moves.add(move);
 
 		if ((states.size() % 2 == 1 && move.getPlayerID() == PLAYER_1)
 				|| (states.size() % 2 == 0 && move.getPlayerID() == PLAYER_2)) {
@@ -300,6 +299,7 @@ public class Game {
 			}
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
+			moves.add(move);
 			List<Move> previousMoves = lastConsecutiveMoves.get(move.getPlayerID());
 			if (!previousMoves.isEmpty() && movedUnit != previousMoves.get(0).getMovedUnit()) {
 				previousMoves.clear();
