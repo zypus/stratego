@@ -16,6 +16,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
+import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class MctsAI extends AI{
 
@@ -32,21 +33,19 @@ public class MctsAI extends AI{
 	
 	/** Performs actual MCTS */
 	private Move mcts(){
-		int generateProbableBoards = 1;
-		AIGameState state = super.createAIGameState(super.gameView);
-		List<Move> possibleMoves = super.createAllLegalMoves(gameView, gameView.getCurrentState());
-		//Create Game Boards based upon all the possible moves
-		GameBoard[] probableBoards = new GameBoard[generateProbableBoards];
-		for(int c=0; c<probableBoards.length; c++){
-			probableBoards[c] = setProbableOpponent();
+		Random rand = new Random();
+		
+		SchrodingersBoard board = new SchrodingersBoard(this.gameView);
+		for(int c=0; c<20; c++){
+			List<Move> mo = board.generateAllMoves(c%2==0?gameView.getPlayerID():gameView.getOpponentID());
+			List<SchrodingersBoard> boards = board.generateFromMove(mo.get(rand.nextInt(mo.size())));
+			board = boards.get(rand.nextInt(boards.size()));
 		}
-		for(int cy=0; cy<probableBoards[0].getHeight(); cy++){
-			for(int cx=0; cx<probableBoards[0].getWidth(); cx++){
-				System.out.print(probableBoards[0].getUnit(cx, cy).getType()+" ");
-			}
-			System.out.println();
-		}
-		return null;
+		
+		//Return Random Move
+		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
+		List<Move> moves = b.generateAllMoves(gameView.getPlayerID());
+		return moves.get(rand.nextInt(moves.size()));
 	}
 	
 	/** 'Reveals' the actual board state based on known information and probabilistically based on AIGameState's information */
