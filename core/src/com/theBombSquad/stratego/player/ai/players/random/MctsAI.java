@@ -16,6 +16,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
+import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class MctsAI extends AI{
@@ -96,6 +97,7 @@ public class MctsAI extends AI{
 	}
 	
 	//Now shut up, Flo. I like it this way. Don't ruin my mood, please :)
+	//Never >:D
 	private Move[] generateBestMoves(SchrodingersBoard b, PlayerID player){
 		List<Move> moves = b.generateAllMoves(player);
 		Move[] bestMoves = new Move[5];
@@ -110,7 +112,8 @@ public class MctsAI extends AI{
 			board = b.generateFromMove(moves.get(i));
 			//Evaluate all possible boards for move:
 			for(int j = 0; j < board.size(); j++){
-				float eval = (SimpleEvaluationFunction.evaluate(board.get(j), player))*(board.get(j).getProbability());
+				SimpleEvaluationFunction s = new SimpleEvaluationFunction();
+				float eval = board.get(j).evaluate(s, player)*board.get(j).getProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
 				boolean changed = false;
 				//Check if new evaluation is higher than any we already had
 				for( int k = 0; k < evals.length; k++){

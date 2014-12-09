@@ -8,7 +8,7 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.ai.AI;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.simpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class NegamaxAI extends AI
@@ -20,15 +20,15 @@ public class NegamaxAI extends AI
 	}
 
 	private Float negamax(int depth, SchrodingersBoard board, float alpha, float beta)
-	{	simpleEvaluationFunction simpleEvaluationFunction = new simpleEvaluationFunction();
+	{	SimpleEvaluationFunction simpleEvaluationFunction = new SimpleEvaluationFunction();
 		if (depth==0)
 		{
 			return simpleEvaluationFunction.evaluate(null, null);
 		}
-		List<Move> moves = board.generateAllMoves(player);
+		List<Move> moves = board.generateAllMoves(this.gameView.getPlayerID());
 		for (Move move:moves)
 		{
-			List<SchrodingersBoard> boards = board.doesntyethaveaname(move); //returns a list of schrodinger boards
+			List<SchrodingersBoard> boards = board.generateFromMove(move);//returns a list of schrodinger boards
 			if (boards.size()>1)
 			{
 				alpha = Math.max(alpha, -expectimax(depth-1, boards, -beta, -alpha));
@@ -51,7 +51,7 @@ public class NegamaxAI extends AI
 	{
 		if (depth==0)
 		{
-			return simpleEvaluationFunction.evaluate(null, null);
+			return SimpleEvaluationFunction.evaluate(null, null);
 		}
 		float sum = 0;
 		for (SchrodingersBoard board:boards)
@@ -73,10 +73,10 @@ public class NegamaxAI extends AI
 		float beta = Float.MAX_VALUE;
 		Move bestMove;
 		SchrodingersBoard board = new SchrodingersBoard(gameView);
-		List<Move> moves = board.generateAllMoves(player);
+		List<Move> moves = board.generateAllMoves(this.gameView.getPlayerID());
 		for (Move move:moves)
 		{
-			List<SchrodingersBoard> boards = board.doesntYetHaveAName(move); //returns a list of schrodinger boards
+			List<SchrodingersBoard> boards = board.generateFromMove(move); //returns a list of schrodinger boards
 			Float value;
 			if (boards.size()>1)
 			{

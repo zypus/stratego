@@ -4,7 +4,7 @@ import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
-public class simpleEvaluationFunction implements evaluationFunction 
+public class SimpleEvaluationFunction implements EvaluationFunction 
 {
 	public float evaluate(GameBoard gamestate, PlayerID player) 
 	{

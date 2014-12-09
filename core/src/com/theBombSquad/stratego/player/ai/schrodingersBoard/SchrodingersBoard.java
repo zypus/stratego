@@ -302,7 +302,7 @@ public class SchrodingersBoard {
 	}
 	
 	/** Evaluates This Board */
-	public float evaluate(EvaluationFunction eval){
+	public float evaluate(EvaluationFunction eval, PlayerID player){
 		GameBoard model = this.view.getCurrentState().duplicate();
 		//Translate Schrodingers Board into proper Game board
 		for(int cy=0; cy<this.board.length; cy++){
@@ -323,7 +323,7 @@ public class SchrodingersBoard {
 			}
 		}
 		//Evaluates And returns evaluation
-		return eval.evaluate(model);
+		return eval.evaluate(model, player);
 	}
 
 	public int getProbability() {
