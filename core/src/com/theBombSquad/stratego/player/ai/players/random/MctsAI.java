@@ -19,6 +19,8 @@ import com.theBombSquad.stratego.player.ai.AIUnit;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class MctsAI extends AI{
+	
+	float[] evals;
 
 	public MctsAI(GameView gameView) {
 		super(gameView);
@@ -31,7 +33,7 @@ public class MctsAI extends AI{
 		return move;
 	}
 	
-	/** Performs actual MCTS */
+	/* Performs actual MCTS 
 	private Move mcts(){
 		Random rand = new Random();
 		
@@ -46,6 +48,88 @@ public class MctsAI extends AI{
 		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
 		List<Move> moves = b.generateAllMoves(gameView.getPlayerID());
 		return moves.get(rand.nextInt(moves.size()));
+	}
+	*/
+	
+	private Move mcts(){
+		//first generate your best 5 moves
+		//simpleEvaluationFunction.evaluate(GameBoard, PlayerID);
+		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
+		Move[] bestMoves = generateBestMoves(b, gameView.getPlayerID());
+		
+		//then check what move would give opponent least chance to decrease your evaluation
+		//	so take move that decreases evaluation least after opponent move.
+		//	so for every move take five best opponent moves, then take the move
+		//	with the worst average evaluation for the opponent
+		PlayerID opponent = StrategoConstants.PlayerID.PLAYER_1;
+		if(opponent==gameView.getPlayerID()){
+			opponent = StrategoConstants.PlayerID.PLAYER_2;
+		}
+		float[] evalPerMove = new float[bestMoves.length];
+		//per move
+		for(int i = 0; i < bestMoves.length ; i++){
+			List<SchrodingersBoard> board = new ArrayList<SchrodingersBoard>();
+			ArrayList<Float> evalOpp = new ArrayList<Float>();
+			board = b.generateFromMove(bestMoves[i]);
+			//per possible board (max = 3)
+			for(int j = 0; j < board.size(); j++){
+				generateBestMoves(b, opponent);
+				for(int k = 0; k < evals.length; k++){
+					evalOpp.add(evals[k]);
+				}
+			}
+			//calculate average
+			float average = 0;
+			for(int l = 0; l < evalOpp.size(); l++){
+				average = average + evalOpp.get(l);
+			}
+			average =  average/(evalOpp.size());
+			evalPerMove[i] = average;
+		}
+		int worst = 0;
+		for(int m = 0; m<evalPerMove.length; m++){
+			if(evalPerMove[m] < evalPerMove[worst]){
+				worst = m;
+			}
+		}
+		return bestMoves[worst];
+	}
+	
+	//Now shut up, Flo. I like it this way. Don't ruin my mood, please :)
+	private Move[] generateBestMoves(SchrodingersBoard b, PlayerID player){
+		List<Move> moves = b.generateAllMoves(player);
+		Move[] bestMoves = new Move[5];
+		evals = new float[bestMoves.length];
+		int iteration = 0;
+		for(int i = 0; i < evals.length; i++){
+			evals[i] = 0;
+		}
+		//Go through all moves
+		for( int i = 0; i < moves.size(); i++){
+			List<SchrodingersBoard> board = new ArrayList<SchrodingersBoard>();
+			board = b.generateFromMove(moves.get(i));
+			//Evaluate all possible boards for move:
+			for(int j = 0; j < board.size(); j++){
+				float eval = (SimpleEvaluationFunction.evaluate(board.get(j), player))*(board.get(j).getProbability());
+				boolean changed = false;
+				//Check if new evaluation is higher than any we already had
+				for( int k = 0; k < evals.length; k++){
+					//theoretically it is possible to fill ony one of evals, so first fill
+					if(iteration < 5){
+						evals[iteration] = eval;
+						bestMoves[iteration] = moves.get(i); 
+					}
+					if(!changed){
+						if(evals[j] < eval){
+							evals[j] = eval;
+							bestMoves[k] = moves.get(i);
+							changed = true;
+						}
+					}
+				}
+			}
+		}
+		return bestMoves;
 	}
 	
 	/** 'Reveals' the actual board state based on known information and probabilistically based on AIGameState's information */
