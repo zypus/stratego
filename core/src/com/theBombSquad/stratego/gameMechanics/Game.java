@@ -417,8 +417,9 @@ public class Game {
 					System.out.println("PLAYER_1 lost.");
 					return;
 				} else {
-					if (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
-														   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer)) {
+					if (AI_DELAY > 0
+						&& (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
+														   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer))) {
 						activeGameView = player1.getGameView();
 					} else {
 						try {
@@ -438,8 +439,9 @@ public class Game {
 					System.out.println("PLAYER_2 lost.");
 					return;
 				} else {
-					if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
-														   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {
+					if (AI_DELAY > 0
+						&& (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
+														   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer))) {
 						activeGameView = player2.getGameView();
 					} else {
 						try {
