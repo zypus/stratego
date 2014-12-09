@@ -107,6 +107,17 @@ public class Unit implements Serializable {
 			this.quantity = quantity;
 		}
 	}
+	
+	/** Returns the Unit Type corresponding to a given rank (not including lake, unknown or air) */
+	public static UnitType getUnitTypeOfRank(int rank){
+		for(UnitType type : new UnitType[]{UnitType.FLAG, UnitType.BOMB, UnitType.SPY, UnitType.SCOUT, UnitType.SAPPER, UnitType.SERGEANT, UnitType.LIEUTENANT, UnitType.CAPTAIN, UnitType.MAJOR, UnitType.COLONEL, UnitType.GENERAL, UnitType.MARSHAL}){
+			if(type.getRank()==rank){
+				return type;
+			}
+		}
+		System.out.println("getUnitTypeOfRank encountered a problem with rank "+rank);
+		return null;
+	}
 
 	private static class Air extends Unit {
 		private Air() {
