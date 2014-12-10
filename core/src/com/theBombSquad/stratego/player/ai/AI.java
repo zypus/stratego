@@ -277,7 +277,7 @@ public abstract class AI extends Player {
 					outcome.setAIUnit(fromX, fromY, air);
 				} else if (encounter.getResult() == VICTORIOUS_DEFENSE) {
 					//					  _____            _____
-					//					 /     \          /  |  \
+					//					 /     \          /  |  \ <-- shield, not coffin
 					//					| () () |	\/   / --|-- \
 					//					 \  ^  /	/\   \   |   /
 					//					  |||||           \  |  /

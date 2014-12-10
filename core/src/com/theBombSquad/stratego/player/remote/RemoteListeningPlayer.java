@@ -8,7 +8,6 @@ import com.badlogic.gdx.net.Socket;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.Player;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,7 +21,6 @@ import static com.theBombSquad.stratego.gameMechanics.Game.*;
  * @author Fabian Fränz <f.fraenz@t-online.de>
  * @author Flo
  */
-@Log4j2
 public class RemoteListeningPlayer
 		extends Player {
 
@@ -73,11 +71,11 @@ public class RemoteListeningPlayer
 
 		if (receivedObject instanceof Move) {
 			Move move = (Move) receivedObject;
-			log.info("Move successfully received from " + gameView.getPlayerID().toString() + ".");
+			System.out.println("Move successfully received from " + gameView.getPlayerID().toString() + ".");
 			gameView.performMove(move);
 			return move;
 		} else {
-			log.fatal("Unrecognized object received. Objects class is: "+receivedObject.getClass());
+			System.out.println("Unrecognized object received. Objects class is: "+receivedObject.getClass());
 			return null;
 		}
 	}
@@ -91,12 +89,12 @@ public class RemoteListeningPlayer
 
 		if (receivedObject instanceof Setup) {
 			Setup setup = (Setup) receivedObject;
-			log.info("Setup successfully received from " + gameView.getPlayerID().toString() + ".");
+			System.out.println("Setup successfully received from " + gameView.getPlayerID().toString() + ".");
 			gameView.setSetup(setup);
 
 			return setup;
 		} else {
-			log.fatal("Unrecognized object received. Objects class is: " + receivedObject.getClass());
+			System.out.println("Unrecognized object received. Objects class is: " + receivedObject.getClass());
 			return null;
 		}
 	}

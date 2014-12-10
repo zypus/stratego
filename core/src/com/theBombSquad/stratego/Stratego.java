@@ -269,6 +269,8 @@ public class Stratego extends ApplicationAdapter {
 		//TODO: this is only supposed to happen if the view is of Player 2, who is a human player:
 		//((HumanPlayer)player2).setFlippedBoard(true);
 
+		game.setAI_delay(AI_DELAY);
+
 		// TODO setup renderers
 		setupRenderer(game);
 	}
