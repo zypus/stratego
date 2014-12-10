@@ -11,6 +11,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleKillOrientedEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class OnePlyDeepAI extends AI{
@@ -20,7 +21,7 @@ public class OnePlyDeepAI extends AI{
 	}
 	
 	@Override protected Move move() {
-		EvaluationFunctionX eval = new SimpleEvaluationFunction();
+		EvaluationFunctionX eval = new SimpleKillOrientedEvaluationFunction();
 		SchrodingersBoard board = new SchrodingersBoard(super.gameView);
 		List<Move> moves = board.generateAllMoves(super.gameView.getPlayerID());
 		ArrayList<Move> bestMoves = new ArrayList<Move>();
@@ -34,6 +35,7 @@ public class OnePlyDeepAI extends AI{
 						currentScore += possibleResult.evaluate(eval, super.gameView.getPlayerID());
 					}
 					currentScore = currentScore/schrodingersList.size();
+					System.out.println(currentScore);
 					if(currentScore==bestScore){
 						bestMoves.add(move);
 					}
