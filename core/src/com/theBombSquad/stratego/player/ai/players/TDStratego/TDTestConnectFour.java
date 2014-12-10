@@ -309,7 +309,7 @@ public class TDTestConnectFour {
 					previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), bestActivations, bestUnprocessedActivations, lambda, k));
 				}
 				Matrix error = currentResult.minus(previousResult);
-				net.updateWeights(previousEligibilityTraces, error, learningRate);
+				net.updateWeights(previousEligibilityTraces, error, null);
 			}
 			previousResult = currentResult;
 			return bestMove;
@@ -329,7 +329,7 @@ public class TDTestConnectFour {
 					previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), bestActivations, bestUnprocessedActivations, lambda, k));
 				}
 				Matrix error = previousResult.minus(actualResult);
-				net.updateWeights(previousEligibilityTraces, error, learningRate);
+				net.updateWeights(previousEligibilityTraces, error, null);
 				// erase traces
 				eraseTraces();
 				previousResult = null;

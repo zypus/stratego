@@ -1,23 +1,18 @@
 package com.theBombSquad.stratego.player.ai.schrodingersBoard;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.evaluationFunction.EvaluationFunction;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -27,20 +22,20 @@ public class SchrodingersBoard {
 	private int opponentArmySize;
 	private int ownArmySize;
 	private GameView view;
-	
+
 	/** Probability Of This Board Accuring Given Previous Board And Move */
 	@Getter
 	@Setter
 	private float relativeProbability;
-	
+
 	public int getHeight(){
 		return board.length;
 	}
-	
+
 	public int getWidth(){
 		return board[0].length;
 	}
-	
+
 	/** Constructs New Schrodingers Box Which Is Dependent On A Single (The Current) State */
 	public SchrodingersBoard(GameView view){
 		this.view = view;
@@ -118,7 +113,7 @@ public class SchrodingersBoard {
 		}
 		return new SchrodingersBoard(cBoard, ownArmySize, opponentArmySize, view, relativeProbability);
 	}
-	
+
 	/** Creates a new Board in which unit from origin is now at destination - Also executes Enounters! */
 	public ArrayList<SchrodingersBoard> moveUnit(int originX, int originY, int destX, int destY){
 		ArrayList<SchrodingersBoard> list = new ArrayList<SchrodingersBoard>();
@@ -188,7 +183,7 @@ public class SchrodingersBoard {
 		}
 		return list;
 	}
-	
+
 	/** Generates All Possible Moves That Can Follow This Board Given Player */
 	public List<Move> generateAllMoves(PlayerID player){
 		PlayerID opp = player.getOpponent();
@@ -221,10 +216,16 @@ public class SchrodingersBoard {
 							while(posY>=0+1){
 								posY--;
 								if(board[posY][posX].isAir()){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 								}
 								else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner().equals(opp)){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 									break;
 								}
 								else{
@@ -240,10 +241,16 @@ public class SchrodingersBoard {
 							while(posX<board[cy].length-1){
 								posX++;
 								if(board[posY][posX].isAir()){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 								}
 								else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner().equals(opp)){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 									break;
 								}
 								else{
@@ -259,10 +266,16 @@ public class SchrodingersBoard {
 							while(posY<board.length-1){
 								posY++;
 								if(board[posY][posX].isAir()){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 								}
 								else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner().equals(opp)){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 									break;
 								}
 								else{
@@ -278,10 +291,16 @@ public class SchrodingersBoard {
 							while(posX>=0+1){
 								posX--;
 								if(board[posY][posX].isAir()){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 								}
 								else if(board[posY][posX].isActualUnit() && board[posY][posX].getOwner().equals(opp)){
-									list.add(new Move(cx, cy, posX, posY));
+									Move move = new Move(cx, cy, posX, posY);
+									if (view.validateMove(move)) {
+										list.add(move);
+									}
 									break;
 								}
 								else{
@@ -298,7 +317,7 @@ public class SchrodingersBoard {
 		}
 		return list;
 	}
-	
+
 	/** Generates List Of Schrodingers Boards based upon move (Move is assumed to be legal) */
 	public List<SchrodingersBoard> generateFromMove(Move move){
 		return moveUnit(move.getFromX(), move.getFromY(), move.getToX(), move.getToY());
@@ -328,6 +347,9 @@ public class SchrodingersBoard {
 		//Evaluates And returns evaluation
 		return eval.evaluate(model);
 	}
-	
-	
+
+	public SchrodingersUnit getUnit(int x, int y) {
+		return board[y][x];
+	}
+
 }

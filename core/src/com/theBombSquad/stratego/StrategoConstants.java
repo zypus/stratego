@@ -1,8 +1,9 @@
 package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
-import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.awt.Rectangle;
@@ -60,7 +61,8 @@ public class StrategoConstants {
 	public static enum PlayerType {
 		HUMAN(HumanPlayer.class),
 		RANDOM(RandomAI.class),
-		MCTS(MctsAI.class);
+		MCTS(MctsAI.class),
+		TDSTRATEGO(TDStratego.class);
 
 		private Class<? extends Player> playerClass;
 
@@ -71,7 +73,8 @@ public class StrategoConstants {
 		public Player createPlayer(GameView gameView) {
 			Player playerInstance = null;
 			try {
-				playerInstance = playerClass.getConstructor(GameView.class).newInstance(gameView);
+				playerInstance = playerClass.getConstructor(GameView.class)
+											.newInstance(gameView);
 			} catch (Exception e) {
 				e.printStackTrace();
 				// cannot recover from here
@@ -83,12 +86,12 @@ public class StrategoConstants {
 	}
 
 	/** Remote constants */
-	public static final String LOCAL_HOST = "127.0.0.1";
-	public static final int PORT_PLAYER1 = 9021;			// 21 stands usually for an FTP port TODO find a good port number
-	public static final int PORT_PLAYER2 = 9022;
-	public static final int SERVE_TIMEOUT = 4000; 	// in milliseconds
-	public static final int LISTEN_TIMEOUT = 0;     // in milliseconds
-	public static final int RETRY_DELAY = 2000;     // in milliseconds
+	public static final String LOCAL_HOST     = "127.0.0.1";
+	public static final int    PORT_PLAYER1   = 9021;            // 21 stands usually for an FTP port TODO find a good port number
+	public static final int    PORT_PLAYER2   = 9022;
+	public static final int    SERVE_TIMEOUT  = 4000;    // in milliseconds
+	public static final int    LISTEN_TIMEOUT = 0;     // in milliseconds
+	public static final int    RETRY_DELAY    = 2000;     // in milliseconds
 
 	public static final String SETUP_PATH = "setups/";
 

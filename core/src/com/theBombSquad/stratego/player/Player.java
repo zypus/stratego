@@ -56,12 +56,13 @@ public abstract class Player {
 
 	public void startCleanup() {
 		stopAction();
-		currentAction = new Thread(new Runnable() {
-			@Override public void run() {
-				cleanup();
-			}
-		});
-		currentAction.start();
+		cleanup();
+//		currentAction = new Thread(new Runnable() {
+//			@Override public void run() {
+//				cleanup();
+//			}
+//		});
+//		currentAction.start();
 	}
 
 	private void stopAction() {

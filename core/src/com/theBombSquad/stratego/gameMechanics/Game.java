@@ -64,6 +64,15 @@ public class Game {
 	@Getter private List<Unit> player2Units;
 	@Getter @Setter private boolean waitingForEndTurn;
 
+	@Getter @Setter private long AI_delay = 0;
+
+	@Getter @Setter GameListener gameListener = null;
+
+	public interface GameListener {
+		void gameFinished(int ply);
+		boolean performPly(int ply);
+	}
+
 	public Game() {
 		states = new ArrayList<GameBoard>();
 		// add in the initial board
@@ -411,24 +420,29 @@ public class Game {
 		 */
 		gameOver = gameOver();
 		if (!gameOver) {
+			if (gameListener != null) {
+				if (!gameListener.performPly(getCurrentTurn())) {
+					return;
+				}
+			}
 			if (states.size() % 2 == 1) {
 				if (hasLost(player1)) {
 					// TODO: Add Something to clarify Game end
 					System.out.println("PLAYER_1 lost.");
 					return;
 				} else {
-					if (AI_DELAY > 0
+					if (AI_delay > 0
 						&& (player1 instanceof HumanPlayer || (player1 instanceof RemoteServingPlayer
-														   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer))) {
+															   && ((RemoteServingPlayer) player1).getLocalPlayer() instanceof HumanPlayer))) {
 						activeGameView = player1.getGameView();
 					} else {
 						try {
-							Thread.sleep(AI_DELAY);
+							Thread.sleep(AI_delay);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
-					System.out.println("It is PLAYER_1s move.");
+//					System.out.println("It is PLAYER_1s move.");
 					becomeBlind();
 					player1.startMove();
 					player2.startIdle();
@@ -439,18 +453,18 @@ public class Game {
 					System.out.println("PLAYER_2 lost.");
 					return;
 				} else {
-					if (AI_DELAY > 0
+					if (AI_delay > 0
 						&& (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
-														   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer))) {
+															   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer))) {
 						activeGameView = player2.getGameView();
 					} else {
 						try {
-							Thread.sleep(AI_DELAY);
+							Thread.sleep(AI_delay);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
-					System.out.println("It is PLAYER_2s move.");
+//					System.out.println("It is PLAYER_2s move.");
 					becomeBlind();
 					player2.startMove();
 					player1.startIdle();
@@ -464,6 +478,16 @@ public class Game {
 			player2FinishedCleanup = false;
 			player1.startCleanup();
 			player2.startCleanup();
+			if (gameListener != null) {
+//				while (!player1FinishedCleanup || !player2FinishedCleanup) {
+//					try {
+//						Thread.sleep(10);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+				gameListener.gameFinished(getCurrentTurn());
+			}
 		}
 	}
 
@@ -1323,6 +1347,17 @@ public class Game {
 
 		public int getNumberOfOpponentDefeatedUnits(Unit.UnitType unitType) {
 			return game.getNumberOfDefeatedUnits(unitType.getRank(),opponentID);
+		}
+
+		public PlayerID getWinnerId() {
+			if (game.getWinner() == null) {
+				return NEMO;
+			} else if (game.getWinner()
+						.getGameView() == this) {
+				return playerID;
+			} else {
+				return opponentID;
+			}
 		}
 
 	}

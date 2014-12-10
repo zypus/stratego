@@ -16,11 +16,11 @@ public abstract class AbstractTDPlayer<S> {
 	private float 				lambda;
 	private float[] 				learningRates;
 
-	private TDNeuralNet  		net;
-	private Matrix       		previousResult = null;
-	private List<List<Matrix>> 	previousEligibilityTraces = new ArrayList<List<Matrix>>();
+	private TDNeuralNet net;
+	private Matrix             previousResult            = null;
+	private List<List<Matrix>> previousEligibilityTraces = new ArrayList<List<Matrix>>();
 
-	private AbstractTDPlayer(TDNeuralNet net, float lambda, float[] learningRates) {
+	public AbstractTDPlayer(TDNeuralNet net, float lambda, float[] learningRates) {
 		this.net = net;
 		this.lambda = lambda;
 		this.learningRates = learningRates;
@@ -40,7 +40,7 @@ public abstract class AbstractTDPlayer<S> {
 	 * @param output The output of the neural network.
 	 * @return The utility of that state.
 	 */
-	protected abstract float utilityValue(S state, Matrix output);
+	public abstract float utilityValue(S state, Matrix output);
 
 	/**
 	 * Computes the utility for the provided state.
@@ -48,12 +48,24 @@ public abstract class AbstractTDPlayer<S> {
 	 * @return Utility for the state.
 	 */
 	public final float utilityForState(S state) {
+		return utilityValue(state, outputForState(state));
+	}
+
+	/**
+	 * Computes the output for the provided state.
+	 *
+	 * @param state
+	 * 		The state.
+	 *
+	 * @return Output for the state.
+	 */
+	public final Matrix outputForState(S state) {
 		Matrix activation = stateToActivation(state);
 		for (int i = 0; i < net.getNumberOfLayers(); i++) {
 			TDNeuralNet.NetResult netResult = net.fire(activation, i);
 			activation = netResult.getLayerActivation();
 		}
-		return utilityValue(state, activation);
+		return activation;
 	}
 
 	/**
@@ -78,7 +90,11 @@ public abstract class AbstractTDPlayer<S> {
 	 * @param state The selected/best state.
 	 */
 	public final void learnBasedOnSelectedState(S state) {
-		previousResult = learn(state, previousResult);
+		if (previousResult == null) {
+			previousResult = outputForState(state);
+		} else {
+			previousResult = learn(state, previousResult);
+		}
 	}
 
 	/**
@@ -87,7 +103,9 @@ public abstract class AbstractTDPlayer<S> {
 	 * @param finalResult The final result.
 	 */
 	public final void learnBasedOnFinalResult(S state, Matrix finalResult) {
+
 		learn(state, finalResult);
+		eraseTraces();
 	}
 
 	/**
@@ -100,6 +118,10 @@ public abstract class AbstractTDPlayer<S> {
 		List<TDNeuralNet.NetResult> netResults = netResultsForState(state);
 		List<Matrix> activations = new ArrayList<Matrix>(netResults.size());
 		List<Matrix> unprocessedActivations = new ArrayList<Matrix>(netResults.size());
+		for (TDNeuralNet.NetResult result : netResults) {
+			activations.add(result.getLayerActivation());
+			unprocessedActivations.add(result.getUnprocessedLayerActivation());
+		}
 		Matrix currentResult = activations.get(activations.size() - 1);
 		for (int k = 0; k < currentResult.getRowDimension(); k++) {
 			previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), activations, unprocessedActivations, lambda, k));
@@ -112,7 +134,7 @@ public abstract class AbstractTDPlayer<S> {
 	/**
 	 * Creates and or resets the current eligibility traces.
 	 */
-	private void eraseTraces() {
+	public void eraseTraces() {
 		if (previousEligibilityTraces.isEmpty()) {
 			int numberOfLayers = net.getNumberOfLayers();
 			for (int k = 0; k < net.getSizeOfLayer(numberOfLayers-1); k++) {
@@ -130,12 +152,21 @@ public abstract class AbstractTDPlayer<S> {
 				}
 			}
 		}
+		previousResult = null;
+	}
+
+	public void saveNet(String path) {
+		TDNeuralNet.saveNeuralNet(net, path);
+	}
+
+	public void loadNet(String path) {
+		net = TDNeuralNet.loadNeuralNet(path);
 	}
 
 	/**
 	 * Sigmoid/Logistic function.
 	 */
-	private static class Sigmoid
+	public static class Sigmoid
 			implements TDNeuralNet.Function {
 		@Override
 		public double func(double value) {
@@ -146,7 +177,7 @@ public abstract class AbstractTDPlayer<S> {
 	/**
 	 * Derivative of the sigmoid/logistic function.
 	 */
-	private static class SigmoidPrime
+	public static class SigmoidPrime
 			implements TDNeuralNet.Function {
 		Sigmoid sigmoid = new Sigmoid();
 
