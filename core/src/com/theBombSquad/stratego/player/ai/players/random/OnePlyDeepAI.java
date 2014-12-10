@@ -9,7 +9,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.EvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunction.FunctionOfEvaluation;
 import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
@@ -20,7 +20,7 @@ public class OnePlyDeepAI extends AI{
 	}
 	
 	@Override protected Move move() {
-		EvaluationFunction eval = new SimpleEvaluationFunction();
+		FunctionOfEvaluation eval = new SimpleEvaluationFunction();
 		SchrodingersBoard board = new SchrodingersBoard(super.gameView);
 		List<Move> moves = board.generateAllMoves(super.gameView.getPlayerID());
 		ArrayList<Move> bestMoves = new ArrayList<Move>();

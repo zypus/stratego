@@ -13,6 +13,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+import com.theBombSquad.stratego.player.ai.evaluationFunction.FunctionOfEvaluation;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -324,7 +326,7 @@ public class SchrodingersBoard {
 	}
 
 	/** Evaluates This Board */
-	public float evaluate(EvaluationFunction eval, PlayerID player){
+	public float evaluate(FunctionOfEvaluation eval, PlayerID player){
 		System.out.println("Hi");
 		GameBoard model = this.view.getCurrentState().duplicate();
 		//Translate Schrodingers Board into proper Game board
