@@ -297,6 +297,7 @@ public class Game {
 			if (movedUnit.getType() == Unit.UnitType.SCOUT && move.getDistance() > 1 && movedUnit.getRevealedInTurn() == UNREVEALED) {
 				movedUnit.setRevealedInTurn(states.size());
 			}
+			moves.add(move);
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
 			moves.add(move);

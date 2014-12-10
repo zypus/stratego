@@ -14,11 +14,11 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
  */
 public class GameBoard implements Serializable {
 
-	private Unit[][] board; // board[y][x]
+	protected Unit[][] board; // board[y][x]
 
 	protected GameBoard() {
 	}
-	
+
 	public int getAliveUnits(UnitType type, PlayerID id)
 	{
 		int counter=0;
@@ -35,7 +35,14 @@ public class GameBoard implements Serializable {
 		return counter;
 	}
 
-
+	public GameBoard(int width, int height) {
+		board = new Unit[height][width];
+		for (int y = 0; y < board.length; y++) {
+			for (int x = 0; x < board[0].length; x++) {
+				board[y][x] = Unit.AIR;
+			}
+		}
+	}
 
 	public GameBoard(int width, int height, Rectangle ... lakes) {
 		board = new Unit[height][width];
@@ -78,7 +85,7 @@ public class GameBoard implements Serializable {
 		}
 		return clonedBoard;
 	}
-	
+
 	/** Returns Whether X & Y are within borders */
 	public boolean isInBounds(int x, int y){
 		return x>=0 && x<this.getWidth() && y>=0 && y<this.getHeight();

@@ -8,6 +8,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 
+import lombok.Getter;
+
+import com.theBombSquad.stratego.gameMechanics.GameView;
+
 /**
  * TODO Add description
  *
@@ -15,6 +19,13 @@ import java.util.Scanner;
  * @created $(DATE)
  */
 public class Setup extends GameBoard implements Serializable {
+
+	protected Setup() {
+		super();
+	}
+	protected Setup(int width, int height) {
+		super(width, height);
+	}
 
 	public Setup(int width, int height, Rectangle... lakes) {
 		super(width, height, lakes);
@@ -79,5 +90,7 @@ public class Setup extends GameBoard implements Serializable {
 		}
 		return stringBuilder.toString();
 	}
-
+	public Unit[][] getBoard(){
+		return board;
+	}
 }

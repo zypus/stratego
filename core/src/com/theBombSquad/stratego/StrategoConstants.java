@@ -3,6 +3,7 @@ package com.theBombSquad.stratego;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.awt.Rectangle;
@@ -60,7 +61,8 @@ public class StrategoConstants {
 	public static enum PlayerType {
 		HUMAN(HumanPlayer.class),
 		RANDOM(RandomAI.class),
-		MCTS(MctsAI.class);
+		MCTS(MctsAI.class),
+		SETUPAI(SetupPlayerAI.class);
 
 		private Class<? extends Player> playerClass;
 
