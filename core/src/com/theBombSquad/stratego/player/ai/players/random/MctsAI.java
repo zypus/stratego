@@ -61,6 +61,7 @@ public class MctsAI extends AI{
 		//	so take move that decreases evaluation least after opponent move.
 		//	so for every move take five best opponent moves, then take the move
 		//	with the worst average evaluation for the opponent
+		
 		PlayerID opponent = StrategoConstants.PlayerID.PLAYER_1;
 		if(opponent==gameView.getPlayerID()){
 			opponent = StrategoConstants.PlayerID.PLAYER_2;
@@ -68,23 +69,25 @@ public class MctsAI extends AI{
 		float[] evalPerMove = new float[bestMoves.length];
 		//per move
 		for(int i = 0; i < bestMoves.length ; i++){
-			List<SchrodingersBoard> board = new ArrayList<SchrodingersBoard>();
-			ArrayList<Float> evalOpp = new ArrayList<Float>();
-			board = b.generateFromMove(bestMoves[i]);
-			//per possible board (max = 3)
-			for(int j = 0; j < board.size(); j++){
-				generateBestMoves(b, opponent);
-				for(int k = 0; k < evals.length; k++){
-					evalOpp.add(evals[k]);
+			if(bestMoves[i]!= null){
+				List<SchrodingersBoard> board = new ArrayList<SchrodingersBoard>();
+				ArrayList<Float> evalOpp = new ArrayList<Float>();
+				board = b.generateFromMove(bestMoves[i]);
+				//per possible board (max = 3)
+				for(int j = 0; j < board.size(); j++){
+					generateBestMoves(b, opponent);
+					for(int k = 0; k < evals.length; k++){
+						evalOpp.add(evals[k]);
+					}
 				}
+				//calculate average
+				float average = 0;
+				for(int l = 0; l < evalOpp.size(); l++){
+					average = average + evalOpp.get(l);
+				}
+				average =  average/(evalOpp.size());
+				evalPerMove[i] = average;
 			}
-			//calculate average
-			float average = 0;
-			for(int l = 0; l < evalOpp.size(); l++){
-				average = average + evalOpp.get(l);
-			}
-			average =  average/(evalOpp.size());
-			evalPerMove[i] = average;
 		}
 		int worst = 0;
 		for(int m = 0; m<evalPerMove.length; m++){
@@ -92,6 +95,8 @@ public class MctsAI extends AI{
 				worst = m;
 			}
 		}
+		
+		//int worst = (int) (Math.random()*bestMoves.length);
 		return bestMoves[worst];
 	}
 
@@ -109,7 +114,32 @@ public class MctsAI extends AI{
 		for( int i = 0; i < moves.size(); i++){
 			List<SchrodingersBoard> board = new ArrayList<SchrodingersBoard>();
 			board = b.generateFromMove(moves.get(i));
-			//Evaluate all possible boards for move:
+			boolean changed = false;
+			float totalEval = 0;
+			for(int j = 0; j < board.size(); j++){
+				SimpleEvaluationFunction s = new SimpleEvaluationFunction();
+				float eval = board.get(j).evaluate(s, player);//*board.get(j).getRelativeProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
+				totalEval = totalEval+eval;
+			}
+			float avEval = (totalEval/(board.size()));
+			//Check if new evaluation is higher than any we already had
+			for( int k = 0; k < evals.length; k++){
+				//theoretically it is possible to fill only one of evals, so first fill
+				if(iteration < 5 && !changed){
+					evals[iteration] = avEval;
+					bestMoves[iteration] = moves.get(i);
+					iteration++;
+					changed = true;
+				}
+				if(!changed){
+					if(evals[k] < avEval){
+						evals[k] = avEval;
+						bestMoves[k] = moves.get(i);
+						changed = true;
+					}
+				}
+			}
+			/*//Evaluate all possible boards for move:
 			for(int j = 0; j < board.size(); j++){
 				SimpleEvaluationFunction s = new SimpleEvaluationFunction();
 				float eval = board.get(j).evaluate(s, player)*board.get(j).getProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
@@ -130,7 +160,7 @@ public class MctsAI extends AI{
 						}
 					}
 				}
-			}
+			}*/
 		}
 		return bestMoves;
 	}
