@@ -53,6 +53,20 @@ public class Unit implements Serializable {
 		ids.add(nextId);
 		this.id = nextId;
 	}
+	
+	/** Create Unit Token Without Any Ids */
+	public static Unit createUnitToken(UnitType type, PlayerID player){
+		return new Unit(type, player, true);
+	}
+	
+	/** This Constructor is designed to only create tokens via the Token Factory */
+	private Unit(UnitType type, PlayerID owner, boolean thisIsAToken){
+		this.type = type;
+		this.owner = owner;
+		int nextId = -1;
+		ids.add(nextId);
+		this.id = nextId;
+	}
 
 	public Unit(UnitType type, PlayerID owner, int specificID) {
 		this.type = type;
