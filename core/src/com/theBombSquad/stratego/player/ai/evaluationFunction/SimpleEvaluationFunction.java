@@ -83,6 +83,6 @@ public class SimpleEvaluationFunction implements EvaluationFunction
 		
 		float total = valueOfMarshal*a+valueOfGeneral*b+valueOfColonel*c+valueOfMajor*d+valueOfCaptain*e+valueOfLieutenant*f+valueOfSergeant*g+valueOfSapper*h+valueOfScout*i+valueOfSpy*j+valueOfBomb*k;
 		return total;
-	}	
+	}
 	
 }

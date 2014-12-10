@@ -303,21 +303,23 @@ public class SchrodingersBoard {
 	
 	/** Evaluates This Board */
 	public float evaluate(EvaluationFunction eval, PlayerID player){
+		System.out.println("Hi");
 		GameBoard model = this.view.getCurrentState().duplicate();
 		//Translate Schrodingers Board into proper Game board
 		for(int cy=0; cy<this.board.length; cy++){
 			for(int cx=0; cx<this.board[cy].length; cx++){
+				System.out.println(cx+"/"+board[cy].length+" "+cy+"/"+board.length);
 				if(!model.getUnit(cx, cy).isLake()){
 					if(this.board[cy][cx].isActualUnit()){
 						if(this.board[cy][cx].unitIsKnown()){
-							model.setUnit(cx, cy, new Unit(board[cy][cx].getKnownUnit(), board[cy][cx].getOwner()));
+							model.setUnit(cx, cy, Unit.createUnitToken(board[cy][cx].getKnownUnit(), board[cy][cx].getOwner()));
 						}
 						else{
-							model.setUnit(cx, cy, new Unit(Unit.UnitType.UNKNOWN, board[cy][cx].getOwner()));
+							model.setUnit(cx, cy, Unit.createUnitToken(Unit.UnitType.UNKNOWN, board[cy][cx].getOwner()));
 						}
 					}
-					else{
-						model.setUnit(cx, cy, new Unit(Unit.UnitType.AIR, StrategoConstants.PlayerID.NEMO));
+					else {
+						model.setUnit(cx, cy, Unit.createUnitToken(Unit.UnitType.AIR, StrategoConstants.PlayerID.NEMO));
 					}
 				}
 			}
