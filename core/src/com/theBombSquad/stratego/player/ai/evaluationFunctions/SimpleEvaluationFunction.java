@@ -81,7 +81,7 @@ public class SimpleEvaluationFunction implements EvaluationFunction
 			valueOfSpy = 10;
 		}
 
-		float total = valueOfMarshal*a+valueOfGeneral*b+valueOfColonel*c+valueOfMajor*d+valueOfCaptain*e+valueOfLieutenant*f+valueOfSergeant*g+valueOfSapper*h+valueOfScout*i+valueOfSpy*j+valueOfBomb*k;
+		float total = valueOfMarshal*a+valueOfGeneral*b+valueOfColonel*c+valueOfMajor*d+valueOfCaptain*e+valueOfLieutenant*f+valueOfSergeant*g+valueOfSapper*h+valueOfScout*i+valueOfSpy*j+valueOfBomb*k+l*valueOfFlag;
 		return total;
 	}
 
