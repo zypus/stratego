@@ -15,6 +15,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.RuleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
@@ -28,7 +29,7 @@ public class MctsAI extends AI{
 
 	@Override
 	protected Move move() {
-		Move move = mcts();
+		Move move = mctsRule();
 		gameView.performMove(move);
 		return move;
 	}
@@ -51,6 +52,45 @@ public class MctsAI extends AI{
 	}
 	*/
 
+	private Move mctsRule(){
+		Move[] bestMoves = generateBestMovesRule();
+		int worst = (int) (Math.random()*bestMoves.length);
+		return bestMoves[worst];
+	}
+	
+	private Move[] generateBestMovesRule(){
+		List<Move> moves = AI.createAllLegalMoves(gameView, gameView.getCurrentState()); //b.generateAllMoves(player);
+		Move[] bestMoves = new Move[5];
+		evals = new float[bestMoves.length];
+		int iteration = 0;
+		for(int i = 0; i < evals.length; i++){
+			evals[i] = 0;
+		}
+		for( int i = 0; i < moves.size(); i++){
+			boolean changed = false;
+			RuleEvaluationFunction r = new RuleEvaluationFunction();
+			float eval = r.evaluate(gameView, moves.get(i));
+			//Check if new evaluation is higher than any we already had
+			for( int k = 0; k < evals.length; k++){
+				//theoretically it is possible to fill only one of evals, so first fill
+				if(iteration < 5 && !changed){
+					evals[iteration] = eval;
+					bestMoves[iteration] = moves.get(i);
+					iteration++;
+					changed = true;
+				}
+				if(!changed){
+					if(evals[k] < eval){
+						evals[k] = eval;
+						bestMoves[k] = moves.get(i);
+						changed = true;
+					}
+				}
+			}
+		}
+		return bestMoves;
+	}
+	
 	private Move mcts(){
 		//first generate your best 5 moves
 		//simpleEvaluationFunction.evaluate(GameBoard, PlayerID);
@@ -117,6 +157,8 @@ public class MctsAI extends AI{
 			boolean changed = false;
 			float totalEval = 0;
 			for(int j = 0; j < board.size(); j++){
+				//RuleEvaluationFunction r = new RuleEvaluationFunction();
+				//float eval = r.evaluate(gameView, moves.get(i));
 				SimpleEvaluationFunction s = new SimpleEvaluationFunction();
 				float eval = board.get(j).evaluate(s, player);//*board.get(j).getRelativeProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
 				totalEval = totalEval+eval;
