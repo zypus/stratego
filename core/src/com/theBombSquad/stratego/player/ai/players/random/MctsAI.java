@@ -120,10 +120,11 @@ public class MctsAI extends AI{
 					if(iteration < 5){
 						evals[iteration] = eval;
 						bestMoves[iteration] = moves.get(i);
+						iteration++;
 					}
 					if(!changed){
-						if(evals[j] < eval){
-							evals[j] = eval;
+						if(evals[k] < eval){
+							evals[k] = eval;
 							bestMoves[k] = moves.get(i);
 							changed = true;
 						}
