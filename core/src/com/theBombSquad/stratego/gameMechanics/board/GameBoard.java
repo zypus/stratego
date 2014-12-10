@@ -26,7 +26,7 @@ public class GameBoard implements Serializable {
 		{
 			for(int j =0; j<getHeight(); j++)
 			{
-				if(id==board[j][i].getOwner() && type==board[j][i].getType())
+				if(id.equals(board[j][i].getOwner()) && type==board[j][i].getType())
 				{
 					counter++;
 				}

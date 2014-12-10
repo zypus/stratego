@@ -3,6 +3,7 @@ package com.theBombSquad.stratego;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
+import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
@@ -66,7 +67,8 @@ public class StrategoConstants {
 		MCTS(MctsAI.class),
 		SETUPAI(SetupPlayerAI.class),
 		TDSTRATEGO(TDStratego.class),
-		ONE_PLYER(OnePlyDeepAI.class);
+		ONE_PLYER(OnePlyDeepAI.class),
+		THE_QUEEN(TheQueen.class);
 
 		private Class<? extends Player> playerClass;
 

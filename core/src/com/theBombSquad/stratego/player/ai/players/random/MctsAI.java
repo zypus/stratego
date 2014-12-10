@@ -111,8 +111,8 @@ public class MctsAI extends AI{
 			board = b.generateFromMove(moves.get(i));
 			//Evaluate all possible boards for move:
 			for(int j = 0; j < board.size(); j++){
-				SimpleEvaluationFunction s = new SimpleEvaluationFunction();
-				float eval = board.get(j).evaluate(s, player)*board.get(j).getProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
+				EvaluationFunctionX s = new SimpleEvaluationFunction();
+				float eval = board.get(j).evaluate(s, player)*board.get(j).getRelativeProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
 				boolean changed = false;
 				//Check if new evaluation is higher than any we already had
 				for( int k = 0; k < evals.length; k++){

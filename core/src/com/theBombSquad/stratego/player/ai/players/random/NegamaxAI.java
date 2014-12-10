@@ -51,7 +51,7 @@ public class NegamaxAI extends AI
 		float sum = 0;
 		for (SchrodingersBoard board:boards)
 		{
-			sum+=board.getProbability()*-negamax(depth, board, alpha, beta);
+			sum+=board.getRelativeProbability()*-negamax(depth, board, alpha, beta);
 		}
 		return sum;
 	}

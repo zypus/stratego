@@ -4,6 +4,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
+import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,8 @@ public class RandomAI extends AI {
 
 	@Override protected Move move() {
 		Move move;
-		List<Move> possibleMoves = AI.createAllLegalMoves(gameView, gameView.getCurrentState());
+		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
+		List<Move> possibleMoves = b.generateAllMoves(this.gameView.getPlayerID());//AI.createAllLegalMoves(gameView, gameView.getCurrentState());
 //		for(int c=0; c<possibleMoves.size(); c++){
 //			Move mover = possibleMoves.get(c);
 //			if(gameView.isEnemy(mover.getToX(), mover.getToY())){
