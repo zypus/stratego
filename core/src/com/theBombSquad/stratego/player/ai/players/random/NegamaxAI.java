@@ -5,32 +5,33 @@ import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.ai.AI;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 import java.util.List;
+import java.util.Random;
 
 public class NegamaxAI extends AI
 {
-	private final int maxDepth = 3;
+	private final int MAX_DEPTH = 4;
+	private Random                   random             = new Random();
 	private SimpleEvaluationFunction evaluationFunction = new SimpleEvaluationFunction();
 
 	public NegamaxAI(GameView gameView) {
 		super(gameView);
 	}
 
-	private Float negamax(int depth, SchrodingersBoard board, float alpha, float beta) {
-		SimpleEvaluationFunction simpleEvaluationFunction = new SimpleEvaluationFunction();
+	private Float negamax(int depth, SchrodingersBoard board, float alpha, float beta, PlayerID playerID) {
 		if (depth == 0) {
-			return simpleEvaluationFunction.evaluate(null, null);
+			return board.evaluate(evaluationFunction, playerID);
 		}
-		List<Move> moves = board.generateAllMoves(this.gameView.getPlayerID());
+		List<Move> moves = board.generateAllMoves(playerID);
 		for (Move move : moves) {
 			List<SchrodingersBoard> boards = board.generateFromMove(move);//returns a list of schrodinger boards
 			if (boards.size() > 1) {
-				alpha = Math.max(alpha, -expectimax(depth - 1, boards, -beta, -alpha));
+				alpha = Math.max(alpha, -expectimax(depth - 1, boards, -beta, -alpha, playerID.getOpponent()));
 			} else {
-				alpha = Math.max(alpha, -negamax(depth-1, boards.get(0), -beta, -alpha));
+				alpha = Math.max(alpha, -negamax(depth - 1, boards.get(0), -beta, -alpha, playerID.getOpponent()));
 			}
 			//beta cutoff
 			if (alpha >= beta)
@@ -42,7 +43,7 @@ public class NegamaxAI extends AI
 		return alpha;
 	}
 
-	private Float expectimax(int depth, List<SchrodingersBoard> boards, float alpha, float beta)
+	private Float expectimax(int depth, List<SchrodingersBoard> boards, float alpha, float beta, PlayerID playerID)
 	{
 		if (depth==0)
 		{
@@ -51,7 +52,7 @@ public class NegamaxAI extends AI
 		float sum = 0;
 		for (SchrodingersBoard board:boards)
 		{
-			sum+=board.getProbability()*-negamax(depth, board, alpha, beta);
+			sum+=board.getRelativeProbability()*-negamax(depth, board, alpha, beta, playerID);
 		}
 		return sum;
 	}
@@ -63,23 +64,23 @@ public class NegamaxAI extends AI
 
 	protected Move move()
 	{
-		float max = Float.MIN_VALUE;
-		float alpha = Float.MIN_VALUE;
+		float alpha = -Float.MAX_VALUE;
 		float beta = Float.MAX_VALUE;
-		Move bestMove = null;
 		SchrodingersBoard board = new SchrodingersBoard(gameView);
 		List<Move> moves = board.generateAllMoves(this.gameView.getPlayerID());
+//		Collections.shuffle(moves);
+		Move bestMove = moves.get(random.nextInt(moves.size()));
 		for (Move move:moves)
 		{
 			List<SchrodingersBoard> boards = board.generateFromMove(move); //returns a list of schrodinger boards
 			Float value;
 			if (boards.size()>1)
 			{
-				value = -expectimax(maxDepth-1, boards, -beta, -alpha);
+				value = -expectimax(MAX_DEPTH-1, boards, -beta, -alpha, gameView.getPlayerID());
 			}
 			else
 			{
-				value = -negamax(maxDepth-1, boards.get(0), -beta, -alpha);
+				value = -negamax(MAX_DEPTH-1, boards.get(0), -beta, -alpha, gameView.getPlayerID());
 			}
 			if(value>alpha)
 			{
@@ -102,8 +103,8 @@ public class NegamaxAI extends AI
 	@Override
 	protected Setup setup()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("NEGAMAX");
+		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
 	}
 
 }

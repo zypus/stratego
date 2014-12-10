@@ -2,7 +2,8 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
-import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.random.NegamaxAI;
+import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
 
 /**
  * TODO Add description
@@ -17,6 +18,7 @@ public class NoGUIStratego implements Game.GameListener {
 	int player1Wins = 0;
 	int player2Wins = 0;
 	int draws = 0;
+	int totalPlys = 0;
 
 	private Game       game;
 	private Player player1;
@@ -34,12 +36,13 @@ public class NoGUIStratego implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		player1 = new RandomAI(playerOneView);
-		player2 = new RandomAI(playerTwoView);
+		player1 = new NegamaxAI(playerOneView);
+		player2 = new OnePlyDeepAI(playerTwoView);
 
 //		player1.setLearning(true);
 		//		player2.setLearning(true);
 
+		game.reset();
 		gameFinished(-1, null);
 	}
 
@@ -56,6 +59,7 @@ public class NoGUIStratego implements Game.GameListener {
 					draws++;
 				}
 			}
+			totalPlys += ply;
 		}
 		if (round < MAX_ROUNDS) {
 			round++;
@@ -66,7 +70,7 @@ public class NoGUIStratego implements Game.GameListener {
 
 			game.startSetupPhase();
 		} else {
-			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws);
+			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws+" - average game length: "+totalPlys/MAX_ROUNDS);
 //			player1.save("test/TDStratego/player1.net");
 			//			player2.save("test/TDStratego/player2.net");
 		}
