@@ -6,7 +6,6 @@ import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
-import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.awt.Rectangle;
@@ -66,7 +65,7 @@ public class StrategoConstants {
 		RANDOM(RandomAI.class),
 		MCTS(MctsAI.class),
 		SETUPAI(SetupPlayerAI.class),
-		TDSTRATEGO(TDStratego.class);
+		TDSTRATEGO(TDStratego.class),
 		ONE_PLYER(OnePlyDeepAI.class);
 
 		private Class<? extends Player> playerClass;

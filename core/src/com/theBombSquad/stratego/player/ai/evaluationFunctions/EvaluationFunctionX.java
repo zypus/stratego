@@ -9,7 +9,7 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
  * @author Fabian Fraenz <f.fraenz@t-online.de>
  * @created 10/12/14
  */
-public interface EvaluationFunction {
+public interface EvaluationFunctionX {
 
 	public float evaluate(GameBoard state, StrategoConstants.PlayerID player);
 
