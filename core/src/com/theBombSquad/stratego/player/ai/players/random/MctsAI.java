@@ -12,15 +12,14 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class MctsAI extends AI{
-	
+
 	float[] evals;
 
 	public MctsAI(GameView gameView) {
@@ -33,31 +32,31 @@ public class MctsAI extends AI{
 		gameView.performMove(move);
 		return move;
 	}
-	
-	/* Performs actual MCTS 
+
+	/* Performs actual MCTS
 	private Move mcts(){
 		Random rand = new Random();
-		
+
 		SchrodingersBoard board = new SchrodingersBoard(this.gameView);
 		for(int c=0; c<20; c++){
 			List<Move> mo = board.generateAllMoves(c%2==0?gameView.getPlayerID():gameView.getOpponentID());
 			List<SchrodingersBoard> boards = board.generateFromMove(mo.get(rand.nextInt(mo.size())));
 			board = boards.get(rand.nextInt(boards.size()));
 		}
-		
+
 		//Return Random Move
 		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
 		List<Move> moves = b.generateAllMoves(gameView.getPlayerID());
 		return moves.get(rand.nextInt(moves.size()));
 	}
 	*/
-	
+
 	private Move mcts(){
 		//first generate your best 5 moves
 		//simpleEvaluationFunction.evaluate(GameBoard, PlayerID);
 		SchrodingersBoard b = new SchrodingersBoard(this.gameView);
 		Move[] bestMoves = generateBestMoves(b, gameView.getPlayerID());
-		
+
 		//then check what move would give opponent least chance to decrease your evaluation
 		//	so take move that decreases evaluation least after opponent move.
 		//	so for every move take five best opponent moves, then take the move
@@ -95,7 +94,7 @@ public class MctsAI extends AI{
 		}
 		return bestMoves[worst];
 	}
-	
+
 	//Now shut up, Flo. I like it this way. Don't ruin my mood, please :)
 	//Never >:D
 	private Move[] generateBestMoves(SchrodingersBoard b, PlayerID player){
@@ -120,7 +119,7 @@ public class MctsAI extends AI{
 					//theoretically it is possible to fill ony one of evals, so first fill
 					if(iteration < 5){
 						evals[iteration] = eval;
-						bestMoves[iteration] = moves.get(i); 
+						bestMoves[iteration] = moves.get(i);
 					}
 					if(!changed){
 						if(evals[j] < eval){
@@ -134,7 +133,7 @@ public class MctsAI extends AI{
 		}
 		return bestMoves;
 	}
-	
+
 	/** 'Reveals' the actual board state based on known information and probabilistically based on AIGameState's information */
 	private GameBoard setProbableOpponent(){
 		PlayerID opponent = StrategoConstants.PlayerID.PLAYER_1;
@@ -175,7 +174,7 @@ public class MctsAI extends AI{
 		}
 		return probableBoard;
 	}
-	
+
 	/** Returns an integer array with each index representing the yet unplaced and not dead number of units for a Unit type of the opponent, sorted according to rank */
 	private int[] getNumberOfRevealedOpponentUnits(GameBoard board){
 		int[] numberOfStillPlacable = new int[12];
@@ -194,7 +193,7 @@ public class MctsAI extends AI{
 						numberOfStillPlacable[unit.getType().getRank()]--;
 					}
 				}
-				
+
 			}
 		}
 		return numberOfStillPlacable;

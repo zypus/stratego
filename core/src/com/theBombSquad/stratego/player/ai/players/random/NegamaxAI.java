@@ -5,7 +5,7 @@ import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.ai.AI;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 import java.util.List;

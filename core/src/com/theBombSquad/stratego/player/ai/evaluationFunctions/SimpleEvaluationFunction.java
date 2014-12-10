@@ -1,12 +1,12 @@
-package com.theBombSquad.stratego.player.ai.evaluationFunction;
+package com.theBombSquad.stratego.player.ai.evaluationFunctions;
 
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
-public class SimpleEvaluationFunction implements EvaluationFunction 
+public class SimpleEvaluationFunction implements EvaluationFunction
 {
-	public float evaluate(GameBoard gamestate, PlayerID player) 
+	public float evaluate(GameBoard gamestate, PlayerID player)
 	{
 		PlayerID opponent = player.getOpponent();
 		float a = gamestate.getAliveUnits(Unit.UnitType.MARSHAL, player);
@@ -21,7 +21,7 @@ public class SimpleEvaluationFunction implements EvaluationFunction
 		float j = gamestate.getAliveUnits(Unit.UnitType.SPY, player);
 		float k = gamestate.getAliveUnits(Unit.UnitType.BOMB, player);
 		float l = gamestate.getAliveUnits(Unit.UnitType.FLAG, player);
-		
+
 		//values from thesis paper
 		float valueOfMarshal = 400;
 		float valueOfGeneral = 200;
@@ -80,9 +80,9 @@ public class SimpleEvaluationFunction implements EvaluationFunction
 		{
 			valueOfSpy = 10;
 		}
-		
+
 		float total = valueOfMarshal*a+valueOfGeneral*b+valueOfColonel*c+valueOfMajor*d+valueOfCaptain*e+valueOfLieutenant*f+valueOfSergeant*g+valueOfSapper*h+valueOfScout*i+valueOfSpy*j+valueOfBomb*k;
 		return total;
-	}	
-	
+	}
+
 }

@@ -6,7 +6,7 @@ import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.EvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunction;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
