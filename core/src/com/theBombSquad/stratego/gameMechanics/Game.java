@@ -69,7 +69,7 @@ public class Game {
 	@Getter @Setter GameListener gameListener = null;
 
 	public interface GameListener {
-		void gameFinished(int ply);
+		void gameFinished(int ply, PlayerID winner);
 		boolean performPly(int ply);
 	}
 
@@ -486,7 +486,7 @@ public class Game {
 //						e.printStackTrace();
 //					}
 //				}
-				gameListener.gameFinished(getCurrentTurn());
+				gameListener.gameFinished(getCurrentTurn(), (winner != null) ? winner.getGameView().getPlayerID() : null);
 			}
 		}
 	}
