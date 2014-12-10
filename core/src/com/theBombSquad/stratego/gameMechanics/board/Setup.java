@@ -8,9 +8,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 
-import lombok.Getter;
-
-import com.theBombSquad.stratego.gameMechanics.GameView;
 
 /**
  * TODO Add description

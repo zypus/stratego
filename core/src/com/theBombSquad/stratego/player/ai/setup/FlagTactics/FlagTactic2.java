@@ -1,15 +1,15 @@
 package com.theBombSquad.stratego.player.ai.setup.FlagTactics;
 
-import java.util.ArrayList;
-
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactic;
-import com.theBombSquad.stratego.player.ai.setup.Strategy;
-import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
 import com.theBombSquad.stratego.player.ai.setup.Strategies.Defensive;
 import com.theBombSquad.stratego.player.ai.setup.Strategies.Middle;
 import com.theBombSquad.stratego.player.ai.setup.Strategies.Ofensive;
+import com.theBombSquad.stratego.player.ai.setup.Strategy;
+import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
+
+import java.util.ArrayList;
 
 public class FlagTactic2 extends FlagTactic{
 
@@ -35,15 +35,8 @@ public class FlagTactic2 extends FlagTactic{
 		strategies.add(new Middle());
 	}
 
-	protected void addStrategies() {
-		strategies = new ArrayList<Strategy>();
-		strategies.add(new Defensive());
-		strategies.add(new Ofensive());
-		strategies.add(new Middle());
-	}
-
 	private void proceed() {
-	
+
 		possiblePlacements = new ArrayList<UnitPlacement>();
 		for (int j = 1; j < setup.getWidth()-1; j++) {
 			possiblePlacements.add(new UnitPlacement(UnitType.FLAG, j, 3, 1));
@@ -85,7 +78,7 @@ public class FlagTactic2 extends FlagTactic{
 		toPut.setX(x+1);
 		toPut.setUnitType(super.randomizeSL());
 		super.placeUnit(toPut);
-		
+
 		//Place last bomb
 		//make possible placemnets empty
 		super.empty();
@@ -103,5 +96,5 @@ public class FlagTactic2 extends FlagTactic{
 		UnitPlacement toPut2 = super.randomizeUnitPlacement();
 		super.placeUnit(toPut2);
 	}
-	
+
 }

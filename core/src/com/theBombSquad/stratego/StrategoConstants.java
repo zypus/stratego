@@ -4,11 +4,7 @@ import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
-<<<<<<< HEAD
-import com.theBombSquad.stratego.player.ai.players.random.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
-=======
->>>>>>> origin/feature/TDStratego
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.awt.Rectangle;

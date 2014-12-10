@@ -1,19 +1,18 @@
 package com.theBombSquad.stratego.player.ai.setup.FlagTactics;
 
-import java.util.ArrayList;
-
-import com.theBombSquad.stratego.gameMechanics.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactic;
-import com.theBombSquad.stratego.player.ai.setup.Strategy;
-import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
 import com.theBombSquad.stratego.player.ai.setup.Strategies.Defensive;
 import com.theBombSquad.stratego.player.ai.setup.Strategies.Middle;
 import com.theBombSquad.stratego.player.ai.setup.Strategies.Ofensive;
+import com.theBombSquad.stratego.player.ai.setup.Strategy;
+import com.theBombSquad.stratego.player.ai.setup.UnitPlacement;
+
+import java.util.ArrayList;
 
 public class FlagTactic10 extends FlagTactic{
-	
+
 	public FlagTactic10(AISetup setup) {
 		super(setup);
 		proceed();
@@ -37,7 +36,7 @@ public class FlagTactic10 extends FlagTactic{
 	}
 
 	private void proceed() {
-		
+
 		//place 4's in corners
 		UnitPlacement toPut = new UnitPlacement(super.randomizeSL(), 0, 3, 1);
 		super.placeUnit(toPut);
