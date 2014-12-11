@@ -15,31 +15,31 @@ public class PlanPunishUnitReveals implements Plan{
 		
 		//Check For Complete Reveals:
 		//Check Whether Scout Move
-		if(Math.abs(move.getFromX()-move.getToX())>=2 || Math.abs(move.getFromY()-move.getToY())>=2){
-			revealHiddenUnitPenalty = TheQueen.getUnitValue(self.getType()) * 0.1f;
-		}
-		else{
-			Unit target = board.getUnit(move.getToX(), move.getToY());
-			//If Not Enemy Unit, No Encounter, No Revelation
-			if(target.isAir()){
-				revealHiddenUnitPenalty = 0;
+		if(!self.wasRevealed(view.getCurrentTurn())){
+			if(Math.abs(move.getFromX()-move.getToX())>=2 || Math.abs(move.getFromY()-move.getToY())>=2){
+				revealHiddenUnitPenalty = TheQueen.getUnitValue(self.getType()) * 0.01f;
 			}
-			//Enemy Is Unit
 			else{
-				//If Unit Has Been Revealed Before
-				if(!self.wasRevealed(view.getCurrentTurn())){
-					revealHiddenUnitPenalty = TheQueen.getUnitValue(self.getType()) * 0.1f;
-				} 
+				Unit target = board.getUnit(move.getToX(), move.getToY());
+				//If Not Enemy Unit, No Encounter, No Revelation
+				if(target.isAir()){
+					revealHiddenUnitPenalty = 0;
+				}
+				//Enemy Is Unit
+				else{
+					//If Unit Has Been Revealed Before
+					revealHiddenUnitPenalty = TheQueen.getUnitValue(self.getType()) * 0.01f;
+				}
 			}
 		}
 		
 		//Punishment For Moving When Not before Moving:
-		if(!self.wasMoved(view.getCurrentTurn())){
-			revealHiddenUnitPenalty += TheQueen.getUnitValue(Unit.UnitType.BOMB);
+		if(!self.wasMoved(view.getCurrentTurn()) && !self.wasRevealed(view.getCurrentTurn())){
+			revealHiddenUnitPenalty = TheQueen.getUnitValue(self.getType()) * 0.01f+TheQueen.getUnitValue(Unit.UnitType.BOMB)*0.01f;
 		}
 		
 		//As This Is Punishment The Value Should Be Subtracted From Complete
-		return -revealHiddenUnitPenalty;
+		return 0;//-revealHiddenUnitPenalty;
 	}
 
 	@Override

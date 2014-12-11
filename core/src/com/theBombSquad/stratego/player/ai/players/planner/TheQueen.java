@@ -20,19 +20,40 @@ public class TheQueen extends AI{
 		return unitValues[unit.getRank()];
 	}
 	
-	
 	private List<Plan> plans;
+	private boolean planSetupFinished = false;
 	
 	public TheQueen(GameView gameView) {
 		super(gameView);
+	}
+	
+	private void planSetup(){
 		plans = new ArrayList<Plan>();
 		plans.add(new PlanRandom());
 		plans.add(new PlanAttackAdjacent());
+		plans.add(new PlanPunishUnitReveals());
+		plans.add(new PlanFleeDefeatableUnitFromKnownStrongerThreat());
+		plans.add(new PlanDefendFlag());
+		plans.add(new PlanReveal());
+		for(int cy=0; cy<10; cy++){
+			for(int cx=0; cx<10; cx++){
+				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
+					plans.add(new PlanMarchKill(gameView.getUnit(cx, cy)));
+				}
+			}
+		}
+		this.planSetupFinished = true;
 	}
 	
 	
 	@Override
 	protected Move move() {
+		if(!planSetupFinished){
+			planSetup();
+		}
+		for(Plan plan : plans){
+			plan.postMoveUpdate(gameView);
+		}
 		List<Move> moves = super.createAllLegalMoves(gameView, gameView.getCurrentState());
 		Move bestMove = null;
 		float bestProfit = Float.NEGATIVE_INFINITY;

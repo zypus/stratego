@@ -5,7 +5,7 @@ import java.util.Random;
 import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 
-/** This Plan Returns A Small Random Value (Between 0 And 1) So That A Random Move Is Choosen Out Of Several Moves That Have The Same Profit */
+/** This Plan Returns A Small Random Value (Between 0 And 1) So That A Random Move Is Chosen Out Of Several Moves That Have The Same Profit */
 public class PlanRandom implements Plan{
 	
 	private Random rand;

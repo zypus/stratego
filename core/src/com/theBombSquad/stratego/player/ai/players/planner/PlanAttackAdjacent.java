@@ -22,24 +22,19 @@ public class PlanAttackAdjacent implements Plan{
 		}
 		//Enemy Is Unit
 		else{
-			float revealHiddenUnitPenalty = 0;
-			//If Unit Has Been 
-			if(!self.wasRevealed(view.getCurrentTurn())){
-				revealHiddenUnitPenalty = TheQueen.getUnitValue(self.getType()) * 0.1f;
-			}
 			//Enemy Is Revealed!
 			if(target.wasRevealed(view.getCurrentTurn())){
 				CombatResult result = Encounter.resolveFight(self.getType(), target.getType());
 				//Attack Successful
 				if(result.equals(CombatResult.VICTORIOUS_ATTACK)){
 					//Value Of Opponent
-					float foeValue = TheQueen.getUnitValue(target.getType());
-					return foeValue - revealHiddenUnitPenalty;
+					float foeValue = TheQueen.getUnitValue(target.getType())*2;
+					return foeValue;
 				}
 				//Attack Not Successful (Attacking A Known Unit And Failing Is NEVER A Good Idea!)
 				else if(result.equals(CombatResult.VICTORIOUS_DEFENSE)){
 					float selfValue = TheQueen.getUnitValue(self.getType());
-					return (selfValue * -10) - revealHiddenUnitPenalty;
+					return (selfValue * -10);
 				}
 			}
 			//Enemy Is Not Revealed
@@ -49,15 +44,15 @@ public class PlanAttackAdjacent implements Plan{
 				if(!target.wasMoved(view.getCurrentTurn())){
 					//Calculate Expected Profit (Reduce As We Should Be Somewhat Pessimistic When Dealing With Unknowns)
 					float expectedUnmovedValue = calculateExpectedUnmovedValue(view, self);
-					expectedUnmovedValue = expectedUnmovedValue - (Math.abs(expectedUnmovedValue)*0.2f);
-					return expectedUnmovedValue + revelationBonus - revealHiddenUnitPenalty;
+					expectedUnmovedValue = expectedUnmovedValue*0.95f;
+					return expectedUnmovedValue + revelationBonus;
 				}
 				//Target Has Already Moved (Can't Be A Bomb)
 				else{
 					//Calculate Expected Profit (Reduce As We Should Be Somewhat Pessimistic When Dealing With Unknowns)
 					float expectedMovedValue = calculateExpectedMovedValue(view, self);
-					expectedMovedValue = expectedMovedValue - (Math.abs(expectedMovedValue)*0.2f);
-					return expectedMovedValue + revelationBonus - revealHiddenUnitPenalty;
+					expectedMovedValue = expectedMovedValue*0.8f;
+					return expectedMovedValue + revelationBonus;
 				}
 			}
 		}
@@ -109,9 +104,6 @@ public class PlanAttackAdjacent implements Plan{
 					if(unit.wasRevealed(view.getCurrentTurn())){
 						revealedOfType[unit.getType().getRank()]++;
 					}
-					else{
-						opponentHiddenArmySize++;
-					}
 				}
 			}
 		}
@@ -119,6 +111,7 @@ public class PlanAttackAdjacent implements Plan{
 		int[] remainingHidden = new int[12];
 		for(int c=0; c<12; c++){
 			remainingHidden[c] = view.getCurrentState().getAliveUnits(Unit.getUnitTypeOfRank(c), view.getOpponentID())-revealedOfType[c];
+			opponentHiddenArmySize += remainingHidden[c];
 		}
 		float winPoints = 0;
 		float losePoints = 0;
@@ -144,10 +137,10 @@ public class PlanAttackAdjacent implements Plan{
 			}
 			//Mutual Defeat
 			else{
-				losePoints += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c)) * remainingHidden[c] * 0.8;
+				//losePoints += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c)) * remainingHidden[c] * 0.8;
 			}
 		}
-		return (winPoints+losePoints)/opponentHiddenArmySize;
+		return (winPoints*-losePoints);
 	}
 	
 	/** Calculates The Expected Profit For Attacking A Moved Unit With This Unit */
@@ -163,9 +156,6 @@ public class PlanAttackAdjacent implements Plan{
 					if(unit.wasRevealed(view.getCurrentTurn())){
 						revealedOfType[unit.getType().getRank()]++;
 					}
-					else{
-						opponentHiddenArmySize++;
-					}
 				}
 			}
 		}
@@ -178,6 +168,7 @@ public class PlanAttackAdjacent implements Plan{
 			else{
 				remainingHidden[c] = view.getCurrentState().getAliveUnits(Unit.getUnitTypeOfRank(c), view.getOpponentID())-revealedOfType[c];
 			}
+			opponentHiddenArmySize += remainingHidden[c];
 		}
 		float winPoints = 0;
 		float losePoints = 0;
@@ -195,10 +186,10 @@ public class PlanAttackAdjacent implements Plan{
 			}
 			//Mutual Defeat
 			else{
-				losePoints += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c)) * remainingHidden[c] * 0.8;
+				//losePoints += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c)) * remainingHidden[c] * 0.8;
 			}
 		}
-		return (winPoints+losePoints)/opponentHiddenArmySize;
+		return (winPoints*-losePoints);
 	}
 
 	@Override
