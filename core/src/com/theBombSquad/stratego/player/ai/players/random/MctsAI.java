@@ -15,7 +15,6 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class MctsAI extends AI{
