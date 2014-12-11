@@ -140,7 +140,7 @@ public class PlanAttackAdjacent implements Plan{
 				//losePoints += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c)) * remainingHidden[c] * 0.8;
 			}
 		}
-		return (winPoints*-losePoints);
+		return (winPoints-losePoints);
 	}
 	
 	/** Calculates The Expected Profit For Attacking A Moved Unit With This Unit */
@@ -189,7 +189,7 @@ public class PlanAttackAdjacent implements Plan{
 				//losePoints += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c)) * remainingHidden[c] * 0.8;
 			}
 		}
-		return (winPoints*-losePoints);
+		return (winPoints-losePoints);
 	}
 
 	@Override
