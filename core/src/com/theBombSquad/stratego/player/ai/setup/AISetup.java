@@ -3,7 +3,8 @@ package com.theBombSquad.stratego.player.ai.setup;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic9;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.*;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -76,9 +77,9 @@ public class AISetup extends Setup{
 		//flagTactics.add(new FlagTactic6());
 		//flagTactics.add(new FlagTactic7());
 		//flagTactics.add(new FlagTactic8());
-		flagTactics.add(new FlagTactic9());
+		//flagTactics.add(new FlagTactic9());
 		//flagTactics.add(new FlagTactic10());
-		//flagTactics.add(new FlagTactic11());
+		flagTactics.add(new FlagTactic11());
 
 		// add them all one by one
 		int random= (int)(Math.random()*flagTactics.size());
