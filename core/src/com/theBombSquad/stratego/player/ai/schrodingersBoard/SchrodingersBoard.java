@@ -7,13 +7,15 @@ import com.theBombSquad.stratego.gameMechanics.GameState;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.FunctionOfEvaluation;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -333,11 +335,13 @@ public class SchrodingersBoard {
 	}
 
 	/** Evaluates This Board */
-	public float evaluate(FunctionOfEvaluation eval, PlayerID player){
+	public float evaluate(EvaluationFunctionX eval, PlayerID player){
+		//System.out.println("Hi");
 		GameBoard model = this.view.getCurrentState().duplicate();
 		//Translate Schrodingers Board into proper Game board
 		for(int cy=0; cy<this.board.length; cy++){
 			for(int cx=0; cx<this.board[cy].length; cx++){
+				//System.out.println(cx+"/"+board[cy].length+" "+cy+"/"+board.length);
 				if(!model.getUnit(cx, cy).isLake()){
 					if(this.board[cy][cx].isActualUnit()){
 						if(this.board[cy][cx].unitIsKnown()){

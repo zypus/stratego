@@ -2,9 +2,11 @@ package com.theBombSquad.stratego.player.ai.evaluationFunction;
 
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.GameState;
+import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 
-public class SimpleEvaluationFunction implements FunctionOfEvaluation
+public class SimpleEvaluationFunction implements EvaluationFunctionX
 {
 	public float evaluate(GameState gamestate, PlayerID player)
 	{
@@ -181,4 +183,8 @@ public class SimpleEvaluationFunction implements FunctionOfEvaluation
 		return total;
 	}
 
+	@Override
+	public float evaluate(GameBoard state, PlayerID player) {
+		return 0;
+	}
 }

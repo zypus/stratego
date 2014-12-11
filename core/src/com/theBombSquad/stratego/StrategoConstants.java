@@ -70,6 +70,7 @@ public class StrategoConstants {
 		ONE_PLYER(OnePlyDeepAI.class),
 		NEGAMAX(NegamaxAI.class);
 
+
 		private Class<? extends Player> playerClass;
 
 		private PlayerType(Class<? extends Player> playerClass) {
