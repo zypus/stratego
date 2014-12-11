@@ -5,8 +5,9 @@ import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
-import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
+import com.theBombSquad.stratego.player.ai.players.random.NegamaxAI;
 import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 
 import java.awt.Rectangle;
@@ -37,7 +38,7 @@ public class StrategoConstants {
 	public static final int UNMOVED = 9999999;
 	public static final int FIRST_TURN = 0;
 
-	public static final int AI_DELAY = 200;
+	public static final int AI_DELAY = 500;
 
 	public static enum PlayerID {
 		PLAYER_1,
@@ -68,7 +69,8 @@ public class StrategoConstants {
 		SETUPAI(SetupPlayerAI.class),
 		TDSTRATEGO(TDStratego.class),
 		ONE_PLYER(OnePlyDeepAI.class),
-		THE_QUEEN(TheQueen.class);
+		THE_QUEEN(TheQueen.class),
+		NEGAMAX(NegamaxAI.class);
 
 		private Class<? extends Player> playerClass;
 

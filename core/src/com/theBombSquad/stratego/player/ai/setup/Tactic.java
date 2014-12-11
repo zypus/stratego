@@ -1,9 +1,9 @@
 package com.theBombSquad.stratego.player.ai.setup;
 
-import java.util.ArrayList;
-
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
+
+import java.util.ArrayList;
 
 public class Tactic {
 	protected AISetup setup;
@@ -57,16 +57,16 @@ public class Tactic {
 					setup.setUnit( toPut.getX(),toPut.getY(), setup
 							.getAvailableUnits().get(i));
 					if(setup.getView().getPlayerID()==PlayerID.PLAYER_1){
-						System.out.println(setup.getAvailableUnits().get(i).getType().getRank()+" "+ counter+" " +setup.getAvailableUnits().size());
+//						System.out.println(setup.getAvailableUnits().get(i).getType().getRank()+" "+ counter+" " +setup.getAvailableUnits().size());
 						counter++;
 					}
 					setup.getAvailableUnits().remove(i);
-					
+
 					return true;
 				}
 			}
 		}
-		System.out.println("error"+ setup.getAvailableUnits().size()+setup.getView().getPlayerID());//}
+//		System.out.println("error"+ setup.getAvailableUnits().size()+setup.getView().getPlayerID());//}
 		return false;
 	}
 

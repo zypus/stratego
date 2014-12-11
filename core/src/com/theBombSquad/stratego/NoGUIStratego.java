@@ -18,6 +18,7 @@ public class NoGUIStratego implements Game.GameListener {
 	int player1Wins = 0;
 	int player2Wins = 0;
 	int draws = 0;
+	int totalPlys = 0;
 
 	private Game       game;
 	private Player player1;
@@ -41,6 +42,7 @@ public class NoGUIStratego implements Game.GameListener {
 //		player1.setLearning(true);
 		//		player2.setLearning(true);
 
+		game.reset();
 		gameFinished(-1, null);
 	}
 
@@ -57,6 +59,7 @@ public class NoGUIStratego implements Game.GameListener {
 					draws++;
 				}
 			}
+			totalPlys += ply;
 		}
 		if (round < MAX_ROUNDS) {
 			round++;
@@ -67,7 +70,7 @@ public class NoGUIStratego implements Game.GameListener {
 
 			game.startSetupPhase();
 		} else {
-			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws);
+			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws+" - average game length: "+totalPlys/MAX_ROUNDS);
 //			player1.save("test/TDStratego/player1.net");
 			//			player2.save("test/TDStratego/player2.net");
 		}

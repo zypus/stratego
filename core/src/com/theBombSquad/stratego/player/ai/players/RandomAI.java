@@ -2,12 +2,9 @@ package com.theBombSquad.stratego.player.ai.players;
 
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
-import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
-import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
-import com.theBombSquad.stratego.player.ai.setup.AISetup;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,6 +44,7 @@ public class RandomAI extends AI {
 	}
 
 	@Override protected Setup setup() {
+		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
 //		Setup setup = new Setup(10,4);
 //		List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
 //		// shuffle the list containing all available units
@@ -61,17 +59,6 @@ public class RandomAI extends AI {
 //		// so simply sending the setup over to the game
 //		gameView.setSetup(setup);
 //		return setup;
-		AISetup setup = new AISetup(gameView);
-		gameView.setSetup(setup);
-		//System.out.println(gameView.getPlayerID());
-		Setup setup2 = new Setup(10,4);
-		for (int y = 0; y < 4; y++) {
-			for (int x = 0; x < 10; x++) {
-				setup2.setUnit(x, y, setup.getUnit(x, y));
-			}
-		}
-		System.out.println(gameView.validateSetup(setup));
-		return setup2;
 	}
 
 }

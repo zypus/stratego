@@ -13,8 +13,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -101,6 +99,9 @@ public class SchrodingersBoard {
 					else{
 						board[cy][cx] = new SchrodingersUnit(u.getOwner(), u.getType());
 					}
+					if (u.wasRevealed(view.getCurrentTurn())) {
+						board[cy][cx].setRevealed(true);
+					}
 				}
 				else{
 					//Create Empty
@@ -145,13 +146,16 @@ public class SchrodingersBoard {
 		if(Math.abs(originX-destX)>=2 || Math.abs(originY-destY)>=2){
 			float probs = placeHolder.board[originY][originX].getProbabilityFor(Unit.UnitType.SCOUT);
 			placeHolder.board[originY][originX].setKnown(Unit.UnitType.SCOUT);
-			placeHolder.setRelativeProbability(probs);
+			placeHolder.board[originY][originX].setRevealed(true);
+//			placeHolder.setRelativeProbability(probs);
+			placeHolder.setRelativeProbability(1);
 		}
 		//Moves onto empty square
 		if(getBoard()[destY][destX].isAir()){
 			SchrodingersBoard newBoard = placeHolder.clone();
 			newBoard.getBoard()[destY][destX] = newBoard.getBoard()[originY][originX];
 			newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+			newBoard.setRelativeProbability(1);
 			list.add(newBoard);
 		}
 		//Destination is not empty - i.e. Encounter!
@@ -177,6 +181,7 @@ public class SchrodingersBoard {
 			if(an.combatUpdateWin(helper.clone(), win, offensiveNotDefensive)){
 				SchrodingersBoard newBoard = win;
 				newBoard.getBoard()[destY][destX] = an;
+				newBoard.board[destY][destX].setRevealed(true);
 				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
 				newBoard.ownArmySize = newBoard.ownArmySize-1;
 				list.add(newBoard);
