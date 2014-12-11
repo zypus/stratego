@@ -1,10 +1,5 @@
 package com.theBombSquad.stratego.player.ai.players.random;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game.GameView;
@@ -16,7 +11,6 @@ import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
 import com.theBombSquad.stratego.player.ai.evaluationFunctions.RuleEvaluationFunction;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 import java.util.ArrayList;
@@ -61,7 +55,7 @@ public class MctsAI extends AI{
 		int worst = (int) (Math.random()*bestMoves.length);
 		return bestMoves[worst];
 	}
-	
+
 	private Move[] generateBestMovesRule(){
 		List<Move> moves = AI.createAllLegalMoves(gameView, gameView.getCurrentState()); //b.generateAllMoves(player);
 		Move[] bestMoves = new Move[5];
@@ -94,7 +88,7 @@ public class MctsAI extends AI{
 		}
 		return bestMoves;
 	}
-	
+
 	private Move mcts(){
 		//first generate your best 5 moves
 		//simpleEvaluationFunction.evaluate(GameBoard, PlayerID);
@@ -105,7 +99,7 @@ public class MctsAI extends AI{
 		//	so take move that decreases evaluation least after opponent move.
 		//	so for every move take five best opponent moves, then take the move
 		//	with the worst average evaluation for the opponent
-		
+
 		PlayerID opponent = StrategoConstants.PlayerID.PLAYER_1;
 		if(opponent==gameView.getPlayerID()){
 			opponent = StrategoConstants.PlayerID.PLAYER_2;
@@ -139,7 +133,7 @@ public class MctsAI extends AI{
 				worst = m;
 			}
 		}
-		
+
 		//int worst = (int) (Math.random()*bestMoves.length);
 		return bestMoves[worst];
 	}
@@ -163,7 +157,7 @@ public class MctsAI extends AI{
 			for(int j = 0; j < board.size(); j++){
 				//RuleEvaluationFunction r = new RuleEvaluationFunction();
 				//float eval = r.evaluate(gameView, moves.get(i));
-				SimpleEvaluationFunction s = new SimpleEvaluationFunction();
+				RuleEvaluationFunction s = new RuleEvaluationFunction();
 				float eval = board.get(j).evaluate(s, player);//*board.get(j).getRelativeProbability();//(s.evaluate(board.get(j), player))*(board.get(j).getProbability());
 				totalEval = totalEval+eval;
 			}

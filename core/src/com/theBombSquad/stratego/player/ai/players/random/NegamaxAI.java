@@ -47,7 +47,7 @@ public class NegamaxAI extends AI
 	{
 		if (depth==0)
 		{
-			return evaluationFunction.evaluate(null, null);
+			return boards.get(0).evaluate(evaluationFunction, playerID);
 		}
 		float sum = 0;
 		for (SchrodingersBoard board:boards)

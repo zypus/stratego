@@ -3,7 +3,6 @@ package com.theBombSquad.stratego.player.ai.schrodingersBoard;
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
 import com.theBombSquad.stratego.gameMechanics.Game.GameView;
-import com.theBombSquad.stratego.gameMechanics.GameState;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
@@ -14,8 +13,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -372,7 +369,8 @@ public class SchrodingersBoard {
 			opponent[u] = view.getNumberOfDefeatedOpponentUnits(u);
 		}
 		//Evaluates And returns evaluation
-		return eval.evaluate(new GameState(model, view.getMoves(), own, opponent, this), player);
+		return eval.evaluate(model, player);
+//		new GameState(model, view.getMoves(), own, opponent, this)
 	}
 
 	public float getTotalProbabilityFor(Unit.UnitType type, PlayerID playerID) {

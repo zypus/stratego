@@ -2,8 +2,8 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
-import com.theBombSquad.stratego.player.ai.players.random.NegamaxAI;
-import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 
 /**
  * TODO Add description
@@ -36,8 +36,8 @@ public class NoGUIStratego implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		player1 = new NegamaxAI(playerOneView);
-		player2 = new OnePlyDeepAI(playerTwoView);
+		player1 = new MctsAI(playerOneView);
+		player2 = new RandomAI(playerTwoView);
 
 //		player1.setLearning(true);
 		//		player2.setLearning(true);
