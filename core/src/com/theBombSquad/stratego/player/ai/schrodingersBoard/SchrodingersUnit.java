@@ -2,7 +2,9 @@ package com.theBombSquad.stratego.player.ai.schrodingersBoard;
 
 import java.util.ArrayList;
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
@@ -10,6 +12,12 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
 public class SchrodingersUnit {
+	
+	@Getter @Setter
+	private int[] unitsStillPossibleToBe = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	
+	@Getter @Setter
+	private boolean revealedToOpponent = false;
 	
 	//Direct Reference to the Unit Type of this Object IF the Unit Type is actually known and set
 	private UnitType knownUnit = null;
@@ -43,17 +51,23 @@ public class SchrodingersUnit {
 		for(int c=0; c<probs.length; c++){
 			probs[c] = probabilities[c];
 		}
-		return new SchrodingersUnit(knownUnit, probs, probSum, owner, placeholder, airNotLake);
+		int[] uns = new int[this.unitsStillPossibleToBe.length];
+		for(int c=0; c<probs.length; c++){
+			uns[c] = unitsStillPossibleToBe[c];
+		}
+		return new SchrodingersUnit(knownUnit, probs, probSum, owner, placeholder, airNotLake, uns, revealedToOpponent);
 	}
 	
 	/** Constructor used for cloning */
-	private SchrodingersUnit(UnitType knownUnit, float[] probabilities, float probSum, PlayerID owner, boolean placeholder, boolean airNotLake){
+	private SchrodingersUnit(UnitType knownUnit, float[] probabilities, float probSum, PlayerID owner, boolean placeholder, boolean airNotLake, int[] unitsStillPossibleToBe, boolean revealedToOpponent){
 		this.knownUnit = knownUnit;
 		this.probabilities = probabilities;
 		this.probSum = probSum;
 		this.owner = owner;
 		this.placeholder = placeholder;
 		this.airNotLake = airNotLake;
+		this.unitsStillPossibleToBe = unitsStillPossibleToBe;
+		this.revealedToOpponent = revealedToOpponent;
 	}
 	
 	/** Constructs All Empty Unit, No Chance of being anything (Air) */
@@ -167,18 +181,26 @@ public class SchrodingersUnit {
 	
 	/** Updates the probability of the unit type according to the death of another unit that may have been this type and the size of all units with this units colour (before the death of that unit) */
 	public void deathUpdate(UnitType unit, float probOfDeath, float armySize){
-		probabilities[unit.getRank()] = ((probabilities[unit.getRank()]*armySize)-probSum*probOfDeath)/(armySize-1);
+		probabilities[unit.getRank()] = probabilities[unit.getRank()]-((1f/((float)unit.getQuantity()))*probOfDeath*probSum);
 		calcProbSum();
 	}
 	
 	/** Updates Probability of given Unit Type in case a unit should just have been revealed to definitely be this Unit Type */
 	public void revealedUpdate(UnitType unit, float armySize){
-		probabilities[unit.getRank()] = probabilities[unit.getRank()]-(probSum/armySize);
+		this.unitsStillPossibleToBe[unit.getRank()] -= 1;
+		if(unitsStillPossibleToBe[unit.getRank()]<=0){
+			probabilities[unit.getRank()] = 0;
+		}
+		else{
+			probabilities[unit.getRank()] = probabilities[unit.getRank()]-((1f/((float)unit.getQuantity()))*probSum);
+		}
 		calcProbSum();
 	}
 	
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to lose, returns false if it is impossible for it to lose */
 	public boolean combatUpdateLose(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		this.setRevealedToOpponent(true);
+		known.setRevealedToOpponent(true);
 		boolean unitWasKnown = this.unitIsKnown();
 		ArrayList<UnitType> weakerThanKnown = new ArrayList<UnitType>();
 		ArrayList<UnitType> not = new ArrayList<UnitType>();
@@ -234,6 +256,7 @@ public class SchrodingersUnit {
 	
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
 	public boolean combatUpdateDraw(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		this.setRevealedToOpponent(true);
 		boolean unitWasKnown = this.unitIsKnown();
 		float probs = this.probabilities[known.getKnownUnit().getRank()];
 		boolean possible = probs>0;
@@ -277,6 +300,7 @@ public class SchrodingersUnit {
 	
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
 	public boolean combatUpdateWin(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		this.setRevealedToOpponent(true);
 		boolean unitWasKnown = this.unitIsKnown();
 		ArrayList<UnitType> strongerThanKnown = new ArrayList<UnitType>();
 		ArrayList<UnitType> not = new ArrayList<UnitType>();

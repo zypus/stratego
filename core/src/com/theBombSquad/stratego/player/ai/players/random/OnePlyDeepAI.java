@@ -10,7 +10,8 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleBloodthirstyEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.SimpleFunctionOfEvaluation;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class OnePlyDeepAI extends AI{
@@ -20,20 +21,23 @@ public class OnePlyDeepAI extends AI{
 	}
 	
 	@Override protected Move move() {
-		EvaluationFunctionX eval = new SimpleEvaluationFunction();
+		EvaluationFunctionX eval = new SimpleFunctionOfEvaluation();
 		SchrodingersBoard board = new SchrodingersBoard(super.gameView);
 		List<Move> moves = board.generateAllMoves(super.gameView.getPlayerID());
 		ArrayList<Move> bestMoves = new ArrayList<Move>();
-		float bestScore = 0f;
+		float bestScore = Float.NEGATIVE_INFINITY;
 		for(Move move : moves){
 			if(super.gameView.validateMove(move)){
 				float currentScore = 0;
 				List<SchrodingersBoard> schrodingersList = board.generateFromMove(move);
 				if(schrodingersList.size()>0){
+					float relProb = 0;
 					for(SchrodingersBoard possibleResult : schrodingersList){
-						currentScore += possibleResult.evaluate(eval, super.gameView.getPlayerID());
+						relProb = possibleResult.getRelativeProbability();
+						currentScore += possibleResult.evaluate(eval, super.gameView.getPlayerID())*possibleResult.getRelativeProbability();
 					}
-					currentScore = currentScore/schrodingersList.size();
+					currentScore = currentScore / relProb;
+					System.out.println(currentScore);
 					if(currentScore==bestScore){
 						bestMoves.add(move);
 					}
