@@ -3,6 +3,16 @@ package com.theBombSquad.stratego.player.ai.setup;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic1;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic10;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic11;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic2;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic3;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic4;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic5;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic6;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic7;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic8;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic9;
 import lombok.Getter;
 
@@ -68,17 +78,17 @@ public class AISetup extends Setup{
 	//picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {
 		ArrayList<FlagTactic> flagTactics= new ArrayList<FlagTactic>();
-		//flagTactics.add(new FlagTactic1());
-		//flagTactics.add(new FlagTactic2());
-		//flagTactics.add(new FlagTactic3());
-		//flagTactics.add(new FlagTactic4());
-		//flagTactics.add(new FlagTactic5());
-		//flagTactics.add(new FlagTactic6());
-		//flagTactics.add(new FlagTactic7());
-		//flagTactics.add(new FlagTactic8());
+		flagTactics.add(new FlagTactic1());
+		flagTactics.add(new FlagTactic2());
+		flagTactics.add(new FlagTactic3());
+		flagTactics.add(new FlagTactic4());
+		flagTactics.add(new FlagTactic5());
+		flagTactics.add(new FlagTactic6());
+		flagTactics.add(new FlagTactic7());
+		flagTactics.add(new FlagTactic8());
 		flagTactics.add(new FlagTactic9());
-		//flagTactics.add(new FlagTactic10());
-		//flagTactics.add(new FlagTactic11());
+		flagTactics.add(new FlagTactic10());
+		flagTactics.add(new FlagTactic11());
 
 		// add them all one by one
 		int random= (int)(Math.random()*flagTactics.size());

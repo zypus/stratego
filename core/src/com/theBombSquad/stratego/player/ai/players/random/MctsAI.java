@@ -28,6 +28,9 @@ public class MctsAI extends AI{
 	@Override
 	protected Move move() {
 		Move move = mctsRule();
+		if (move == null) {
+			move = AI.createAllLegalMoves(gameView, gameView.getCurrentState()).get(0);
+		}
 		gameView.performMove(move);
 		return move;
 	}

@@ -6,6 +6,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.evaluationFunction.SimpleEvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.RuleEvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class NegamaxAI extends AI
 	private final int MAX_DEPTH = 4;
 	private Random                   random             = new Random();
 	private SimpleEvaluationFunction evaluationFunction = new SimpleEvaluationFunction();
+	private RuleEvaluationFunction ruleEvaluationFunction = new RuleEvaluationFunction();
 
 	public NegamaxAI(GameView gameView) {
 		super(gameView);
@@ -23,7 +25,7 @@ public class NegamaxAI extends AI
 
 	private Float negamax(int depth, SchrodingersBoard board, float alpha, float beta, PlayerID playerID) {
 		if (depth == 0) {
-			return board.evaluate(evaluationFunction, playerID);
+			return board.evaluate(ruleEvaluationFunction, playerID);
 		}
 		List<Move> moves = board.generateAllMoves(playerID);
 		for (Move move : moves) {
@@ -34,8 +36,7 @@ public class NegamaxAI extends AI
 				alpha = Math.max(alpha, -negamax(depth - 1, boards.get(0), -beta, -alpha, playerID.getOpponent()));
 			}
 			//beta cutoff
-			if (alpha >= beta)
-			{
+			if (alpha >= beta) {
 				return alpha;
 			}
 		}
@@ -43,11 +44,10 @@ public class NegamaxAI extends AI
 		return alpha;
 	}
 
-	private Float expectimax(int depth, List<SchrodingersBoard> boards, float alpha, float beta, PlayerID playerID)
-	{
-		if (depth==0)
-		{
-			return boards.get(0).evaluate(evaluationFunction, playerID);
+	private Float expectimax(int depth, List<SchrodingersBoard> boards, float alpha, float beta, PlayerID playerID) {
+		if (depth == 0) {
+			return boards.get(0)
+						 .evaluate(ruleEvaluationFunction, playerID);
 		}
 		float sum = 0;
 		for (SchrodingersBoard board:boards)
