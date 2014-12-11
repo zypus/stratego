@@ -43,6 +43,9 @@ public class RuleEvaluationFunction implements EvaluationFunctionX{
 			if(fromY>toY&&gameView.getCurrentTurn()<200){
 				eval = eval + 15;
 			}
+			else if(fromY>toY){
+				eval = eval + 5;
+			}
 			if(fromY==toY&&gameView.getCurrentTurn()<200){
 				eval = eval + 10;
 			}
