@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AI;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 
 /** The Queen, AI Based On Several Predefined Plans That Evaluate Each Possible Move According To Unit Values And A Little Bit Of 'Research' Based Magic */
@@ -75,32 +77,27 @@ public class TheQueen extends AI{
 	
 	@Override
 	protected Setup setup() {
-		AISetup setup = new AISetup(gameView);
-		gameView.setSetup(setup);
-		//System.out.println(gameView.getPlayerID());
-		Setup setup2 = new Setup(10,4);
-		for (int y = 0; y < 4; y++) {
-			for (int x = 0; x < 10; x++) {
-				setup2.setUnit(x, y, setup.getUnit(x, y));
-			}
-		}
-		System.out.println(gameView.validateSetup(setup));
-		return setup2;
+		boolean f = gameView.getPlayerID().equals(StrategoConstants.PlayerID.PLAYER_1);
 		
-//		Setup setup = new Setup(10,4);
-//		List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
-//		// shuffle the list containing all available units
-//		Collections.shuffle(availableUnits);
-//		//go through the list and place them on the board as the units appear in the randomly shuffled list
-//		for (int y = 0; y < 4; y++) {
-//			for (int x = 0; x < 10; x++) {
-//				setup.setUnit(x, y, availableUnits.get(y * 10 + x));
-//			}
-//		}
-//		// no need to check if the setup is valid because it cannot be invalid by the way it is created
-//		// so simply sending the setup over to the game
-//		gameView.setSetup(setup);
-//		return setup;
+		if(f){
+			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+		}
+		else{
+			Setup setup = new Setup(10,4);
+			List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
+			// shuffle the list containing all available units
+			Collections.shuffle(availableUnits);
+			//go through the list and place them on the board as the units appear in the randomly shuffled list
+			for (int y = 0; y < 4; y++) {
+				for (int x = 0; x < 10; x++) {
+					setup.setUnit(x, y, availableUnits.get(y * 10 + x));
+				}
+			}
+			// no need to check if the setup is valid because it cannot be invalid by the way it is created
+			// so simply sending the setup over to the game
+			gameView.setSetup(setup);
+			return setup;
+		}
 	}
 
 }

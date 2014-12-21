@@ -1,7 +1,9 @@
 package com.theBombSquad.stratego.player.ai.evaluationFunctions;
 
 import com.theBombSquad.stratego.StrategoConstants;
+import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 /**
@@ -12,6 +14,6 @@ import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
  */
 public interface EvaluationFunctionX {
 
-	public float evaluate(SchrodingersBoard state, StrategoConstants.PlayerID player);
+	public float evaluate(GameView gameView, Move move);
 
 }

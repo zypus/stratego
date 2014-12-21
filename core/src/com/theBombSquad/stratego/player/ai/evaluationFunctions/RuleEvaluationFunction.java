@@ -5,6 +5,7 @@ import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
+import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 public class RuleEvaluationFunction implements EvaluationFunctionX{
 
@@ -123,10 +124,7 @@ public class RuleEvaluationFunction implements EvaluationFunctionX{
 		return eval;
 	}
 
-	@Override
-	public float evaluate(GameBoard state, PlayerID player) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+
+	
 
 }
