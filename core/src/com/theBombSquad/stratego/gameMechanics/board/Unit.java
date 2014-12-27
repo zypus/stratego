@@ -53,18 +53,18 @@ public class Unit implements Serializable {
 		ids.add(nextId);
 		this.id = nextId;
 	}
-	
+
 	/** Create Unit Token Without Any Ids */
 	public static Unit createUnitToken(UnitType type, PlayerID player){
 		return new Unit(type, player, true);
 	}
-	
+
 	/** This Constructor is designed to only create tokens via the Token Factory */
 	private Unit(UnitType type, PlayerID owner, boolean thisIsAToken){
 		this.type = type;
 		this.owner = owner;
 		int nextId = -1;
-		ids.add(nextId);
+//		ids.add(nextId);
 		this.id = nextId;
 	}
 
@@ -121,7 +121,7 @@ public class Unit implements Serializable {
 			this.quantity = quantity;
 		}
 	}
-	
+
 	/** Returns the Unit Type corresponding to a given rank (not including lake, unknown or air) */
 	public static UnitType getUnitTypeOfRank(int rank){
 		for(UnitType type : new UnitType[]{UnitType.FLAG, UnitType.BOMB, UnitType.SPY, UnitType.SCOUT, UnitType.SAPPER, UnitType.SERGEANT, UnitType.LIEUTENANT, UnitType.CAPTAIN, UnitType.MAJOR, UnitType.COLONEL, UnitType.GENERAL, UnitType.MARSHAL}){

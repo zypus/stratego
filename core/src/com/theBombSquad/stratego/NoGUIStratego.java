@@ -2,7 +2,9 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.HybridAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 
 /**
  * TODO Add description
@@ -11,7 +13,7 @@ import com.theBombSquad.stratego.player.ai.players.RandomAI;
  * @created 10/12/14
  */
 public class NoGUIStratego implements Game.GameListener {
-	private static final int MAX_ROUNDS = 100;
+	private static final int MAX_ROUNDS = 1000;
 
 	private int round = 0;
 	int player1Wins = 0;
@@ -34,8 +36,10 @@ public class NoGUIStratego implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		player1 = new RandomAI(playerOneView);
-		player2 = new RandomAI(playerTwoView);
+		player1 = new HybridAI(playerOneView).setMover(new MctsAI(playerOneView))
+											 .setSetuper(new RandomAI(playerOneView));
+		player2 = new HybridAI(playerTwoView).setMover(new RandomAI(playerTwoView))
+											 .setSetuper(new RandomAI(playerTwoView));
 
 //		player1.setLearning(true);
 		//		player2.setLearning(true);
