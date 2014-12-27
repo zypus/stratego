@@ -317,6 +317,11 @@ public class PlayerRenderer
 				&& gameView.getCurrentTurn() >= unit.getRevealedInTurn()) {
 				batch.setColor(new Color(1, 1, 1, 0.75f));
 				batch.draw(eye, x, y, scaledSize, scaledSize);
+			} else if (!game.isGameOver() && gameView.getPlayerID() == PlayerID.NEMO
+					   && unit.getRevealedInTurn() != UNREVEALED
+					   && gameView.getCurrentTurn() >= unit.getRevealedInTurn()) {
+				batch.setColor(new Color(1, 1, 1, 0.75f));
+				batch.draw(eye, x, y, scaledSize, scaledSize);
 			}
 			batch.setColor(Color.WHITE);
 		} else {

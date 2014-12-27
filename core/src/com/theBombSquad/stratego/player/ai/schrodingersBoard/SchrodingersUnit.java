@@ -2,7 +2,9 @@ package com.theBombSquad.stratego.player.ai.schrodingersBoard;
 
 import java.util.ArrayList;
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
@@ -11,51 +13,65 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 
 public class SchrodingersUnit {
 	
+	@Getter @Setter
+	private int[] unitsStillPossibleToBe = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	
+	@Getter @Setter
+	private boolean revealedToOpponent = false;
+	
 	//Direct Reference to the Unit Type of this Object IF the Unit Type is actually known and set
 	private UnitType knownUnit = null;
-	
+
 	//Index equal to Unit Rank (probabilities are not stored normalized)
 	private float[] probabilities;
 	private float probSum;
 	@Getter
 	private PlayerID owner;
-	
+
 	//Placeholder variables for when the unit is used as air or lake
 	private boolean placeholder = false;
 	private boolean airNotLake = false;
-	
+	@Getter @Setter
+	private boolean revealed = false;
+
 	/** Returns whether this Unit actually represents any Unit or just Air/Lake */
-	public boolean isActualUnit(){
+	public boolean isActualUnit() {
 		return !placeholder;
 	}
-	
-	public boolean isAir(){
+
+	public boolean isAir() {
 		return placeholder && airNotLake;
 	}
-	
-	public boolean isLake(){
+
+	public boolean isLake() {
 		return placeholder && !airNotLake;
 	}
-	
+
 	/** Clones this Unit */
-	public SchrodingersUnit clone(){
+	public SchrodingersUnit clone() {
 		float[] probs = new float[probabilities.length];
-		for(int c=0; c<probs.length; c++){
+		for (int c = 0; c < probs.length; c++) {
 			probs[c] = probabilities[c];
 		}
-		return new SchrodingersUnit(knownUnit, probs, probSum, owner, placeholder, airNotLake);
+		int[] uns = new int[this.unitsStillPossibleToBe.length];
+		for(int c=0; c<probs.length; c++){
+			uns[c] = unitsStillPossibleToBe[c];
+		}
+		return new SchrodingersUnit(knownUnit, probs, probSum, owner, placeholder, airNotLake, uns, revealedToOpponent);
 	}
-	
+
 	/** Constructor used for cloning */
-	private SchrodingersUnit(UnitType knownUnit, float[] probabilities, float probSum, PlayerID owner, boolean placeholder, boolean airNotLake){
+	private SchrodingersUnit(UnitType knownUnit, float[] probabilities, float probSum, PlayerID owner, boolean placeholder, boolean airNotLake, int[] unitsStillPossibleToBe, boolean revealedToOpponent){
 		this.knownUnit = knownUnit;
 		this.probabilities = probabilities;
 		this.probSum = probSum;
 		this.owner = owner;
 		this.placeholder = placeholder;
 		this.airNotLake = airNotLake;
+		this.unitsStillPossibleToBe = unitsStillPossibleToBe;
+		this.revealedToOpponent = revealedToOpponent;
 	}
-	
+
 	/** Constructs All Empty Unit, No Chance of being anything (Air) */
 	public SchrodingersUnit(boolean airNotLake){
 		this.placeholder = true;
@@ -67,14 +83,14 @@ public class SchrodingersUnit {
 		}
 		this.knownUnit = airNotLake?Unit.UnitType.AIR:Unit.UnitType.LAKE;
 	}
-	
+
 	/** Constructs new Schrodinger Unit, probabilities' indexes = Units' ranks, array has to be 12 long */
 	public SchrodingersUnit(PlayerID player, float[] probabilities){
 		this.owner = player;
 		this.probabilities = probabilities;
 		calcProbSum();
 	}
-	
+
 	/** Constructs new Schrodingers Unit with known UnitType */
 	public SchrodingersUnit(PlayerID player, UnitType unit){
 		this.owner = player;
@@ -90,8 +106,8 @@ public class SchrodingersUnit {
 		}
 		calcProbSum();
 	}
-	
-	
+
+
 	/** Sets this Schrodinger's Unit to one Certain Unit */
 	public void setKnown(UnitType unit){
 		this.knownUnit = unit;
@@ -101,20 +117,20 @@ public class SchrodingersUnit {
 		probabilities[unit.getRank()] = 1f;
 		probSum = 1f;
 	}
-	
+
 	public boolean unitIsKnown(){
 		return knownUnit!=null;
 	}
-	
+
 	public UnitType getKnownUnit(){
 		return knownUnit;
 	}
-	
+
 	/** Returns Normalized Probability for this Unit being the given Unit Type */
 	public float getProbabilityFor(UnitType unit){
 		return probabilities[unit.getRank()]/probSum;
 	}
-	
+
 	//Recalcs Prob Sum (should be called after each manipulation of probabilities)
 	private void calcProbSum(){
 		float help = 0;
@@ -123,8 +139,8 @@ public class SchrodingersUnit {
 		}
 		this.probSum = help;
 	}
-	
-	
+
+
 	/** Removes the possibility for the Unit to be of given unit type */
 	public void removePossibilityFor(UnitType unit){
 		if(!unitIsKnown()){
@@ -150,12 +166,12 @@ public class SchrodingersUnit {
 			System.out.println("Cannot Remove The Possibility For Unit To Be Of Type "+unit+", Only Possibility Left.");
 		}
 	}
-	
+
 	public void setProbabilityForUnitType(UnitType unit, float probability){
 		probabilities[unit.getRank()] = probability;
 		calcProbSum();
 	}
-	
+
 	/** Returns the normalized probability for either of the given Unit Types to be the Type of this Unit */
 	public float getProbabilityFor(UnitType ... units){
 		float sum = 0;
@@ -164,21 +180,29 @@ public class SchrodingersUnit {
 		}
 		return sum/probSum;
 	}
-	
+
 	/** Updates the probability of the unit type according to the death of another unit that may have been this type and the size of all units with this units colour (before the death of that unit) */
 	public void deathUpdate(UnitType unit, float probOfDeath, float armySize){
-		probabilities[unit.getRank()] = ((probabilities[unit.getRank()]*armySize)-probSum*probOfDeath)/(armySize-1);
+		probabilities[unit.getRank()] = probabilities[unit.getRank()]-((1f/((float)unit.getQuantity()))*probOfDeath*probSum);
 		calcProbSum();
 	}
-	
+
 	/** Updates Probability of given Unit Type in case a unit should just have been revealed to definitely be this Unit Type */
 	public void revealedUpdate(UnitType unit, float armySize){
-		probabilities[unit.getRank()] = probabilities[unit.getRank()]-(probSum/armySize);
+		this.unitsStillPossibleToBe[unit.getRank()] -= 1;
+		if(unitsStillPossibleToBe[unit.getRank()]<=0){
+			probabilities[unit.getRank()] = 0;
+		}
+		else{
+			probabilities[unit.getRank()] = probabilities[unit.getRank()]-((1f/((float)unit.getQuantity()))*probSum);
+		}
 		calcProbSum();
 	}
-	
+
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to lose, returns false if it is impossible for it to lose */
 	public boolean combatUpdateLose(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		this.setRevealedToOpponent(true);
+		known.setRevealedToOpponent(true);
 		boolean unitWasKnown = this.unitIsKnown();
 		ArrayList<UnitType> weakerThanKnown = new ArrayList<UnitType>();
 		ArrayList<UnitType> not = new ArrayList<UnitType>();
@@ -230,10 +254,11 @@ public class SchrodingersUnit {
 			return true;
 		}
 	}
-	
-	
+
+
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
 	public boolean combatUpdateDraw(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		this.setRevealedToOpponent(true);
 		boolean unitWasKnown = this.unitIsKnown();
 		float probs = this.probabilities[known.getKnownUnit().getRank()];
 		boolean possible = probs>0;
@@ -273,19 +298,20 @@ public class SchrodingersUnit {
 			return true;
 		}
 	}
-	
-	
+
+
 	/** Updates itself and the entire board accordingly, should only be performed on opponents units if this Unit is supposed to draw, returns false if it is impossible for it to do so */
 	public boolean combatUpdateWin(SchrodingersUnit known, SchrodingersBoard board, boolean offensiveNotDefensive){
+		this.setRevealedToOpponent(true);
 		boolean unitWasKnown = this.unitIsKnown();
 		ArrayList<UnitType> strongerThanKnown = new ArrayList<UnitType>();
 		ArrayList<UnitType> not = new ArrayList<UnitType>();
 		boolean possible = false;
 		float probs = 0;
 		for(UnitType unitType : new UnitType[]{Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL}){
-			if(((known.getKnownUnit().getRank()<unitType.getRank() 
-					|| (offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.MARSHAL.getRank() && unitType.getRank()==Unit.UnitType.SPY.getRank()) 
-					|| (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank()))) 
+			if(((known.getKnownUnit().getRank()<unitType.getRank()
+					|| (offensiveNotDefensive && known.getKnownUnit().getRank()==Unit.UnitType.MARSHAL.getRank() && unitType.getRank()==Unit.UnitType.SPY.getRank())
+					|| (known.getKnownUnit().getRank()==Unit.UnitType.BOMB.getRank() && unitType.getRank()==Unit.UnitType.SAPPER.getRank())))
 					&& !(!offensiveNotDefensive && unitType.getRank()==Unit.UnitType.BOMB.getRank() && known.getKnownUnit().getRank()==Unit.UnitType.SAPPER.getRank())){
 				strongerThanKnown.add(unitType);
 				if(this.probabilities[unitType.getRank()]>0){
@@ -320,6 +346,6 @@ public class SchrodingersUnit {
 			return true;
 		}
 	}
-	
+
 
 }

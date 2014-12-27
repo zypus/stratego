@@ -6,15 +6,13 @@ import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunction;
+import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
-import com.theBombSquad.stratego.player.ai.evaluationFunction.FunctionOfEvaluation;
 
 @Data
 /** This Class is supposed to simplify and abstract board states and board state manipulation for unknown units */
@@ -25,7 +23,7 @@ public class SchrodingersBoard {
 	private int ownArmySize;
 	private GameView view;
 
-	/** Probability Of This Board Accuring Given Previous Board And Move */
+	/** Probability Of This Board Occurring Given Previous Board And Move */
 	@Getter
 	@Setter
 	private float relativeProbability;
@@ -78,9 +76,31 @@ public class SchrodingersBoard {
 							probs[c] = stillUnknownUnits[c]/((float)opponentArmySize);
 						}
 						board[cy][cx] = new SchrodingersUnit(view.getOpponentID(), probs);
+						for(int c=0; c<12; c++){
+							board[cy][cx].getUnitsStillPossibleToBe()[c] = Unit.getUnitTypeOfRank(c).getQuantity()-view.getNumberOfOpponentDefeatedUnits(Unit.getUnitTypeOfRank(c));
+						}
+						for(Move move : view.getMoves()){
+							if(move.hasEncounter()){
+								if(move.getEncounter().getAttackingUnit().getId()==u.getId()){
+									board[cy][cx].setKnown(move.getEncounter().getAttackingUnit().getType());
+									board[cy][cx].setRevealedToOpponent(true);
+								}
+								else if(move.getEncounter().getDefendingUnit().getId()==u.getId()){
+									board[cy][cx].setKnown(move.getEncounter().getDefendingUnit().getType());
+									board[cy][cx].setRevealedToOpponent(true);
+								}
+							}
+							if(move.getMovedUnit().getId()==u.getId()){
+								board[cy][cx].removePossibilityFor(Unit.UnitType.BOMB);
+								board[cy][cx].removePossibilityFor(Unit.UnitType.FLAG);
+							}
+						}
 					}
 					else{
 						board[cy][cx] = new SchrodingersUnit(u.getOwner(), u.getType());
+					}
+					if (u.wasRevealed(view.getCurrentTurn())) {
+						board[cy][cx].setRevealed(true);
 					}
 				}
 				else{
@@ -126,13 +146,16 @@ public class SchrodingersBoard {
 		if(Math.abs(originX-destX)>=2 || Math.abs(originY-destY)>=2){
 			float probs = placeHolder.board[originY][originX].getProbabilityFor(Unit.UnitType.SCOUT);
 			placeHolder.board[originY][originX].setKnown(Unit.UnitType.SCOUT);
-			placeHolder.setRelativeProbability(probs);
+			placeHolder.board[originY][originX].setRevealed(true);
+//			placeHolder.setRelativeProbability(probs);
+			placeHolder.setRelativeProbability(1);
 		}
 		//Moves onto empty square
 		if(getBoard()[destY][destX].isAir()){
 			SchrodingersBoard newBoard = placeHolder.clone();
 			newBoard.getBoard()[destY][destX] = newBoard.getBoard()[originY][originX];
 			newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+			newBoard.setRelativeProbability(1);
 			list.add(newBoard);
 		}
 		//Destination is not empty - i.e. Encounter!
@@ -145,23 +168,28 @@ public class SchrodingersBoard {
 			if(orig.getOwner()==view.getOpponentID()){
 				analyzed = orig;
 				helper = dest;
+				offensiveNotDefensive = true;
 			}
 			else{
 				analyzed = dest;
 				helper = orig;
+				offensiveNotDefensive = true;
 			}
 			//Win With Analyzed
 			SchrodingersBoard win = placeHolder.clone();
-			if(analyzed.combatUpdateWin(helper.clone(), win, offensiveNotDefensive)){
+			SchrodingersUnit an = analyzed.clone();
+			if(an.combatUpdateWin(helper.clone(), win, offensiveNotDefensive)){
 				SchrodingersBoard newBoard = win;
-				newBoard.getBoard()[destY][destX] = newBoard.getBoard()[originY][originX];
+				newBoard.getBoard()[destY][destX] = an;
+				newBoard.board[destY][destX].setRevealed(true);
 				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
 				newBoard.ownArmySize = newBoard.ownArmySize-1;
 				list.add(newBoard);
 			}
 			//Draw With Analyzed
 			SchrodingersBoard draw = placeHolder.clone();
-			if(analyzed.combatUpdateDraw(helper.clone(), draw, offensiveNotDefensive)){
+			an = analyzed.clone();
+			if(an.combatUpdateDraw(helper.clone(), draw, offensiveNotDefensive)){
 				SchrodingersBoard newBoard = draw;
 				newBoard.getBoard()[destY][destX] = new SchrodingersUnit(true);
 				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
@@ -171,9 +199,17 @@ public class SchrodingersBoard {
 			}
 			//Lose With Analyzed
 			SchrodingersBoard lose = placeHolder.clone();
-			if(analyzed.combatUpdateLose(helper.clone(), lose, offensiveNotDefensive)){
+			SchrodingersUnit u = helper.clone();
+			an = analyzed.clone();
+			if(an.combatUpdateLose(u, lose, offensiveNotDefensive)){
 				SchrodingersBoard newBoard = lose;
-				newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+				if(offensiveNotDefensive){
+					newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+				}
+				else{
+					newBoard.getBoard()[originY][originX] = new SchrodingersUnit(true);
+					newBoard.getBoard()[destY][destX] = u;
+				}
 				newBoard.opponentArmySize = newBoard.opponentArmySize-1;
 				list.add(newBoard);
 			}
@@ -326,35 +362,8 @@ public class SchrodingersBoard {
 	}
 
 	/** Evaluates This Board */
-	public float evaluate(FunctionOfEvaluation eval, PlayerID player){
-		System.out.println("Hi");
-		GameBoard model = this.view.getCurrentState().duplicate();
-		//Translate Schrodingers Board into proper Game board
-		for(int cy=0; cy<this.board.length; cy++){
-			for(int cx=0; cx<this.board[cy].length; cx++){
-				System.out.println(cx+"/"+board[cy].length+" "+cy+"/"+board.length);
-				if(!model.getUnit(cx, cy).isLake()){
-					if(this.board[cy][cx].isActualUnit()){
-						if(this.board[cy][cx].unitIsKnown()){
-							model.setUnit(cx, cy, Unit.createUnitToken(board[cy][cx].getKnownUnit(), board[cy][cx].getOwner()));
-						}
-						else{
-							model.setUnit(cx, cy, Unit.createUnitToken(Unit.UnitType.UNKNOWN, board[cy][cx].getOwner()));
-						}
-					}
-					else {
-						model.setUnit(cx, cy, Unit.createUnitToken(Unit.UnitType.AIR, StrategoConstants.PlayerID.NEMO));
-					}
-				}
-			}
-		}
-		//Evaluates And returns evaluation
-		return eval.evaluate(model, player);
-	}
-
-	public int getProbability() {
-		// TODO Auto-generated method stub
-		return 0;
+	public float evaluate(EvaluationFunctionX eval, PlayerID player){
+		return eval.evaluate(this, player);
 	}
 
 	public SchrodingersUnit getUnit(int x, int y) {

@@ -365,14 +365,37 @@ public class Stratego extends ApplicationAdapter {
 					this.game.setPlayer2(player[1]);
 					strategoInstance.setupRenderer(game);
 					new Thread(new Runnable() {
-						@Override public void run() {
+						@Override
+						public void run() {
 							strategoInstance.startGame();
 						}
 					}).start();
-				} else if (game.isWaitingForEndTurn()) {
-					game.setWaitingForEndTurn(false);
-				} else if (game.isBlind()) {
-					game.setBlind(false);
+				} else
+					if (game.isWaitingForEndTurn()) {
+						game.setWaitingForEndTurn(false);
+					} else
+						if (game.isBlind()) {
+							game.setBlind(false);
+						}
+			} else if (keycode == Input.Keys.F2) {
+				if (!this.game.isGameOver()) {
+					InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+					inputMultiplexer.clear();
+					inputMultiplexer.addProcessor(this);
+					this.game.reset();
+					GameView playerOneView = new GameView(this.game, StrategoConstants.PlayerID.PLAYER_1);
+					GameView playerTwoView = new GameView(this.game, StrategoConstants.PlayerID.PLAYER_2);
+					Player[] player = strategoInstance.determinePlayers(playerOneView, playerTwoView);
+					// tell the game about the players
+					this.game.setPlayer1(player[0]);
+					this.game.setPlayer2(player[1]);
+					strategoInstance.setupRenderer(game);
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							strategoInstance.startGame();
+						}
+					}).start();
 				}
 			}
 			return super.keyDown(keycode);

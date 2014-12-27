@@ -58,6 +58,7 @@ public class Game {
 	@Getter private GameView activeGameView;
 	@Getter private boolean gameOver;
 	@Getter private boolean reseted = true;
+	private boolean resetPending = true;
 	@Getter @Setter private boolean blind = false;
 
 	@Getter private List<Unit> player1Units;
@@ -101,29 +102,36 @@ public class Game {
 	}
 
 	public void reset() {
-		if (player1FinishedCleanup && player2FinishedCleanup) {
-			currentTurn = 1;
-			reseted = true;
-			player1 = null;
-			player2 = null;
-			player1FinishedSetup = false;
-			player2FinishedSetup = false;
-			player1ChaseBegin = 0;
-			player2ChaseBegin = 0;
-			gameOver = false;
-			finishedSetup = false;
-			states.clear();
-			states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
-			current = states.get(0);
-			moves.clear();
-			winner = null;
-			defeatedUnitsPlayer1.clear();
-			defeatedUnitsPlayer2.clear();
-			lastConsecutiveMoves.put(PLAYER_1, new ArrayList<Move>());
-			lastConsecutiveMoves.put(PLAYER_2, new ArrayList<Move>());
-			clearUnits(PLAYER_1);
-			clearUnits(PLAYER_2);
+		if (!resetPending) {
+			resetPending = true;
 		}
+		else {
+			if (player1FinishedCleanup && player2FinishedCleanup) {
+				resetPending = false;
+				currentTurn = 1;
+				reseted = true;
+				player1 = null;
+				player2 = null;
+				player1FinishedSetup = false;
+				player2FinishedSetup = false;
+				player1ChaseBegin = 0;
+				player2ChaseBegin = 0;
+				gameOver = false;
+				finishedSetup = false;
+				states.clear();
+				states.add(new GameBoard(GRID_WIDTH, GRID_HEIGHT, DEFAULT_LAKES));
+				current = states.get(0);
+				moves.clear();
+				winner = null;
+				defeatedUnitsPlayer1.clear();
+				defeatedUnitsPlayer2.clear();
+				lastConsecutiveMoves.put(PLAYER_1, new ArrayList<Move>());
+				lastConsecutiveMoves.put(PLAYER_2, new ArrayList<Move>());
+				clearUnits(PLAYER_1);
+				clearUnits(PLAYER_2);
+			}
+		}
+
 	}
 
 	private void clearUnits(PlayerID playerID) {
@@ -307,7 +315,6 @@ public class Game {
 			moves.add(move);
 			// sets the unit that is moved to air
 			current.setUnit(move.getFromX(), move.getFromY(), Unit.AIR);
-			moves.add(move);
 			List<Move> previousMoves = lastConsecutiveMoves.get(move.getPlayerID());
 			if (!previousMoves.isEmpty() && movedUnit != previousMoves.get(0).getMovedUnit()) {
 				previousMoves.clear();
@@ -419,6 +426,10 @@ public class Game {
 		 * when called, first determine which players turn is it, then call one
 		 * of them to start move, second to idle
 		 */
+		if (resetPending) {
+			reset();
+			return;
+		}
 		gameOver = gameOver();
 		if (!gameOver) {
 			if (gameListener != null) {
@@ -443,7 +454,7 @@ public class Game {
 							e.printStackTrace();
 						}
 					}
-//					System.out.println("It is PLAYER_1s move.");
+					//					System.out.println("It is PLAYER_1s move.");
 					becomeBlind();
 					player1.startMove();
 					player2.startIdle();
@@ -465,7 +476,7 @@ public class Game {
 							e.printStackTrace();
 						}
 					}
-//					System.out.println("It is PLAYER_2s move.");
+					//					System.out.println("It is PLAYER_2s move.");
 					becomeBlind();
 					player2.startMove();
 					player1.startIdle();
@@ -473,21 +484,26 @@ public class Game {
 			}
 		} else {
 			// stop the game!
-			System.out.println("GAME OVER! Winner is "+winner.getGameView().getPlayerID());
+			System.out.println("GAME OVER! Winner is " + winner.getGameView()
+															   .getPlayerID());
 			revealBoard();
 			player1FinishedCleanup = false;
 			player2FinishedCleanup = false;
 			player1.startCleanup();
 			player2.startCleanup();
+			resetPending = true;
 			if (gameListener != null) {
-//				while (!player1FinishedCleanup || !player2FinishedCleanup) {
-//					try {
-//						Thread.sleep(10);
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-//				}
-				gameListener.gameFinished(getCurrentTurn(), (winner != null) ? winner.getGameView().getPlayerID() : null);
+				//				while (!player1FinishedCleanup || !player2FinishedCleanup) {
+				//					try {
+				//						Thread.sleep(10);
+				//					} catch (InterruptedException e) {
+				//						e.printStackTrace();
+				//					}
+				//				}
+				gameListener.gameFinished(getCurrentTurn(), (winner != null)
+															? winner.getGameView()
+																	.getPlayerID()
+															: null);
 			}
 		}
 	}
@@ -1203,6 +1219,14 @@ public class Game {
 			}
 			List<Unit> units = playerID.equals(PLAYER_2) ? game.getDefeatedUnitsPlayer1() : game.getDefeatedUnitsPlayer2();
 			return Collections.unmodifiableList(units);
+		}
+
+		public int getNumberOfDefeatedOwnUnits(int unitRank) {
+			return game.getNumberOfDefeatedUnits(unitRank, playerID);
+		}
+
+		public int getNumberOfDefeatedOpponentUnits(int unitRank) {
+			return game.getNumberOfDefeatedUnits(unitRank, playerID.getOpponent());
 		}
 
 		// HELPER METHODS
