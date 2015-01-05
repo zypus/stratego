@@ -3,12 +3,8 @@ package com.theBombSquad.stratego;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
-import com.theBombSquad.stratego.player.ai.players.RandomAI;
-<<<<<<< HEAD
-import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
-=======
-import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
->>>>>>> origin/develop
+import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
 /**
  * TODO Add description
@@ -17,11 +13,7 @@ import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
  * @created 10/12/14
  */
 public class NoGUIStratego implements Game.GameListener {
-<<<<<<< HEAD
-	private static final int MAX_ROUNDS = 1000;
-=======
-	private static final int MAX_ROUNDS = 50;
->>>>>>> origin/develop
+	private static final int MAX_ROUNDS = 100;
 
 	private int round = 0;
 	int player1Wins = 0;
@@ -32,6 +24,8 @@ public class NoGUIStratego implements Game.GameListener {
 	private Game       game;
 	private Player player1;
 	private Player     player2;
+	private final TDStratego mover1;
+	private final TDStratego mover2;
 
 	public static void main(String[] args) {
 		new NoGUIStratego();
@@ -45,17 +39,13 @@ public class NoGUIStratego implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-<<<<<<< HEAD
-		player1 = new HybridAI(playerOneView).setMover(new MctsAI(playerOneView))
-											 .setSetuper(new RandomAI(playerOneView));
-		player2 = new HybridAI(playerTwoView).setMover(new RandomAI(playerTwoView))
-											 .setSetuper(new RandomAI(playerTwoView));
-=======
-		player1 = new TheQueen(playerOneView);
-		player2 = new RandomAI(playerTwoView);
->>>>>>> origin/develop
-
-//		player1.setLearning(true);
+		mover1 = new TDStratego(playerOneView);
+		player1 = new HybridAI(playerOneView).setMover(mover1)
+											 .setSetuper(new SetupPlayerAI(playerOneView));
+		mover2 = new TDStratego(playerTwoView);
+		player2 = new HybridAI(playerTwoView).setMover(mover2)
+											 .setSetuper(new SetupPlayerAI(playerTwoView));
+		//		player1.setLearning(true);
 		//		player2.setLearning(true);
 
 		game.reset();
@@ -87,8 +77,8 @@ public class NoGUIStratego implements Game.GameListener {
 			game.startSetupPhase();
 		} else {
 			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws+" - average game length: "+totalPlys/MAX_ROUNDS);
-//			player1.save("test/TDStratego/player1.net");
-			//			player2.save("test/TDStratego/player2.net");
+			mover1.save("test/TDStratego/player1.net");
+			mover2.save("test/TDStratego/player2.net");
 		}
 	}
 

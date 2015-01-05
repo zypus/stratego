@@ -3,7 +3,8 @@ package com.theBombSquad.stratego.player.ai.players.TDStratego;
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
-import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.HybridAI;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
 /**
  * TODO Add description
@@ -13,13 +14,15 @@ import com.theBombSquad.stratego.player.ai.players.RandomAI;
  */
 public class TDStrategoLearner implements Game.GameListener {
 
-	private static final int MAX_ROUNDS = 1000;
+	private static final int MAX_ROUNDS = 100;
 
 	private int round = 0;
 
 	private Game game;
-	private TDStratego player1;
+	private Player player1;
 	private Player player2;
+	private final TDStratego stratego1;
+	private final TDStratego stratego2;
 
 	public static void main(String[] args) {
 		new TDStrategoLearner();
@@ -33,11 +36,15 @@ public class TDStrategoLearner implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		player1 = new TDStratego(playerOneView);
-		player2 = new RandomAI(playerTwoView);
+		stratego1 = new TDStratego(playerOneView);
+		player1 = new HybridAI(playerOneView).setMover(stratego1)
+											 .setSetuper(new SetupPlayerAI(playerOneView));
+		stratego2 = new TDStratego(playerTwoView);
+		player2 = new HybridAI(playerOneView).setMover(stratego2)
+													   .setSetuper(new SetupPlayerAI(playerOneView));
 
-		player1.setLearning(true);
-//		player2.setLearning(true);
+		stratego1.setLearning(true);
+		stratego2.setLearning(true);
 
 		// tell the game about the players
 		gameFinished(-1, null);
@@ -57,8 +64,8 @@ public class TDStrategoLearner implements Game.GameListener {
 
 			game.startSetupPhase();
 		} else {
-			player1.save("test/TDStratego/player1.net");
-//			player2.save("test/TDStratego/player2.net");
+			stratego1.save("test/TDStratego/player1.net");
+			stratego2.save("test/TDStratego/player2.net");
 		}
 	}
 
@@ -69,8 +76,8 @@ public class TDStrategoLearner implements Game.GameListener {
 		}
 		if (ply < 0) {
 			System.out.println("Round interrupted!");
-			player1.reset();
-//			player2.reset();
+			stratego1.reset();
+			stratego2.reset();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

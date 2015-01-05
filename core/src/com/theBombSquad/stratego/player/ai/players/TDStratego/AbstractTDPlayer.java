@@ -89,11 +89,11 @@ public abstract class AbstractTDPlayer<S> {
 	 * Changes the neural networks weights based on the expectation for the chosen state and the previously expected outcome.
 	 * @param state The selected/best state.
 	 */
-	public final void learnBasedOnSelectedState(S state) {
+	public final void learnBasedOnSelectedState(S state, float learnMod) {
 		if (previousResult == null) {
 			previousResult = outputForState(state);
 		} else {
-			previousResult = learn(state, previousResult);
+			previousResult = learn(state, previousResult, learnMod);
 		}
 	}
 
@@ -102,9 +102,9 @@ public abstract class AbstractTDPlayer<S> {
 	 * @param state The state.
 	 * @param finalResult The final result.
 	 */
-	public final void learnBasedOnFinalResult(S state, Matrix finalResult) {
+	public final void learnBasedOnFinalResult(S state, Matrix finalResult, float learnMod) {
 
-		learn(state, finalResult);
+		learn(state, finalResult, learnMod);
 		eraseTraces();
 	}
 
@@ -114,7 +114,7 @@ public abstract class AbstractTDPlayer<S> {
 	 * @param expectation The previous expectation.
 	 * @return The current expectation.
 	 */
-	private Matrix learn(S state, Matrix expectation) {
+	private Matrix learn(S state, Matrix expectation, float learnMod) {
 		List<TDNeuralNet.NetResult> netResults = netResultsForState(state);
 		List<Matrix> activations = new ArrayList<Matrix>(netResults.size());
 		List<Matrix> unprocessedActivations = new ArrayList<Matrix>(netResults.size());
@@ -127,6 +127,11 @@ public abstract class AbstractTDPlayer<S> {
 			previousEligibilityTraces.set(k, net.computeEligibilityTraces(previousEligibilityTraces.get(k), activations, unprocessedActivations, lambda, k));
 		}
 		Matrix error = currentResult.minus(expectation);
+		float[] currentLearningRates = new float[learningRates.length];
+		System.arraycopy(learningRates, 0, currentLearningRates, 0, learningRates.length);
+		for (int i = 0; i < currentLearningRates.length; i++) {
+			currentLearningRates[i] *= learnMod;
+		}
 		net.updateWeights(previousEligibilityTraces, error, learningRates);
 		return currentResult;
 	}

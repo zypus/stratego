@@ -2,9 +2,11 @@ package com.theBombSquad.stratego.player.ai.players;
 
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
+import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
-import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
+import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
