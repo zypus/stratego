@@ -191,7 +191,7 @@ public abstract class AI extends Player {
 			for (int cy = 0; cy < board.getHeight(); cy++) {
 				Unit unit = board.getUnit(cx, cy);
 				AIUnit aiUnit = null;
-				if (unit.isAir()) {
+				if (unit.isAir() || unit.isLake()) {
 					aiUnit = new AIUnit()
 							.setOwner(NEMO)
 							.setUnitReference(unit)
@@ -312,6 +312,38 @@ public abstract class AI extends Player {
 		}
 		return outcomes;
 	}
+
+    public static AIGameState compressedState(List<AIGameState> states) {
+        AIGameState compressedState = new AIGameState(states.get(0));
+
+        for (int cx = 0; cx < compressedState.getWidth(); cx++) {
+            for (int cy = 0; cy < compressedState.getHeight(); cy++) {
+                for (int i = 3; i < UnitType.values().length; i++) {
+                    UnitType unitType = UnitType.values()[i];
+                    float prob = 0;
+                    boolean moved = false;
+                    boolean revealed = false;
+                    for (int s = 0; s < states.size(); s++) {
+                        AIGameState state = states.get(s);
+                        AIUnit aiUnit = state.getAIUnit(cx, cy);
+                        prob += state.getProbability() * aiUnit.getProbabilityFor(unitType);
+                        if (aiUnit.isMoved()) {
+                            moved = true;
+                        }
+                        if (aiUnit.isRevealed()) {
+                            revealed = true;
+                        }
+                    }
+                    compressedState.getAIUnit(cx, cy).setProbabilityFor(unitType, prob)
+                    .setMoved(moved)
+                    .setRevealed(revealed);
+                }
+            }
+        }
+        compressedState.setCompressed(true);
+
+        return compressedState;
+    }
 
 	public static void reevaluateGameState(AIGameState gameState) {
 		for (int cx = 0; cx < gameState.getWidth(); cx++) {

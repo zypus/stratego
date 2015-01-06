@@ -2,13 +2,13 @@ package com.theBombSquad.stratego.player.ai.players.TDStratego;
 
 import Jama.Matrix;
 import com.theBombSquad.stratego.gameMechanics.Game;
-import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
+import com.theBombSquad.stratego.player.ai.AIGameState;
+import com.theBombSquad.stratego.player.ai.AIUnit;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
-import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersUnit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Random;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID.PLAYER_1;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID.PLAYER_2;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
 
 /**
@@ -33,8 +34,8 @@ public class TDStratego
 		extends AI {
 
 	private static final int MAX_DEPTH = 1;
-	private static final float epsilon = 0.05f;
-	private List<SchrodingersBoard> lastBoards;
+	private static final float epsilon = 0.2f;
+	private AIGameState lastBoard;
 	private Random random = new Random();
 
 	@Getter @Setter private boolean learning = false;
@@ -49,45 +50,32 @@ public class TDStratego
 
 	@Override
 	protected Move move() {
-		SchrodingersBoard board = new SchrodingersBoard(gameView);
+		AIGameState board = AI.createAIGameState(gameView);
 		PlayerID playerID = gameView.getPlayerID();
-		List<Move> moves = board.generateAllMoves(playerID);
+		List<Move> moves = AI.createAllLegalMoves(gameView, gameView.getCurrentState());
 		Move bestMove = null;
-		List<SchrodingersBoard> bestBoards = null;
+		AIGameState bestBoard = null;
 		float max = -Float.MAX_VALUE;
-		if (random.nextFloat() < epsilon) {
+        float v = random.nextFloat();
+        if (v < epsilon) {
 			bestMove = moves.get(random.nextInt(moves.size()));
-			bestBoards = board.generateFromMove(bestMove);
+			bestBoard = AI.compressedState(AI.createOutcomesOfMove(board, bestMove));
 		} else {
 			for (Move move : moves) {
-				List<SchrodingersBoard> boards = board.generateFromMove(move);
-				float sum = 0;
-				for (SchrodingersBoard nextBoard : boards) {
-					sum += nextBoard.getRelativeProbability() * tdPlayer.utilityForState(nextBoard);
-				}
-				if (sum > max) {
+				AIGameState b = AI.compressedState(AI.createOutcomesOfMove(board, move));
+				float sum = tdPlayer.utilityForState(b);
+                if (sum > max) {
 					bestMove = move;
-					bestBoards = boards;
+					bestBoard = b;
+                    max = sum;
 				}
 			}
 		}
 
-		lastBoards = bestBoards;
+		lastBoard = bestBoard;
 		gameView.performMove(bestMove);
 		if (learning) {
-			if (bestBoards.size() > 1) {
-				Encounter encounter = gameView.getLastMove()
-											  .getEncounter();
-				if (encounter.mutualDefeat()) {
-					tdPlayer.learnBasedOnSelectedState(bestBoards.get(2), 1);
-				} else if (encounter.getResult() == Encounter.CombatResult.VICTORIOUS_ATTACK) {
-					tdPlayer.learnBasedOnSelectedState(bestBoards.get(0), 1);
-				} else {
-					tdPlayer.learnBasedOnSelectedState(bestBoards.get(1), 1);
-				}
-			} else {
-				tdPlayer.learnBasedOnSelectedState(bestBoards.get(0), 1);
-			}
+            tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
 		}
 		return bestMove;
 	}
@@ -98,7 +86,7 @@ public class TDStratego
 			Matrix endResult = new Matrix(2,1);
 			endResult.set(0, 0, (gameView.getWinnerId() == PLAYER_1) ? 1 : 0) ;
 			endResult.set(1, 0, (gameView.getWinnerId() == PLAYER_2) ? 1 : 0) ;
-			tdPlayer.learnBasedOnFinalResult(lastBoards.get(0), endResult, 1);
+			tdPlayer.learnBasedOnFinalResult(lastBoard, endResult, 1);
 		}
 		super.cleanup();
 	}
@@ -127,7 +115,7 @@ public class TDStratego
 
 	private float negamax(SchrodingersBoard board, float alpha, float beta, int depth, PlayerID playerID) {
 		if (depth <= 0) {
-			return tdPlayer.utilityForState(board);
+			return 0;// tdPlayer.utilityForState(board);
 		}
 		List<Move> moves = board.generateAllMoves(playerID);
 		for (Move move : moves) {
@@ -147,7 +135,7 @@ public class TDStratego
 
 	private float star(SchrodingersBoard board, List<SchrodingersBoard> nextBoards, float alpha, float beta, int depth, PlayerID playerID) {
 		if (depth <= 0) {
-			return tdPlayer.utilityForState(board);
+			return 0;//tdPlayer.utilityForState(board);
 		}
 		float sum = 0;
 		for (SchrodingersBoard nextBoard : nextBoards) {
@@ -173,7 +161,7 @@ public class TDStratego
 	}
 
 	private static class TDPlayer
-			extends AbstractTDPlayer<SchrodingersBoard> {
+			extends AbstractTDPlayer<AIGameState> {
 
 		private static final int             PLAYER_FLAG         = 2;
 		/** Owner of the unit*/
@@ -187,13 +175,13 @@ public class TDStratego
 		}
 
 		@Override
-		protected Matrix stateToActivation(SchrodingersBoard state) {
+		protected Matrix stateToActivation(AIGameState state) {
 			Matrix activation = new Matrix(INFO_SIZE, 1);
 			int index = 0;
 			for (int x = 0; x < state.getWidth(); x++) {
 				for (int y = 0; y < state.getHeight(); y++) {
-					SchrodingersUnit unit = state.getUnit(x, y);
-					if (!unit.isLake()) {
+					AIUnit unit = state.getAIUnit(x, y);
+					if (!unit.getUnitReference().isLake()) {
 						// owner
 						activation.set(index++, 0, (unit.getOwner() == PLAYER_1)
 												   ? 1
@@ -203,7 +191,7 @@ public class TDStratego
 												   : 0);
 						// unit probabilities
 						for (Unit.UnitType unitType : RELEVANT_UNIT_TYPES) {
-							if (unit.isAir()) {
+							if (unit.getUnitReference().isAir()) {
 								activation.set(index++, 0, 0);
 							} else {
 								activation.set(index++, 0, unit.getProbabilityFor(unitType));
@@ -214,13 +202,12 @@ public class TDStratego
 			}
 			// own death counts
 			for (Unit.UnitType unitType : RELEVANT_UNIT_TYPES) {
-				activation.set(index++, 0, (float) state.getView()
-														.getNumberOfOwnDefeatedUnits(unitType) / (float) unitType.getQuantity());
+				activation.set(index++, 0, (float) state.getOwn().getDefeatedFor(unitType) / (float) unitType.getQuantity());
 			}
 			// opponent death counts
 			for (Unit.UnitType unitType : RELEVANT_UNIT_TYPES) {
-				activation.set(index++, 0, (float) state.getView()
-														.getNumberOfOpponentDefeatedUnits(unitType) / (float) unitType.getQuantity());
+				activation.set(index++, 0, (float) state.getOpponent()
+														.getDefeatedFor(unitType) / (float) unitType.getQuantity());
 			}
 
 			//			for (int i = 0; i < activation.getRowDimension(); i++) {
@@ -233,10 +220,9 @@ public class TDStratego
 		}
 
 		@Override
-		public float utilityValue(SchrodingersBoard state, Matrix output) {
+		public float utilityValue(AIGameState state, Matrix output) {
 			float utility;
-			if (state.getView()
-					 .getPlayerID() == PLAYER_1) {
+			if (state.getCurrentPlayer() == PLAYER_1) {
 				utility = (float) (output.get(0, 0) - output.get(1, 0));
 			} else {
 				utility = (float) (output.get(1, 0) - output.get(0, 0));

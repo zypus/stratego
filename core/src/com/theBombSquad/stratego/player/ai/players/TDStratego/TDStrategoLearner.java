@@ -40,13 +40,14 @@ public class TDStrategoLearner implements Game.GameListener {
 		player1 = new HybridAI(playerOneView).setMover(stratego1)
 											 .setSetuper(new SetupPlayerAI(playerOneView));
 		stratego2 = new TDStratego(playerTwoView);
-		player2 = new HybridAI(playerOneView).setMover(stratego2)
-													   .setSetuper(new SetupPlayerAI(playerOneView));
+		player2 = new HybridAI(playerTwoView).setMover(stratego2)
+													   .setSetuper(new SetupPlayerAI(playerTwoView));
 
 		stratego1.setLearning(true);
 		stratego2.setLearning(true);
 
 		// tell the game about the players
+        game.reset();
 		gameFinished(-1, null);
 	}
 
@@ -54,11 +55,15 @@ public class TDStrategoLearner implements Game.GameListener {
 	public void gameFinished(int ply, StrategoConstants.PlayerID winner) {
 		if (ply >= 0) {
 			System.out.println("Round ended at ply "+ply);
+            stratego1.save("test/TDStratego/player1_progress"+round+".net");
+            stratego2.save("test/TDStratego/player2_progress"+round+".net");
 		}
 		if (round < MAX_ROUNDS) {
 			round++;
 			System.out.println("Starting round "+round);
 			game.reset();
+            stratego1.reset();
+            stratego2.reset();
 			game.setPlayer1(player1);
 			game.setPlayer2(player2);
 
@@ -74,10 +79,11 @@ public class TDStrategoLearner implements Game.GameListener {
 		if (ply % 1000 == 0) {
 			System.out.println("Ply "+ply);
 		}
-		if (ply < 0) {
+		if (ply > 10000) {
 			System.out.println("Round interrupted!");
-			stratego1.reset();
-			stratego2.reset();
+//			stratego1.reset();
+//			stratego2.reset();
+            game.reset();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

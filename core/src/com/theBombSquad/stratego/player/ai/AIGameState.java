@@ -21,6 +21,7 @@ public class AIGameState {
 
 	@Getter @Setter private PlayerID currentPlayer;
 	@Getter @Setter private float probability;
+    @Getter @Setter private boolean compressed;
 	private AIUnit[][] aiUnits;
 	@Getter private PlayerInformation own;
 	@Getter private PlayerInformation opponent;
@@ -75,6 +76,7 @@ public class AIGameState {
 		this.currentPlayer = gameState.currentPlayer;
 		this.own = new PlayerInformation(gameState.own);
 		this.opponent = new PlayerInformation(gameState.opponent);
+        this.compressed = gameState.compressed;
 	}
 
 	@Accessors(chain = true)
