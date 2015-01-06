@@ -63,7 +63,7 @@ public class AIUnit {
 	}
 
 	public float getProbabilitySum() {
-		int sum = 0;
+		float sum = 0;
 		for (float prob : unitTypeProbabilities) {
 			sum += prob;
 		}

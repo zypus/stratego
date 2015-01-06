@@ -216,7 +216,13 @@ public abstract class AI extends Player {
 								aiUnit.setProbabilityFor(unitType, (float)unknown / (float)player.getUnrevealedUnitCount());
 							}
 						}
-						assert abs(aiUnit.getProbabilitySum()-1) < 0.01 : "Probabilities do not sum up to 1.0";
+						// normalize
+						float sum = aiUnit.getProbabilitySum();
+						for (int i = 3; i < UnitType.values().length; i++) {
+							UnitType unitType = UnitType.values()[i];
+							aiUnit.setProbabilityFor(unitType, aiUnit.getProbabilityFor(unitType)/sum);
+						}
+						assert abs(aiUnit.getProbabilitySum()-1) < 0.01 : "Probabilities do not sum up to 1.0, but to " + aiUnit.getProbabilitySum();
 					}
 					aiUnit.setMoved(unit.wasMoved(currentTurn))
 						  .setRevealed(unit.wasRevealed(currentTurn));

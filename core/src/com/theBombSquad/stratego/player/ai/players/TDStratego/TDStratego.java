@@ -43,8 +43,8 @@ public class TDStratego
 
 	public TDStratego(Game.GameView gameView) {
 		super(gameView);
-		TDNeuralNet net = new TDNeuralNet(new int[]{TDPlayer.INFO_SIZE, 100, 2}, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
-//		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/player1.net");
+//		TDNeuralNet net = new TDNeuralNet(new int[]{TDPlayer.INFO_SIZE, 100, 2}, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
+		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/player1.net");
 		tdPlayer = new TDPlayer(net, 0.75f, new float[] { 0.5f, 0.5f });
 	}
 
