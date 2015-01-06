@@ -3,6 +3,7 @@ package com.theBombSquad.stratego;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 
 /**

@@ -1,6 +1,8 @@
 package com.theBombSquad.stratego.player.ai.evaluationFunctions;
 
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.gameMechanics.Game.GameView;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersUnit;
@@ -56,6 +58,12 @@ public class SimpleFunctionOfEvaluation implements EvaluationFunctionX{
 		
 		
 		return totalValue;
+	}
+
+	@Override
+	public float evaluate(GameView gameView, Move move) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
