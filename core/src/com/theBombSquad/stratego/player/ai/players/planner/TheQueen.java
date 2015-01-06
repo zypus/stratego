@@ -73,7 +73,6 @@ public class TheQueen extends AI{
 				bestMove = move;
 			}
 		}
-		System.out.println(bestProfit);
 		gameView.performMove(bestMove);
 		return bestMove;
 	}
