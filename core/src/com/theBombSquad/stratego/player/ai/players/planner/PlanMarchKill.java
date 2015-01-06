@@ -38,11 +38,12 @@ public class PlanMarchKill implements Plan{
 		if(target.wasRevealed(view.getCurrentTurn())){
 			CombatResult result = Encounter.resolveFight(self.getType(), target.getType());
 			if(result.equals(CombatResult.VICTORIOUS_ATTACK)){
-				ArrayList<AStar.Node> nodes = star.getPath(move.getToX(), move.getToY());
-				if(nodes.size()>0){
-					ArrayList<AStar.Node> nodesX = star.getPath(move.getFromX(), move.getFromY());
-					if(nodesX.size()>nodes.size()){
-						value = TheQueen.getUnitValue(target.getType())*10/(nodes.size()+1);
+				ArrayList<AStar.Node> nodes = star.getPath(move.getFromX(), move.getFromY());
+				for(int c=0; c<nodes.size(); c++){
+					AStar.Node tNode = nodes.get(0);
+					if(tNode.getX()==move.getToX() && tNode.getY()==move.getToY()){
+						System.out.println(self.getType()+" "+target.getType());
+						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c) + 10;
 					}
 				}
 			}

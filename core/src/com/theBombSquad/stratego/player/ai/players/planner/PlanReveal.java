@@ -17,7 +17,8 @@ public class PlanReveal implements Plan{
 		//If Not Enemy Unit, Plan Won't Judge
 		if(!target.isAir()){
 			if(!target.wasRevealed(view.getCurrentTurn())){
-				value = calcRevBonus(view) * view.getCurrentState().getAliveUnits(self.getType(), view.getPlayerID());
+				//TODO: Make The Punishment Equivalent To The Actual Likelihood of 
+				value = calcRevBonus(view) / TheQueen.getUnitValue(self.getType()) + 1;
 			}
 		}
 		return value;
@@ -26,40 +27,11 @@ public class PlanReveal implements Plan{
 	
 	/** Calc Bonus That Should Be Handed Out For Uncovering Opponent Piece */
 	private float calcRevBonus(GameView view){
-		//See How Many Units Of Opponent Of Certain Type Have Been Revealed
-		int opponentHiddenArmySize = 0;
-		int[] revealedOfType = new int[12];
-		GameBoard board = view.getCurrentState();
-		for(int cy=0; cy<board.getHeight(); cy++){
-			for(int cx=0; cx<board.getWidth(); cx++){
-				Unit unit = board.getUnit(cx, cy);
-				if(unit.getOwner().equals(view.getOpponentID())){
-					if(unit.wasRevealed(view.getCurrentTurn())){
-						revealedOfType[unit.getType().getRank()]++;
-					}
-					else{
-						opponentHiddenArmySize++;
-					}
-				}
-			}
-		}
-		//Default To Scout, Weakest UnitType As Strongest Hidden Alive Opponent Unit
-		UnitType strongestAliveHiddenUnit = Unit.UnitType.SCOUT;
-		for(int c=10; c>=0; c--){
-			if(board.getAliveUnits(Unit.getUnitTypeOfRank(c), view.getOpponentID())>0){
-				if(revealedOfType[c]<Unit.getUnitTypeOfRank(c).getQuantity()){
-					strongestAliveHiddenUnit = Unit.getUnitTypeOfRank(c);
-				}
-			}
-		}
-		//Calculate Value Of Maybe Revealing This Unit
-		return TheQueen.getUnitValue(strongestAliveHiddenUnit)/opponentHiddenArmySize;
+		return 40 - view.getOpponentsDefeatedUnits().size() * TheQueen.getUnitValue(Unit.UnitType.SCOUT);
 	}
 	
 
 	@Override
-	public void postMoveUpdate(GameView view) {
-		// TODO Auto-generated method stub
-	}
+	public void postMoveUpdate(GameView view) {}
 
 }

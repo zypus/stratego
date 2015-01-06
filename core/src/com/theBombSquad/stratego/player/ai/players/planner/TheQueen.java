@@ -11,6 +11,8 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AI;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAttackWeakerRevealedAdjacent;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanFleeStrongerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 
@@ -32,10 +34,11 @@ public class TheQueen extends AI{
 	
 	private void planSetup(){
 		plans = new ArrayList<Plan>();
+		//plans.add(new PlanAttackWeakerRevealedAdjacent());
+		//plans.add(new PlanFleeStrongerRevealedAdjacent());
 		plans.add(new PlanRandom());
-		plans.add(new PlanAttackAdjacent());
-		plans.add(new PlanPunishUnitReveals());
-		plans.add(new PlanFleeDefeatableUnitFromKnownStrongerThreat());
+//		plans.add(new PlanAttackAdjacent());
+//		plans.add(new PlanFleeDefeatableUnitFromKnownStrongerThreat());
 		plans.add(new PlanDefendFlag());
 		plans.add(new PlanReveal());
 		for(int cy=0; cy<10; cy++){
@@ -70,6 +73,7 @@ public class TheQueen extends AI{
 				bestMove = move;
 			}
 		}
+		System.out.println(bestProfit);
 		gameView.performMove(bestMove);
 		return bestMove;
 	}
