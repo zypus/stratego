@@ -3,6 +3,7 @@ package com.theBombSquad.stratego;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
@@ -25,7 +26,7 @@ public class NoGUIStratego implements Game.GameListener {
 	private Player player1;
 	private Player     player2;
 	private final TDStratego mover1;
-	private final TDStratego mover2;
+	private final Player mover2;
 
 	public static void main(String[] args) {
 		new NoGUIStratego();
@@ -42,7 +43,7 @@ public class NoGUIStratego implements Game.GameListener {
 		mover1 = new TDStratego(playerOneView);
 		player1 = new HybridAI(playerOneView).setMover(mover1)
 											 .setSetuper(new SetupPlayerAI(playerOneView));
-		mover2 = new TDStratego(playerTwoView);
+		mover2 = new RandomAI(playerTwoView);
 		player2 = new HybridAI(playerTwoView).setMover(mover2)
 											 .setSetuper(new SetupPlayerAI(playerTwoView));
 		//		player1.setLearning(true);
@@ -70,6 +71,7 @@ public class NoGUIStratego implements Game.GameListener {
 		if (round < MAX_ROUNDS) {
 			round++;
 			System.out.println("Starting round "+round);
+			mover1.reset();
 			game.reset();
 			game.setPlayer1(player1);
 			game.setPlayer2(player2);
@@ -77,8 +79,6 @@ public class NoGUIStratego implements Game.GameListener {
 			game.startSetupPhase();
 		} else {
 			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws+" - average game length: "+totalPlys/MAX_ROUNDS);
-			mover1.save("test/TDStratego/player1.net");
-			mover2.save("test/TDStratego/player2.net");
 		}
 	}
 
@@ -89,7 +89,7 @@ public class NoGUIStratego implements Game.GameListener {
 		}
 		if (ply < 0) {
 			System.out.println("Round interrupted!");
-//			player1.reset();
+			mover1.reset();
 			//			player2.reset();
 			new Thread(new Runnable() {
 				@Override

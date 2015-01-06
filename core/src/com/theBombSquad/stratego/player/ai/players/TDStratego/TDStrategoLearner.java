@@ -4,6 +4,7 @@ import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
+import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
 /**
@@ -22,7 +23,7 @@ public class TDStrategoLearner implements Game.GameListener {
 	private Player player1;
 	private Player player2;
 	private final TDStratego stratego1;
-	private final TDStratego stratego2;
+	private final Player opp;
 
 	public static void main(String[] args) {
 		new TDStrategoLearner();
@@ -39,12 +40,11 @@ public class TDStrategoLearner implements Game.GameListener {
 		stratego1 = new TDStratego(playerOneView);
 		player1 = new HybridAI(playerOneView).setMover(stratego1)
 											 .setSetuper(new SetupPlayerAI(playerOneView));
-		stratego2 = new TDStratego(playerTwoView);
-		player2 = new HybridAI(playerTwoView).setMover(stratego2)
-													   .setSetuper(new SetupPlayerAI(playerTwoView));
+		opp = new TheQueen(playerTwoView);
+		player2 = new HybridAI(playerTwoView).setMover(opp)
+											 .setSetuper(new SetupPlayerAI(playerTwoView));
 
 		stratego1.setLearning(true);
-		stratego2.setLearning(true);
 
 		// tell the game about the players
         game.reset();
@@ -55,22 +55,24 @@ public class TDStrategoLearner implements Game.GameListener {
 	public void gameFinished(int ply, StrategoConstants.PlayerID winner) {
 		if (ply >= 0) {
 			System.out.println("Round ended at ply "+ply);
-            stratego1.save("test/TDStratego/player1_progress"+round+".net");
-            stratego2.save("test/TDStratego/player2_progress"+round+".net");
+			if (round % 10 == 0) {
+				stratego1.save("test/TDStratego/progress/player1_progress" + round + ".net");
+				//            stratego2.save("test/TDStratego/player2_progress"+round+".net");
+			}
 		}
 		if (round < MAX_ROUNDS) {
 			round++;
 			System.out.println("Starting round "+round);
 			game.reset();
             stratego1.reset();
-            stratego2.reset();
+//            stratego2.reset();
 			game.setPlayer1(player1);
 			game.setPlayer2(player2);
 
 			game.startSetupPhase();
 		} else {
 			stratego1.save("test/TDStratego/player1.net");
-			stratego2.save("test/TDStratego/player2.net");
+//			stratego2.save("test/TDStratego/player2.net");
 		}
 	}
 
@@ -79,7 +81,7 @@ public class TDStrategoLearner implements Game.GameListener {
 		if (ply % 1000 == 0) {
 			System.out.println("Ply "+ply);
 		}
-		if (ply > 10000) {
+		if (ply > 20000) {
 			System.out.println("Round interrupted!");
 //			stratego1.reset();
 //			stratego2.reset();
