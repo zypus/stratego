@@ -34,8 +34,8 @@ public class TheQueen extends AI{
 	
 	private void planSetup(){
 		plans = new ArrayList<Plan>();
-		//plans.add(new PlanAttackWeakerRevealedAdjacent());
-		//plans.add(new PlanFleeStrongerRevealedAdjacent());
+		plans.add(new PlanAttackWeakerRevealedAdjacent());
+		plans.add(new PlanFleeStrongerRevealedAdjacent());
 		plans.add(new PlanRandom());
 //		plans.add(new PlanAttackAdjacent());
 //		plans.add(new PlanFleeDefeatableUnitFromKnownStrongerThreat());

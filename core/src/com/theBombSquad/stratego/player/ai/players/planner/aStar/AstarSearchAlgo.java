@@ -33,14 +33,12 @@ public class AstarSearchAlgo {
 			for(int cx=0; cx<nodes[cy].length; cx++){
 				Node node = nodes[cy][cx];
 				ArrayList<Edge> edges = new ArrayList<Edge>();
-				for(int yy=-1; yy<=1; yy++){
-					for(int xx=-1; xx<=1; xx++){
-						if(Math.abs(yy)+Math.abs(xx) == 1){
-							if(board.isInBounds(cx+xx, cy+yy)){
-								if(board.getUnit(cx+xx, cy+yy).isAir()){
-									edges.add(new Edge(nodes[cx+xx][cy+yy]));
-								}
-							}
+				for(int[] dir : new int[][]{new int[]{cx, cy-1}, new int[]{cx+1, cy}, new int[]{cx, cy+1}, new int[]{cx-1, cy}}){
+					int dirX = dir[0];
+					int dirY = dir[1];
+					if(board.isInBounds(dirX, dirY)){
+						if(board.getUnit(dirX, dirY).isAir()){
+							edges.add(new Edge(nodes[dirY][dirX]));
 						}
 					}
 				}
@@ -52,7 +50,7 @@ public class AstarSearchAlgo {
 			}
 		}
 	}
-
+	
 	public List<Node> printPath(Node target) {
 		List<Node> path = new ArrayList<Node>();
 		for (Node node = target; node != null; node = node.parent) {
@@ -77,7 +75,7 @@ public class AstarSearchAlgo {
 	}
 	
 	
-
+	
 	public void astarSearch(Node source, Node goal) {
 
 		Set<Node> explored = new HashSet<Node>();
@@ -116,7 +114,7 @@ public class AstarSearchAlgo {
 			explored.add(current);
 
 			// goal found
-			if (current.value.equals(goal.value)) {
+			if (current.getX() == goal.getX() && current.getY()==goal.getY()) {
 				found = true;
 			}
 
@@ -206,9 +204,9 @@ public class AstarSearchAlgo {
 		
 		public Edge(Node targetNode){
 			target = targetNode;
-			cost = targetNode.isCollision()?9999999:1;
+			cost = 1;
 		}
-
+		
 		public Edge(Node targetNode, double costVal) {
 			target = targetNode;
 			cost = costVal;

@@ -7,8 +7,9 @@ import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 
-/** Moves Unit Away From Adjacent Unit That Is Likely To Be A Threat */
-public class PlanFleeDefeatableUnitFromKnownStrongerThreat implements Plan{
+/** Moves Unit Away From Adjacent Unit That Is Likely To Be A Threat 
+ * Name By James R. */
+public class PlanLikeTheFrench implements Plan{
 
 	@Override
 	public float evaluateMove(GameView view, Move move) {
