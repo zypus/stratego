@@ -96,7 +96,6 @@ public class PlanAvoidHiddenStronger implements Plan{
 		for(int c=0; c<enemyWeakerProbs.length; c++){
 			weaker += TheQueen.getUnitValue(Unit.getUnitTypeOfRank(c))*enemyWeakerProbs[c];
 		}
-		System.out.println("w "+weaker);
 		this.enemyWeakerFactor = weaker;
 	}
 	
