@@ -34,7 +34,7 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 		
 		//Evaluate
 		if(knownThreats>0){
-			return TheQueen.getUnitValue(self.getType())*MULTIPLIER;
+			return -TheQueen.getUnitValue(self.getType())*MULTIPLIER;
 		}
 		else{
 			return 0;

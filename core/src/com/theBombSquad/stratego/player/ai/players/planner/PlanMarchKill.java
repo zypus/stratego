@@ -11,14 +11,14 @@ import com.theBombSquad.stratego.gameMechanics.board.Encounter.CombatResult;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.player.ai.players.planner.aStar.AstarSearchAlgo;
+import com.theBombSquad.stratego.player.ai.players.planner.aStar.GameSpecificAStar;
 
 /** Gives Points For Getting A Unit Able To Defeat A Specific Revealed Opponent Unit To A Space Next To It */
 public class PlanMarchKill implements Plan{
 	
 	private Unit target;
 	private boolean currActive = false;
-	private AstarSearchAlgo star = null;
+	private GameSpecificAStar star = null;
 
 	
 	public PlanMarchKill(Unit target){
@@ -39,17 +39,19 @@ public class PlanMarchKill implements Plan{
 		if(target.wasRevealed(view.getCurrentTurn())){
 			CombatResult result = Encounter.resolveFight(self.getType(), target.getType());
 			if(result.equals(CombatResult.VICTORIOUS_ATTACK)){
-				List<AstarSearchAlgo.Node> nodes = star.astar(move.getFromX(), move.getFromY());
+				List<GameSpecificAStar.Node> nodes = star.findPath(move.getFromX(), move.getFromY());
 				for(int c=0; c<nodes.size(); c++){
-					AstarSearchAlgo.Node tNode = nodes.get(c);
+					GameSpecificAStar.Node tNode = nodes.get(c);
 					if(tNode.getX()==move.getToX() && tNode.getY()==move.getToY()){
-						System.out.println(self.getType()+" "+target.getType());
-						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c) + 10;
+						System.out.println(self.getType()+" "+target.getType()+" "+(nodes.size()-c));
+						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c);
 					}
 				}
 			}
 		}
-		
+//		if(value>0){
+//			System.out.println(value);
+//		}
 		return value;
 	}
 
@@ -72,7 +74,7 @@ public class PlanMarchKill implements Plan{
 		}
 		else{
 			currActive = true;
-			this.star = new AstarSearchAlgo(board, destX, destY);
+			this.star = new GameSpecificAStar(board, destX, destY);
 		}
 	}
 
