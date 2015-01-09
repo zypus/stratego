@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.ai.players.TDStratego;
 
 import Jama.Matrix;
+
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
@@ -8,7 +9,9 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
+import com.theBombSquad.stratego.player.ai.BluffingAI.BluffingMoveEvaluation;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -37,6 +40,7 @@ public class TDStratego
 	private static final float epsilon = 0.2f;
 	private AIGameState lastBoard;
 	private Random random = new Random();
+	BluffingMoveEvaluation e = new BluffingMoveEvaluation();
 
 	@Getter @Setter private boolean learning = false;
 	@Getter private TDPlayer tdPlayer;
@@ -73,6 +77,7 @@ public class TDStratego
 		}
 
 		lastBoard = bestBoard;
+		System.out.println(e.evaluateBluff(bestMove, board));
 		gameView.performMove(bestMove);
 		if (learning) {
             tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
