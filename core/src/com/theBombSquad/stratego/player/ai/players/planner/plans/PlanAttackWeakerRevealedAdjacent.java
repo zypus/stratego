@@ -13,18 +13,19 @@ public class PlanAttackWeakerRevealedAdjacent implements Plan{
 
 	@Override
 	public float evaluateMove(GameView view, Move move) {
+		float value = 0;
 		GameBoard board = view.getCurrentState();
 		Unit self = board.getUnit(move.getFromX(), move.getFromY());
 		Unit target = board.getUnit(move.getToX(), move.getToY());
 		if(!target.isAir() && !target.isLake() && !target.isUnknown() && target.getOwner().equals(view.getOpponentID())){
-			if(Encounter.resolveFight(self.getType(), target.getType()) == Encounter.CombatResult.VICTORIOUS_ATTACK){
-				return TheQueen.getUnitValue(target.getType());
+			if(Encounter.resolveFight(self.getType(), target.getType()).equals(Encounter.CombatResult.VICTORIOUS_ATTACK)){
+				value = TheQueen.getUnitValue(target.getType());
 			}
 			else{
-				return -TheQueen.getUnitValue(self.getType());
+				value = -TheQueen.getUnitValue(self.getType());
 			}
 		}
-		return 0;
+		return value;
 	}
 
 	@Override

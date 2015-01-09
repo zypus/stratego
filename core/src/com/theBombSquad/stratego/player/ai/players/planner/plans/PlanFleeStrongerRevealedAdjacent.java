@@ -16,8 +16,8 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 	public float evaluateMove(GameView view, Move move) {
 		Unit self = view.getCurrentState().getUnit(move.getFromX(), move.getFromY());
 		
-		int x = move.getFromX();
-		int y = move.getFromY();
+		int x = move.getToX();
+		int y = move.getToY();
 		int knownThreats = 0;
 		if(couldDie(view, move, x, y-1)){
 			knownThreats++;
@@ -34,7 +34,8 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 		
 		//Evaluate
 		if(knownThreats>0){
-			return -TheQueen.getUnitValue(self.getType())*MULTIPLIER;
+			System.out.println("Threat");
+			return -TheQueen.getUnitValue(self.getType());
 		}
 		else{
 			return 0;

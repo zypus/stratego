@@ -20,7 +20,7 @@ import com.theBombSquad.stratego.player.ai.setup.AISetup;
 /** The Queen, AI Based On Several Predefined Plans That Evaluate Each Possible Move According To Unit Values And A Little Bit Of 'Research' Based Magic */
 public class TheQueen extends AI{
 	
-	private static final float[] unitValues = new float[]{1000f, 200f, 30f, 25f, 15f, 25f, 50f, 75f, 100f, 200f, 400f, 20f};
+	private static final float[] unitValues = new float[]{600f, 200f, 30f, 25f, 15f, 25f, 50f, 75f, 100f, 200f, 400f, 20f};
 	
 	public static float getUnitValue(UnitType unit){
 		return unitValues[unit.getRank()];
@@ -35,7 +35,7 @@ public class TheQueen extends AI{
 	
 	private void planSetup(){
 		plans = new ArrayList<Plan>();
-		plans.add(new PlanRandom());
+		//plans.add(new PlanRandom());
 		plans.add(new PlanAttackWeakerRevealedAdjacent());
 		plans.add(new PlanFleeStrongerRevealedAdjacent());
 		plans.add(new PlanDefendFlag());
@@ -49,7 +49,9 @@ public class TheQueen extends AI{
 		}
 		for(int c=0; c<12; c++){
 			UnitType type = Unit.getUnitTypeOfRank(c);
-			plans.add(new PlanAvoidHiddenStronger(type));
+			if(!type.equals(Unit.UnitType.BOMB) && !type.equals(Unit.UnitType.FLAG)){
+				plans.add(new PlanAvoidHiddenStronger(type));
+			}
 		}
 		this.planSetupFinished = true;
 	}
@@ -64,8 +66,8 @@ public class TheQueen extends AI{
 			plan.postMoveUpdate(gameView);
 		}
 		List<Move> moves = super.createAllLegalMoves(gameView, gameView.getCurrentState());
-		Move bestMove = null;
 		float bestProfit = Float.NEGATIVE_INFINITY;
+		ArrayList<Move> bestMoves = new ArrayList<Move>();
 		for(Move move : moves){
 			float currentProfit = 0;
 			for(Plan plan : plans){
@@ -73,9 +75,15 @@ public class TheQueen extends AI{
 			}
 			if(currentProfit>bestProfit){
 				bestProfit = currentProfit;
-				bestMove = move;
+				bestMoves = new ArrayList<Move>();
+				bestMoves.add(move);
+			}
+			else if(currentProfit==bestProfit){
+				bestMoves.add(move);
 			}
 		}
+		Collections.shuffle(bestMoves);
+		Move bestMove = bestMoves.get(0);
 		gameView.performMove(bestMove);
 		return bestMove;
 	}

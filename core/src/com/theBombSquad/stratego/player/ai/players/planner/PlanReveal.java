@@ -14,12 +14,9 @@ public class PlanReveal implements Plan{
 		GameBoard board = view.getCurrentState();
 		Unit self = board.getUnit(move.getFromX(), move.getFromY());
 		Unit target = board.getUnit(move.getToX(), move.getToY());
-		//If Not Enemy Unit, Plan Won't Judge
-		if(!target.isAir()){
-			if(!target.wasRevealed(view.getCurrentTurn())){
-				//TODO: Make The Punishment Equivalent To The Actual Likelihood of 
-				value = calcRevBonus(view) / TheQueen.getUnitValue(self.getType()) + 1;
-			}
+		//If Not Unknown Enemy Unit, Plan Won't Judge
+		if(target.isUnknown()){
+			value = calcRevBonus(view) - TheQueen.getUnitValue(self.getType());
 		}
 		return value;
 	}
@@ -27,7 +24,27 @@ public class PlanReveal implements Plan{
 	
 	/** Calc Bonus That Should Be Handed Out For Uncovering Opponent Piece */
 	private float calcRevBonus(GameView view){
-		return 40 - view.getOpponentsDefeatedUnits().size() * TheQueen.getUnitValue(Unit.UnitType.SCOUT);
+		GameBoard board = view.getCurrentState();
+		int[] opponentUnitUncovered = new int[12];
+		for(int cy=0; cy<board.getHeight(); cy++){
+			for(int cx=0; cx<board.getWidth(); cx++){
+				Unit unit = board.getUnit(cx, cy);
+				if(unit.getOwner()==view.getOpponentID()){
+					if(!unit.isUnknown()){
+						opponentUnitUncovered[unit.getType().getRank()] += 1;
+					}
+				}
+			}
+		}
+		float bonus = 0;
+		int totalNumber = 0;
+		for(int c=0; c<12; c++){
+			UnitType type = Unit.getUnitTypeOfRank(c);
+			int opponentFeasible = type.getQuantity() - opponentUnitUncovered[c] - view.getNumberOfDefeatedOpponentUnits(c);
+			totalNumber += opponentFeasible;
+			bonus += TheQueen.getUnitValue(type) * opponentFeasible;
+		}
+		return bonus/totalNumber;
 	}
 	
 

@@ -16,12 +16,10 @@ public class PlanRandom implements Plan{
 
 	@Override
 	public float evaluateMove(GameView view, Move move) {
-		return rand.nextFloat()/1000;
+		return rand.nextFloat()/100000;
 	}
 
 	@Override
-	public void postMoveUpdate(GameView view) {
-		//Nothing To Do Here
-	}
+	public void postMoveUpdate(GameView view) {}
 
 }
