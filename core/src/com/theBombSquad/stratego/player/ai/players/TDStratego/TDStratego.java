@@ -47,15 +47,16 @@ public class TDStratego
 	public TDStratego(Game.GameView gameView1, Game.GameView gameView2) {
 		super(gameView1);
 		optionalGameview = gameView2;
-//		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
-		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress20.net");
-		tdPlayer = new TDPlayer(net, 0.75f, new float[] { 0.5f, 0.5f });
+		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
+		net.clearWeights();
+//		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress20.net");
+		tdPlayer = new TDPlayer(net, 0.8f, new float[] { 0.25f, 0.25f });
 	}
 
 	public TDStratego(Game.GameView gameView) {
 		super(gameView);
-		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
-		//		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/nn.net");
+//		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
+		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress90.net");
 		tdPlayer = new TDPlayer(net, 0.75f, new float[] { 0.5f, 0.5f });
 	}
 

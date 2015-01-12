@@ -81,7 +81,7 @@ public class TDStrategoLearner implements Game.GameListener {
 		if (ply % 1000 == 0) {
 			System.out.println("Ply "+ply);
 		}
-		if (ply > 20000) {
+		if (ply < 0) {
 			System.out.println("Round interrupted!");
 //			stratego1.reset();
 //			stratego2.reset();
