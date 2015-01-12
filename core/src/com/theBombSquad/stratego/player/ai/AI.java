@@ -128,6 +128,36 @@ public abstract class AI extends Player {
 		return board.isInBounds(x, y) && (gameView.isEnemy(x, y) || gameView.isAir(x, y));
 	}
 
+
+	/** ---------------------------------------------------
+	 * AIGameState usage example:
+	 *
+	 * // Creating a new AIGameState:
+	 * Gameview gameview;
+	 * AIGameState state = AI.createAIGameState(gameview);
+	 *
+	 * // To get all possible move use the state AI method, it is not possible to get possible moves from the state itself
+	 * List<Move> moves = AI.createAllLegalMoves(gameview);
+	 *
+	 * // Getting the outcome of a move
+	 * Move move;
+	 * AI.createOutcomeOfMove(state, move)
+	 *
+	 * // The AIGameState is composed out of AIUnits
+	 * int x, y;
+	 * AIUnit aiUnit = state.getAIUnit(x, y);			(After an encounter the state might contain a position (x,y) where one AIUnit of each player is present, in order to get them separately call state.getAIUnitFor(x,y, PlayerID))
+	 * 
+	 * // Each AIUnit contains the probabilities for a certain unitType of the owner of that AIUnit
+	 * float probability = aiUnit.getProbabilityFor( SCOUT );
+	 *
+	 ------------------------------------------------------*/
+
+
+	/**
+	 * Creates a fresh AIGameState from the given gameView, assumes an equally probability distribution for each unit type. IMPORTANT: Does also represent the units of the gameview owner probability wise, so in other words the units are represented in the way the opponent would think about the units.
+	 * @param gameView The gameview from which the current game state is taken.
+	 * @return The new AIGameState which describes the game state solely with probabilities.
+	 */
 	public static AIGameState createAIGameState(GameView gameView) {
 		GameBoard board = gameView.getCurrentState();
 		PlayerID me = gameView.getPlayerID();
@@ -309,6 +339,12 @@ public abstract class AI extends Player {
 		}
 	}
 
+	/**
+	 * Given an AIGameState and a move, a new AIGameState will be created which represents the outcome of the given move. If the move results in an encounter the probability distribution will not be normalized, but will still represent the likelyhood that a given unit type of a certain player will occupy a certain game field after performing the move.
+	 * @param gameState The AIGameState.
+	 * @param move The Move.
+	 * @return Probability based game state after the move.
+	 */
 	public static AIGameState createOutcomeOfMove(AIGameState gameState, Move move) {
 		AIGameState outcome = null;
 		AIGameState movement = new AIGameState(gameState);
