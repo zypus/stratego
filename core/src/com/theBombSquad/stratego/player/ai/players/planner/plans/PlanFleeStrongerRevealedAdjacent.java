@@ -9,15 +9,18 @@ import com.theBombSquad.stratego.player.ai.players.planner.Plan;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 
 public class PlanFleeStrongerRevealedAdjacent implements Plan{
-	
-	private static final float MULTIPLIER = 0.7f;
 
 	@Override
 	public float evaluateMove(GameView view, Move move) {
 		Unit self = view.getCurrentState().getUnit(move.getFromX(), move.getFromY());
 		
-		int x = move.getToX();
-		int y = move.getToY();
+		//If Unit Hasn't Moved Before And Hasn't Been Revealed Before We Do Not Encourage Fleeing (Plays Bomb)
+		if(!(self.getRevealedInTurn()<view.getCurrentTurn() || self.getMovedInTurn()<view.getCurrentTurn())){
+			return 0;
+		}
+		
+		int x = move.getFromX();
+		int y = move.getFromY();
 		int knownThreats = 0;
 		if(couldDie(view, move, x, y-1)){
 			knownThreats++;
@@ -34,7 +37,6 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 		
 		//Evaluate
 		if(knownThreats>0){
-			System.out.println("Threat");
 			return -TheQueen.getUnitValue(self.getType());
 		}
 		else{
@@ -50,7 +52,10 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 		if(view.getCurrentState().isInBounds(x, y)){
 			Unit target = view.getUnit(x, y);
 			if(!target.isAir() && !target.isLake() && !target.isUnknown() && target.getOwner().equals(view.getOpponentID())){
-				if(Encounter.resolveFight(self.getType(), target.getType()) == Encounter.CombatResult.VICTORIOUS_ATTACK){
+				if(target.getType().getRank()==Unit.UnitType.BOMB.getRank()){
+					return false;
+				}
+				if(Encounter.resolveFight(target.getType(), self.getType()) != Encounter.CombatResult.VICTORIOUS_DEFENSE){
 					return true;
 				}
 			}

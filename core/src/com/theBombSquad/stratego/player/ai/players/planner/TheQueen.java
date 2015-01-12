@@ -91,7 +91,7 @@ public class TheQueen extends AI{
 	
 	@Override
 	protected Setup setup() {
-		boolean f = gameView.getPlayerID().equals(StrategoConstants.PlayerID.PLAYER_1);
+		boolean f = true;
 		
 		if(f){
 			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
