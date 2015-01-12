@@ -7,6 +7,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,8 @@ import java.util.List;
 import static com.theBombSquad.stratego.StrategoConstants.*;
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 import static com.theBombSquad.stratego.gameMechanics.Game.*;
-import static com.theBombSquad.stratego.gameMechanics.board.Encounter.CombatResult.*;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.*;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
-import static java.lang.Math.*;
 
 /**
  * Abstract AI class which gives access to several utility stuff.
@@ -27,14 +26,19 @@ import static java.lang.Math.*;
  */
 public abstract class AI extends Player {
 
+	private static AIUnit AIR_AI_UNIT = new AIUnit()
+			.setOwner(NEMO)
+			.setUnitReference(Unit.AIR)
+			.setRevealed(true);
+
 	public AI(GameView gameView) {
 		super(gameView);
 	}
 
-	public static List<Move> createAllLegalMoves(GameView gameView, GameBoard board){
+	public static List<Move> createAllLegalMoves(GameView gameView, GameBoard board) {
 		List<Move> list = new ArrayList<Move>();
-		for(int cy=0; cy<board.getHeight(); cy++){
-			for(int cx=0; cx<board.getWidth(); cx++){
+		for (int cy = 0; cy < board.getHeight(); cy++) {
+			for (int cx = 0; cx < board.getWidth(); cx++) {
 				list.addAll(createAllLegalMovesForUnit(gameView, board, cx, cy));
 			}
 		}
@@ -45,8 +49,11 @@ public abstract class AI extends Player {
 		List<Move> list = new ArrayList<Move>();
 		Unit unit = board.getUnit(cx, cy);
 		if (unit.getOwner() == gameView.getPlayerID()) {
-			if (!unit.getType().equals(BOMB) && !unit.getType().equals(FLAG)) {
-				if (unit.getType().equals(SCOUT)) {
+			if (!unit.getType()
+					 .equals(BOMB) && !unit.getType()
+										   .equals(FLAG)) {
+				if (unit.getType()
+						.equals(SCOUT)) {
 					addScoutMoves(gameView, list, cx, cy);
 				} else {
 					for (int xx = -1; xx <= 1; xx += 2) {
@@ -128,6 +135,43 @@ public abstract class AI extends Player {
 		return board.isInBounds(x, y) && (gameView.isEnemy(x, y) || gameView.isAir(x, y));
 	}
 
+
+	/** ------------------------------------------------------------------------------------------------------------------------------
+	 * AIGameState usage example:
+	 *
+	 * // Creating a new AIGameState:
+	 * Gameview gameview;
+	 * AIGameState state = AI.createAIGameState(gameview);
+	 *
+	 * // Copying a state is done using the constructor
+	 * AIGameState copy = new AIGameState(state);
+	 *
+	 * // To get all possible move use the state AI method, it is not possible to get possible moves from the state itself
+	 * List<Move> moves = AI.createAllLegalMoves(gameview);
+	 *
+	 * // Getting the outcome of a move
+	 * Move move;
+	 * AI.createOutcomeOfMove(state, move)
+	 *
+	 * // Advance the gameState by an actual taken move.
+	 * Move performedMove;
+	 * AIGameState advancedState = AI.advanceGameState(state, performedMove);
+	 *
+	 * // The AIGameState is composed out of AIUnits
+	 * int x, y;
+	 * AIUnit aiUnit = state.getAIUnit(x, y);			(After an encounter the state might contain a position (x,y) where one AIUnit of each player is present, in order to get them separately call state.getAIUnitFor(x,y, PlayerID))
+	 *
+	 * // Each AIUnit contains the probabilities for a certain unitType of the owner of that AIUnit
+	 * float probability = aiUnit.getProbabilityFor( SCOUT );
+	 *
+	 ---------------------------------------------------------------------------------------------------------------------------------*/
+
+
+	/**
+	 * Creates a fresh AIGameState from the given gameView, assumes an equally probability distribution for each unit type. IMPORTANT: Does also represent the units of the gameview owner probability wise, so in other words the units are represented in the way the opponent would think about the units.
+	 * @param gameView The gameview from which the current game state is taken.
+	 * @return The new AIGameState which describes the game state solely with probabilities.
+	 */
 	public static AIGameState createAIGameState(GameView gameView) {
 		GameBoard board = gameView.getCurrentState();
 		PlayerID me = gameView.getPlayerID();
@@ -139,11 +183,11 @@ public abstract class AI extends Player {
 		AIGameState.PlayerInformation own = gameState.getOwn();
 		int ownRevealedUnitCount = 0;
 		int ownUnrevealedAndUnmovedUnitCount = 0;
-		int[] ownRevealedCountByUnit = new int[12];
+		float[] ownRevealedCountByUnit = new float[12];
 		AIGameState.PlayerInformation opponent = gameState.getOpponent();
 		int opponentRevealedUnitCount = 0;
 		int opponentUnrevealedAndUnmovedUnitCount = 0;
-		int[] opponentRevealedCountByUnit = new int[12];
+		float[] opponentRevealedCountByUnit = new float[12];
 		for (int cx = 0; cx < board.getWidth(); cx++) {
 			for (int cy = 0; cy < board.getHeight(); cy++) {
 				Unit unit = board.getUnit(cx, cy);
@@ -191,7 +235,7 @@ public abstract class AI extends Player {
 			for (int cy = 0; cy < board.getHeight(); cy++) {
 				Unit unit = board.getUnit(cx, cy);
 				AIUnit aiUnit = null;
-				if (unit.isAir()) {
+				if (unit.isAir() || unit.isLake()) {
 					aiUnit = new AIUnit()
 							.setOwner(NEMO)
 							.setUnitReference(unit)
@@ -206,17 +250,23 @@ public abstract class AI extends Player {
 						AIGameState.PlayerInformation player = gameState.getPlayerInformation(unit.getOwner());
 						for (int i = 3; i < UnitType.values().length; i++) {
 							UnitType unitType = UnitType.values()[i];
-							int onBoard = unitType.getQuantity() - player.getDefeatedFor(unitType);
-							int unknown = onBoard - player.getRevealedFor(unitType);
+							float onBoard = unitType.getQuantity() - player.getDefeatedFor(unitType);
+							float unknown = onBoard - player.getRevealedFor(unitType);
 							if (unitType == FLAG || unitType == BOMB) {
 								if (!unit.wasMoved(currentTurn)) {
-									aiUnit.setProbabilityFor(unitType, (float)unknown / (float)player.getUnrevealedAndUnmovedUnitCount());
+									aiUnit.setProbabilityFor(unitType, unknown / player.getUnrevealedAndUnmovedUnitCount());
 								}
-							} else {
-								aiUnit.setProbabilityFor(unitType, (float)unknown / (float)player.getUnrevealedUnitCount());
+							} else if (unit.wasMoved(currentTurn) || unit.wasRevealed(currentTurn) ||  player.getUnrevealedAndUnmovedUnitCount() > (FLAG.getQuantity() - player.getRevealedFor(FLAG) - player.getDefeatedFor(FLAG) + BOMB.getQuantity() - player.getRevealedFor(BOMB) - player.getDefeatedFor(BOMB)) ) {
+								aiUnit.setProbabilityFor(unitType, unknown / player.getUnrevealedUnitCount());
 							}
 						}
-						assert abs(aiUnit.getProbabilitySum()-1) < 0.01 : "Probabilities do not sum up to 1.0";
+						// normalize
+//						float sum = aiUnit.getProbabilitySum();
+//						for (int i = 3; i < UnitType.values().length; i++) {
+//							UnitType unitType = UnitType.values()[i];
+//							aiUnit.setProbabilityFor(unitType, aiUnit.getProbabilityFor(unitType)/sum);
+//						}
+//						assert abs(aiUnit.getProbabilitySum()-1) < 0.01 : "Probabilities do not sum up to 1.0, but to " + aiUnit.getProbabilitySum();
 					}
 					aiUnit.setMoved(unit.wasMoved(currentTurn))
 						  .setRevealed(unit.wasRevealed(currentTurn));
@@ -224,96 +274,309 @@ public abstract class AI extends Player {
 				gameState.setAIUnit(cx, cy, aiUnit);
 			}
 		}
+		normalize(gameState);
+//		AIGameStateDebugger.debug(gameState);
 		return gameState;
 	}
 
-	public static List<AIGameState> createOutcomesOfMove(AIGameState gameState, Move move) {
-		List<AIGameState> outcomes = new ArrayList<AIGameState>();
+	static final float THRESHOLD = 0.1f;
+
+	private static void normalize(AIGameState gameState) {
+		float error = 1;
+		int counter = 0;
+		boolean failed = false;
+		while (error > THRESHOLD) {
+			for (int cx = 0; cx < gameState.getWidth(); cx++) {
+				for (int cy = 0; cy < gameState.getHeight(); cy++) {
+					for (PlayerID playerID : new PlayerID[] { PLAYER_1, PLAYER_2 }) {
+						AIUnit aiUnit = gameState.getAIUnitFor(cx, cy, playerID);
+						if (aiUnit.getOwner() != null && aiUnit.getOwner() != NEMO) {
+							float sum = aiUnit.getProbabilitySum();
+							for (int i = 3; i < UnitType.values().length; i++) {
+								UnitType unitType = UnitType.values()[i];
+								if (aiUnit.getProbabilityFor(unitType) < 0.000001f) {
+									aiUnit.setProbabilityFor(unitType, 0);
+								} else {
+									aiUnit.setProbabilityFor(unitType, aiUnit.getProbabilityFor(unitType) / sum);
+								}
+							}
+						}
+					}
+				}
+			}
+			if (failed) {
+				AIGameStateDebugger.debug(new AIGameState(gameState));
+			}
+			error = 0;
+			for (int i = 3; i < UnitType.values().length; i++) {
+				UnitType unitType = UnitType.values()[i];
+				float[] sum = gameState.getTotalProbabilityFor(unitType);
+				for (int cx = 0; cx < gameState.getWidth(); cx++) {
+					for (int cy = 0; cy < gameState.getHeight(); cy++) {
+						for (PlayerID playerID : new PlayerID[] { PLAYER_1, PLAYER_2 }) {
+							AIUnit aiUnit = gameState.getAIUnitFor(cx, cy, playerID);
+							if (aiUnit.getOwner() != null && aiUnit.getOwner() != NEMO && !aiUnit.isRevealed()) {
+								AIGameState.PlayerInformation information = gameState.getPlayerInformation(playerID);
+								float revealedFor = information.getRevealedFor(unitType);
+								float stillOnBoard = (unitType.getQuantity() - information.getDefeatedFor(unitType) - revealedFor);
+								float s = sum[(playerID == PLAYER_1)
+												? 0
+												: 1] - revealedFor;
+								float currentProb = aiUnit.getProbabilityFor(unitType);
+								float prob = 0;
+								if ( s != 0 ) {
+									prob = currentProb / s * stillOnBoard;
+								}
+								error += Math.abs(prob - currentProb);
+								aiUnit.setProbabilityFor(unitType, prob);
+							}
+						}
+					}
+				}
+			}
+			counter++;
+			if (counter > 1000) {
+				System.out.println("Stuck in normalization, "+error+" "+gameState);
+				AIGameStateDebugger.debug(new AIGameState(gameState));
+				if (failed) {
+					while (true) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				} else {
+					failed = true;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Given an AIGameState and a move, a new AIGameState will be created which represents the outcome of the given move. If the move results in an encounter the probability distribution will not be normalized, but will still represent the likelihood that a given unit type of a certain player will occupy a certain game field after performing the move.
+	 * @param gameState The AIGameState.
+	 * @param move The Move.
+	 * @return Probability based game state after the move.
+	 */
+	public static AIGameState createOutcomeOfMove(AIGameState gameState, Move move) {
+		AIGameState outcome;
+		AIGameState movement = new AIGameState(gameState);
 		int fromX = move.getFromX();
 		int fromY = move.getFromY();
 		int toX = move.getToX();
 		int toY = move.getToY();
-		AIUnit movingAIUnit = gameState.getAIUnit(fromX, fromY);
-		AIUnit destination = gameState.getAIUnit(toX, toY);
+		AIUnit movingAIUnit = new AIUnit(gameState.getAIUnit(fromX, fromY));
+		movingAIUnit.setProbabilityFor(FLAG, 0);
+		movingAIUnit.setProbabilityFor(BOMB, 0);
+		AIGameState.PlayerInformation movementPlayerInformation = movement.getPlayerInformation(movingAIUnit.getOwner());
+		movementPlayerInformation.setUnrevealedAndUnmovedUnitCount(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount() - 1);
+		movingAIUnit.normalize();
+		if (move.getDistance() > 1) {
+			movingAIUnit.clearProbabilities();
+			movingAIUnit.setProbabilityFor(SCOUT, 1f);
+			movingAIUnit.setRevealed(true);
+			movementPlayerInformation.addToRevealedFor(SCOUT, -1);
+			movementPlayerInformation.setUnrevealedUnitCount(movementPlayerInformation.getUnrevealedUnitCount()-1);
+		}
+		AIUnit destination = new AIUnit(gameState.getAIUnit(toX, toY));
 		boolean opponentsMove = movingAIUnit.getOwner() != gameState.getCurrentPlayer();
 		List<ProbabilityEncounter> encounters = computePossibleEncounters(movingAIUnit, destination);
 		// moving to air
 		if (encounters.isEmpty()) {
-			AIGameState outcome = new AIGameState(gameState);
+			outcome = new AIGameState(gameState);
 			outcome.setAIUnit(fromX, fromY, destination);
 			outcome.setAIUnit(toX, toY, movingAIUnit);
 			movingAIUnit.setMoved(true);
-			if (opponentsMove) {
-				reevaluateGameState(outcome);
-			}
-			outcomes.add(outcome);
+			outcome.setContext(move);
+//			reevaluateGameState(outcome);
+			normalize(outcome);
 		} else {
-			AIUnit air = new AIUnit()
-					.setOwner(NEMO)
-					.setUnitReference(Unit.AIR)
-					.setRevealed(true);
+			List<AIGameState> encounterOutcomes = new ArrayList<AIGameState>();
 			for (ProbabilityEncounter encounter : encounters) {
-				AIGameState outcome = new AIGameState(gameState);
-				AIGameState.PlayerInformation attackingPlayer = outcome.getPlayerInformation(movingAIUnit.getOwner());
-				AIGameState.PlayerInformation defendingPlayer = outcome.getPlayerInformation(destination.getOwner());
-				if (encounter.getResult() == VICTORIOUS_ATTACK) {
-					//					    ^              _____
-					//					    |             /     \
-					//					    |       \/   | () () |
-					//					    |       /\    \  ^  /
-					//					   o+o             |||||
-					//					    0              |||||
-					//
-					saveKill(destination, encounter.defender, defendingPlayer);
-					correctRevealStatus(movingAIUnit, attackingPlayer);
-					movingAIUnit.clearProbabilities();
-					movingAIUnit.setProbabilityFor(encounter.attacker, 1f);
-					if (!movingAIUnit.isRevealed()) {
-						attackingPlayer.addToRevealedFor(encounter.attacker, +1);
-					}
-					movingAIUnit.setRevealed(true);
-					movingAIUnit.setMoved(true);
-					outcome.setAIUnit(toX, toY, movingAIUnit);
-					outcome.setAIUnit(fromX, fromY, air);
-				} else if (encounter.getResult() == VICTORIOUS_DEFENSE) {
-					//					  _____            _____
-					//					 /     \          /  |  \ <-- shield, not coffin
-					//					| () () |	\/   / --|-- \
-					//					 \  ^  /	/\   \   |   /
-					//					  |||||           \  |  /
-					//					  |||||            \___/
-					//
-					saveKill(movingAIUnit, encounter.attacker, attackingPlayer);
-					correctRevealStatus(destination, defendingPlayer);
-					destination.clearProbabilities();
-					destination.setProbabilityFor(encounter.defender, 1f);
-					if (!destination.isRevealed()) {
-						defendingPlayer.addToRevealedFor(encounter.defender, +1);
-					}
-					destination.setRevealed(true);
-					outcome.setAIUnit(fromX, fromY, air);
-				} else if (encounter.getResult() == MUTUAL_DEFEAT) {
-					//					  _____            _____
-					//					 /     \          /     \
-					//					| () () |	\/   | () () |
-					//					 \  ^  /	/\	  \  ^  /
-					//					  |||||            |||||
-					//					  |||||            |||||
-					//
-					saveKill(movingAIUnit, encounter.attacker, attackingPlayer);
-					saveKill(destination, encounter.defender, defendingPlayer);
-					outcome.setAIUnit(fromX, fromY, air);
-					outcome.setAIUnit(toX, toY, air);
-				}
-				outcome.setProbability(outcome.getProbability() * encounter.probability);
-				reevaluateGameState(outcome);
-				outcomes.add(outcome);
+				AIGameState encounterOutcome = new AIGameState(gameState);
+				AIUnit attackingAIUnit = encounterOutcome.getAIUnit(fromX, fromY);
+				AIUnit defendingAIUnit = encounterOutcome.getAIUnit(toX, toY);
+				AIGameState.PlayerInformation attackingPlayer = encounterOutcome.getPlayerInformation(movingAIUnit.getOwner());
+				AIGameState.PlayerInformation defendingPlayer = encounterOutcome.getPlayerInformation(destination.getOwner());
+				Encounter.CombatResult result = encounter.getResult();
+				UnitType attacker = encounter.attacker;
+				UnitType defender = encounter.defender;
+				resolveEncounter(fromX, fromY, toX, toY, encounterOutcome, attackingAIUnit, defendingAIUnit, attackingPlayer, defendingPlayer, result, attacker, defender);
+				encounterOutcome.setProbability(encounterOutcome.getProbability() * encounter.probability);
+				encounterOutcome.setContext(encounter);
+				normalize(encounterOutcome);
+//				reevaluateGameState(encounterOutcome);
+//				AIGameStateDebugger.debug(encounterOutcome);
+				encounterOutcomes.add(encounterOutcome);
 			}
+			outcome = compressedState(encounterOutcomes);
 		}
-		return outcomes;
+//		AIGameStateDebugger.debug(outcome);
+		return outcome;
 	}
 
-	public static void reevaluateGameState(AIGameState gameState) {
+	private static void resolveEncounter(int fromX, int fromY, int toX, int toY, AIGameState encounterOutcome, AIUnit attackingAIUnit, AIUnit defendingAIUnit, AIGameState.PlayerInformation attackingPlayer, AIGameState.PlayerInformation defendingPlayer, Encounter.CombatResult result, UnitType attacker, UnitType defender) {
+		switch (result) {
+			case VICTORIOUS_ATTACK:
+				//					    ^              _____
+				//					    |             /     \
+				//					    |       \/   | () () |
+				//					    |       /\    \  ^  /
+				//					   o+o             |||||
+				//					    0              |||||
+				//
+				saveKill(defendingAIUnit, defender, defendingPlayer);
+				correctRevealStatus(attackingAIUnit, attackingPlayer);
+				attackingAIUnit.clearProbabilities();
+				attackingAIUnit.setProbabilityFor(attacker, 1f);
+				if (!attackingAIUnit.isRevealed()) {
+					attackingPlayer.addToRevealedFor(attacker, +1);
+				}
+				attackingAIUnit.setRevealed(true);
+				attackingAIUnit.setMoved(true);
+				encounterOutcome.replaceAIUnit(toX, toY, attackingAIUnit);
+				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
+				break;
+			case VICTORIOUS_DEFENSE:
+				//					  _____            _____
+				//					 /     \          /  |  \ <-- shield, not coffin
+				//					| () () |	\/   / --|-- \
+				//					 \  ^  /	/\   \   |   /
+				//					  |||||           \  |  /
+				//					  |||||            \___/
+				//
+				saveKill(attackingAIUnit, attacker, attackingPlayer);
+				correctRevealStatus(defendingAIUnit, defendingPlayer);
+				defendingAIUnit.clearProbabilities();
+				defendingAIUnit.setProbabilityFor(defender, 1f);
+				if (!defendingAIUnit.isRevealed()) {
+					defendingPlayer.addToRevealedFor(defender, +1);
+				}
+				defendingAIUnit.setRevealed(true);
+				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
+				break;
+			case MUTUAL_DEFEAT:
+				//					  _____            _____
+				//					 /     \          /     \
+				//					| () () |	\/   | () () |
+				//					 \  ^  /	/\	  \  ^  /
+				//					  |||||            |||||
+				//					  |||||            |||||
+				//
+				saveKill(attackingAIUnit, attacker, attackingPlayer);
+				saveKill(defendingAIUnit, defender, defendingPlayer);
+				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
+				encounterOutcome.setAIUnit(toX, toY, AIR_AI_UNIT);
+				break;
+		}
+	}
+
+	public static AIGameState compressedState(List<AIGameState> states) {
+        AIGameState compressedState = new AIGameState(states.get(0));
+
+        for (int cx = 0; cx < compressedState.getWidth(); cx++) {
+            for (int cy = 0; cy < compressedState.getHeight(); cy++) {
+				Unit originalRef = compressedState.getAIUnit(cx, cy)
+												  .getUnitReference();
+				for (PlayerID playerID : new PlayerID[]{PLAYER_1, PLAYER_2}) {
+					AIUnit compressibleUnit = new AIUnit(compressedState.getAIUnitFor(cx, cy, playerID));
+					boolean playerLoaded = false;
+					Unit reference = null;
+					for (int i = 3; i < UnitType.values().length; i++) {
+						UnitType unitType = UnitType.values()[i];
+						float prob = 0;
+						boolean moved = false;
+						boolean revealed = false;
+						for (int s = 0; s < states.size(); s++) {
+							AIGameState state = states.get(s);
+							AIUnit aiUnit = state.getAIUnitFor(cx, cy, playerID);
+							if (aiUnit.getOwner() == playerID) {
+								playerLoaded = true;
+								reference = aiUnit.getUnitReference();
+								prob += state.getProbability() * aiUnit.getProbabilityFor(unitType);
+								if (aiUnit.isMoved()) {
+									moved = true;
+								}
+								if (aiUnit.isRevealed()) {
+									revealed = true;
+								}
+
+							}
+						}
+						compressibleUnit.setOwner((playerLoaded)
+												  ? playerID
+												  : NEMO)
+									   .setUnitReference((reference != null)
+														 ? reference
+														 : originalRef)
+									   .setProbabilityFor(unitType, prob)
+									   .setMoved(moved)
+									   .setRevealed(revealed);
+					}
+					compressedState.setAIUnitFor(cx, cy, compressibleUnit, playerID);
+				}
+            }
+        }
+		for (PlayerID playerID : new PlayerID[] { PLAYER_1, PLAYER_2 }) {
+			float[] defeated = new float[12];
+			float[] revealed = new float[12];
+			float unitCount = 0;
+			float unrevealedAndUnmovedUnitCount = 0;
+			float unrevealedUnitCount = 0;
+			for (int s = 0; s < states.size(); s++) {
+				AIGameState state = states.get(s);
+				AIGameState.PlayerInformation information = state.getPlayerInformation(playerID);
+				for (int i = 0; i < 12; i++) {
+					defeated[i] = state.getProbability() * information.getDefeated()[i];
+					revealed[i] = state.getProbability() * information.getRevealed()[i];
+				}
+				unitCount = state.getProbability() * information.getUnitCount();
+				unrevealedAndUnmovedUnitCount = state.getProbability() * information.getUnrevealedAndUnmovedUnitCount();
+				unrevealedUnitCount = state.getProbability() * information.getUnrevealedUnitCount();
+			}
+			compressedState.getPlayerInformation(playerID)
+						   .setDefeated(defeated)
+						   .setRevealed(revealed)
+						   .setUnitCount(unitCount)
+						   .setUnrevealedAndUnmovedUnitCount(unrevealedAndUnmovedUnitCount)
+						   .setUnrevealedUnitCount(unrevealedUnitCount);
+		}
+		compressedState.setProbability(1f);
+        compressedState.setCompressed(true);
+
+        return compressedState;
+    }
+
+	public static AIGameState advanceGameState(AIGameState gameState, Move move) {
+		AIGameState advancedState =  new AIGameState(gameState);
+		int fromX = move.getFromX();
+		int fromY = move.getFromY();
+		int toX = move.getToX();
+		int toY = move.getToY();
+		AIUnit air = new AIUnit()
+				.setOwner(NEMO)
+				.setUnitReference(Unit.AIR)
+				.setRevealed(true);
+		if (move.hasEncounter()) {
+			Encounter encounter = move.getEncounter();
+			AIUnit attackingAIUnit = advancedState.getAIUnit(fromX, fromY);
+			AIUnit defendingAIUnit = advancedState.getAIUnit(toX, toY);
+			AIGameState.PlayerInformation attackingPlayer = advancedState.getPlayerInformation(attackingAIUnit.getOwner());
+			AIGameState.PlayerInformation defendingPlayer = advancedState.getPlayerInformation(defendingAIUnit.getOwner());
+			Encounter.CombatResult result = encounter.getResult();
+			UnitType attacker = encounter.getAttackingUnit().getType();
+			UnitType defender = encounter.getDefendingUnit().getType();
+			resolveEncounter(fromX, fromY, toX, toY, advancedState, attackingAIUnit, defendingAIUnit, attackingPlayer, defendingPlayer, result, attacker, defender);
+		} else {
+			advancedState.setAIUnit(toX, toY, advancedState.getAIUnit(fromX, fromY));
+			advancedState.setAIUnit(fromX, fromY, air);
+		}
+		normalize(advancedState);
+		return advancedState;
+	}
+
+	private static void reevaluateGameState(AIGameState gameState) {
 		for (int cx = 0; cx < gameState.getWidth(); cx++) {
 			for (int cy = 0; cy < gameState.getHeight(); cy++) {
 				AIUnit aiUnit = gameState.getAIUnit(cx, cy);
@@ -336,12 +599,12 @@ public abstract class AI extends Player {
 					for (int i = 3; i < UnitType.values().length; i++) {
 						UnitType unitType = UnitType.values()[i];
 						if (aiUnit.getProbabilityFor(unitType) > 0) {
-							int onBoard = unitType.getQuantity() - player.getDefeatedFor(unitType);
-							int unknown = onBoard - player.getRevealedFor(unitType);
+							float onBoard = unitType.getQuantity() - player.getDefeatedFor(unitType);
+							float unknown = onBoard - player.getRevealedFor(unitType);
 							if (unitType == FLAG || unitType == BOMB) {
-								aiUnit.setProbabilityFor(unitType, (float) unknown / (float) player.getUnrevealedAndUnmovedUnitCount());
+								aiUnit.setProbabilityFor(unitType, unknown / player.getUnrevealedAndUnmovedUnitCount());
 							} else {
-								aiUnit.setProbabilityFor(unitType, (float) unknown / (float) player.getUnrevealedUnitCount());
+								aiUnit.setProbabilityFor(unitType, unknown / player.getUnrevealedUnitCount());
 							}
 						}
 					}
@@ -384,13 +647,13 @@ public abstract class AI extends Player {
 			UnitType attackerType = UnitType.values()[a];
 			float attackerProbability = attacker.getProbabilityFor(attackerType);
 			if (attackerProbability == 0) {
-				break;
+				continue;
 			}
 			for (int d = 3; d < UnitType.values().length; d++) {
-				UnitType defenderType = UnitType.values()[a];
+				UnitType defenderType = UnitType.values()[d];
 				float defenderProbability = defender.getProbabilityFor(defenderType);
 				if (defenderProbability == 0) {
-					break;
+					continue;
 				}
 				Encounter.CombatResult result = Encounter.resolveFight(attackerType, defenderType);
 				ProbabilityEncounter encounter = new ProbabilityEncounter(attackerType, defenderType, result, attackerProbability * defenderProbability);
@@ -416,6 +679,7 @@ public abstract class AI extends Player {
 
 	@Getter
 	@AllArgsConstructor
+	@ToString
 	private static class ProbabilityEncounter {
 		private UnitType attacker;
 		private UnitType defender;

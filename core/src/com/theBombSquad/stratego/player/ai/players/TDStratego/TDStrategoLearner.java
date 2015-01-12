@@ -3,7 +3,9 @@ package com.theBombSquad.stratego.player.ai.players.TDStratego;
 import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.HybridAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
+import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 
 /**
  * TODO Add description
@@ -13,13 +15,15 @@ import com.theBombSquad.stratego.player.ai.players.RandomAI;
  */
 public class TDStrategoLearner implements Game.GameListener {
 
-	private static final int MAX_ROUNDS = 1000;
+	private static final int MAX_ROUNDS = 100;
 
 	private int round = 0;
 
 	private Game game;
-	private TDStratego player1;
+	private Player player1;
 	private Player player2;
+	private final TDStratego stratego1;
+	private final Player opp;
 
 	public static void main(String[] args) {
 		new TDStrategoLearner();
@@ -33,13 +37,17 @@ public class TDStrategoLearner implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		player1 = new TDStratego(playerOneView);
-		player2 = new RandomAI(playerTwoView);
+		stratego1 = new TDStratego(playerOneView, playerTwoView);
+		player1 = new HybridAI(playerOneView).setMover(stratego1)
+											 .setSetuper(new RandomAI(playerOneView));
+		opp = new TheQueen(playerTwoView);
+		player2 = new HybridAI(playerTwoView).setMover(stratego1)
+											 .setSetuper(new RandomAI(playerTwoView));
 
-		player1.setLearning(true);
-//		player2.setLearning(true);
+		stratego1.setLearning(true);
 
 		// tell the game about the players
+        game.reset();
 		gameFinished(-1, null);
 	}
 
@@ -47,18 +55,24 @@ public class TDStrategoLearner implements Game.GameListener {
 	public void gameFinished(int ply, StrategoConstants.PlayerID winner) {
 		if (ply >= 0) {
 			System.out.println("Round ended at ply "+ply);
+			if (round % 10 == 0) {
+				stratego1.save("test/TDStratego/progress/player42_progress" + round + ".net");
+				//            stratego2.save("test/TDStratego/player2_progress"+round+".net");
+			}
 		}
 		if (round < MAX_ROUNDS) {
 			round++;
 			System.out.println("Starting round "+round);
 			game.reset();
+            stratego1.reset();
+//            stratego2.reset();
 			game.setPlayer1(player1);
 			game.setPlayer2(player2);
 
 			game.startSetupPhase();
 		} else {
-			player1.save("test/TDStratego/player1.net");
-//			player2.save("test/TDStratego/player2.net");
+			stratego1.save("test/TDStratego/nn42.net");
+//			stratego2.save("test/TDStratego/player2.net");
 		}
 	}
 
@@ -67,10 +81,11 @@ public class TDStrategoLearner implements Game.GameListener {
 		if (ply % 1000 == 0) {
 			System.out.println("Ply "+ply);
 		}
-		if (ply < 0) {
+		if (ply > 20000) {
 			System.out.println("Round interrupted!");
-			player1.reset();
-//			player2.reset();
+//			stratego1.reset();
+//			stratego2.reset();
+            game.reset();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
