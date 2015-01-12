@@ -4,6 +4,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
@@ -16,6 +17,7 @@ import static com.theBombSquad.stratego.StrategoConstants.*;
  */
 @NoArgsConstructor
 @Accessors(chain = true)
+@ToString
 public class AIUnit {
 
 	@Getter @Setter private boolean revealed = false;
@@ -68,6 +70,13 @@ public class AIUnit {
 			sum += prob;
 		}
 		return sum;
+	}
+
+	public void normalize() {
+		float sum = getProbabilitySum();
+		for (int i = 0; i < unitTypeProbabilities.length; i++) {
+			unitTypeProbabilities[i] /= sum;
+		}
 	}
 
 	public boolean isUntouched() {

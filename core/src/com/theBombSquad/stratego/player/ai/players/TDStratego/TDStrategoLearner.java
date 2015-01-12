@@ -4,8 +4,8 @@ import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
-import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
 /**
  * TODO Add description
@@ -37,12 +37,12 @@ public class TDStrategoLearner implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		stratego1 = new TDStratego(playerOneView);
+		stratego1 = new TDStratego(playerOneView, playerTwoView);
 		player1 = new HybridAI(playerOneView).setMover(stratego1)
-											 .setSetuper(new SetupPlayerAI(playerOneView));
+											 .setSetuper(new RandomAI(playerOneView));
 		opp = new TheQueen(playerTwoView);
-		player2 = new HybridAI(playerTwoView).setMover(opp)
-											 .setSetuper(new SetupPlayerAI(playerTwoView));
+		player2 = new HybridAI(playerTwoView).setMover(stratego1)
+											 .setSetuper(new RandomAI(playerTwoView));
 
 		stratego1.setLearning(true);
 
@@ -56,7 +56,7 @@ public class TDStrategoLearner implements Game.GameListener {
 		if (ply >= 0) {
 			System.out.println("Round ended at ply "+ply);
 			if (round % 10 == 0) {
-				stratego1.save("test/TDStratego/progress/player1_progress" + round + ".net");
+				stratego1.save("test/TDStratego/progress/player42_progress" + round + ".net");
 				//            stratego2.save("test/TDStratego/player2_progress"+round+".net");
 			}
 		}
@@ -71,7 +71,7 @@ public class TDStrategoLearner implements Game.GameListener {
 
 			game.startSetupPhase();
 		} else {
-			stratego1.save("test/TDStratego/player1.net");
+			stratego1.save("test/TDStratego/nn42.net");
 //			stratego2.save("test/TDStratego/player2.net");
 		}
 	}
