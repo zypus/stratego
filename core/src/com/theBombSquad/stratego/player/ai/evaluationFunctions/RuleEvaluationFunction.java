@@ -124,7 +124,14 @@ public class RuleEvaluationFunction implements EvaluationFunctionX{
 		return eval;
 	}
 
+//	@Override
+	public float evaluate(GameBoard state, PlayerID player) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-	
-
+	@Override
+	public float evaluate(SchrodingersBoard state, PlayerID player) {
+		return 0;
+	}
 }

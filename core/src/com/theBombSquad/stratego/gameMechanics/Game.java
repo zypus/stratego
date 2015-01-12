@@ -138,6 +138,7 @@ public class Game {
 		List<Unit> units = (playerID == PLAYER_1) ? player1Units : player2Units;
 		for (Unit unit : units) {
 			unit.setRevealedInTurn(UNREVEALED);
+			unit.setMovedInTurn(UNMOVED);
 		}
 	}
 
@@ -415,9 +416,11 @@ public class Game {
 			}
 			player2FinishedSetup = true;
 		}
-		if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+//        System.out.println(playerID +" is finished setting up.");
+        if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
 			finishedSetup = true;
-			nextTurn();
+//            System.out.println("Starting game.");
+            nextTurn();
 		}
 	}
 
@@ -426,6 +429,7 @@ public class Game {
 		 * when called, first determine which players turn is it, then call one
 		 * of them to start move, second to idle
 		 */
+//        System.out.println("Turn "+currentTurn);
 		if (resetPending) {
 			reset();
 			return;
