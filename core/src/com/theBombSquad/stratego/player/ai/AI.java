@@ -15,7 +15,6 @@ import java.util.List;
 import static com.theBombSquad.stratego.StrategoConstants.*;
 import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 import static com.theBombSquad.stratego.gameMechanics.Game.*;
-import static com.theBombSquad.stratego.gameMechanics.board.Encounter.CombatResult.*;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.*;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
 
@@ -27,14 +26,19 @@ import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
  */
 public abstract class AI extends Player {
 
+	private static AIUnit AIR_AI_UNIT = new AIUnit()
+			.setOwner(NEMO)
+			.setUnitReference(Unit.AIR)
+			.setRevealed(true);
+
 	public AI(GameView gameView) {
 		super(gameView);
 	}
 
-	public static List<Move> createAllLegalMoves(GameView gameView, GameBoard board){
+	public static List<Move> createAllLegalMoves(GameView gameView, GameBoard board) {
 		List<Move> list = new ArrayList<Move>();
-		for(int cy=0; cy<board.getHeight(); cy++){
-			for(int cx=0; cx<board.getWidth(); cx++){
+		for (int cy = 0; cy < board.getHeight(); cy++) {
+			for (int cx = 0; cx < board.getWidth(); cx++) {
 				list.addAll(createAllLegalMovesForUnit(gameView, board, cx, cy));
 			}
 		}
@@ -45,8 +49,11 @@ public abstract class AI extends Player {
 		List<Move> list = new ArrayList<Move>();
 		Unit unit = board.getUnit(cx, cy);
 		if (unit.getOwner() == gameView.getPlayerID()) {
-			if (!unit.getType().equals(BOMB) && !unit.getType().equals(FLAG)) {
-				if (unit.getType().equals(SCOUT)) {
+			if (!unit.getType()
+					 .equals(BOMB) && !unit.getType()
+										   .equals(FLAG)) {
+				if (unit.getType()
+						.equals(SCOUT)) {
 					addScoutMoves(gameView, list, cx, cy);
 				} else {
 					for (int xx = -1; xx <= 1; xx += 2) {
@@ -129,12 +136,15 @@ public abstract class AI extends Player {
 	}
 
 
-	/** ---------------------------------------------------
+	/** ------------------------------------------------------------------------------------------------------------------------------
 	 * AIGameState usage example:
 	 *
 	 * // Creating a new AIGameState:
 	 * Gameview gameview;
 	 * AIGameState state = AI.createAIGameState(gameview);
+	 *
+	 * // Copying a state is done using the constructor
+	 * AIGameState copy = new AIGameState(state);
 	 *
 	 * // To get all possible move use the state AI method, it is not possible to get possible moves from the state itself
 	 * List<Move> moves = AI.createAllLegalMoves(gameview);
@@ -143,14 +153,18 @@ public abstract class AI extends Player {
 	 * Move move;
 	 * AI.createOutcomeOfMove(state, move)
 	 *
+	 * // Advance the gameState by an actual taken move.
+	 * Move performedMove;
+	 * AIGameState advancedState = AI.advanceGameState(state, performedMove);
+	 *
 	 * // The AIGameState is composed out of AIUnits
 	 * int x, y;
 	 * AIUnit aiUnit = state.getAIUnit(x, y);			(After an encounter the state might contain a position (x,y) where one AIUnit of each player is present, in order to get them separately call state.getAIUnitFor(x,y, PlayerID))
-	 * 
+	 *
 	 * // Each AIUnit contains the probabilities for a certain unitType of the owner of that AIUnit
 	 * float probability = aiUnit.getProbabilityFor( SCOUT );
 	 *
-	 ------------------------------------------------------*/
+	 ---------------------------------------------------------------------------------------------------------------------------------*/
 
 
 	/**
@@ -340,13 +354,13 @@ public abstract class AI extends Player {
 	}
 
 	/**
-	 * Given an AIGameState and a move, a new AIGameState will be created which represents the outcome of the given move. If the move results in an encounter the probability distribution will not be normalized, but will still represent the likelyhood that a given unit type of a certain player will occupy a certain game field after performing the move.
+	 * Given an AIGameState and a move, a new AIGameState will be created which represents the outcome of the given move. If the move results in an encounter the probability distribution will not be normalized, but will still represent the likelihood that a given unit type of a certain player will occupy a certain game field after performing the move.
 	 * @param gameState The AIGameState.
 	 * @param move The Move.
 	 * @return Probability based game state after the move.
 	 */
 	public static AIGameState createOutcomeOfMove(AIGameState gameState, Move move) {
-		AIGameState outcome = null;
+		AIGameState outcome;
 		AIGameState movement = new AIGameState(gameState);
 		int fromX = move.getFromX();
 		int fromY = move.getFromY();
@@ -378,10 +392,6 @@ public abstract class AI extends Player {
 //			reevaluateGameState(outcome);
 			normalize(outcome);
 		} else {
-			AIUnit air = new AIUnit()
-					.setOwner(NEMO)
-					.setUnitReference(Unit.AIR)
-					.setRevealed(true);
 			List<AIGameState> encounterOutcomes = new ArrayList<AIGameState>();
 			for (ProbabilityEncounter encounter : encounters) {
 				AIGameState encounterOutcome = new AIGameState(gameState);
@@ -389,59 +399,10 @@ public abstract class AI extends Player {
 				AIUnit defendingAIUnit = encounterOutcome.getAIUnit(toX, toY);
 				AIGameState.PlayerInformation attackingPlayer = encounterOutcome.getPlayerInformation(movingAIUnit.getOwner());
 				AIGameState.PlayerInformation defendingPlayer = encounterOutcome.getPlayerInformation(destination.getOwner());
-				if (encounter.getResult() == VICTORIOUS_ATTACK) {
-					//					    ^              _____
-					//					    |             /     \
-					//					    |       \/   | () () |
-					//					    |       /\    \  ^  /
-					//					   o+o             |||||
-					//					    0              |||||
-					//
-					saveKill(defendingAIUnit, encounter.defender, defendingPlayer);
-					correctRevealStatus(attackingAIUnit, attackingPlayer);
-					attackingAIUnit.clearProbabilities();
-					attackingAIUnit.setProbabilityFor(encounter.attacker, 1f);
-					if (!attackingAIUnit.isRevealed()) {
-						attackingPlayer.addToRevealedFor(encounter.attacker, +1);
-					}
-					attackingAIUnit.setRevealed(true);
-					attackingAIUnit.setMoved(true);
-					encounterOutcome.replaceAIUnit(toX, toY, attackingAIUnit);
-					encounterOutcome.setAIUnit(fromX, fromY, air);
-				} else {
-					if (encounter.getResult() == VICTORIOUS_DEFENSE) {
-						//					  _____            _____
-						//					 /     \          /  |  \ <-- shield, not coffin
-						//					| () () |	\/   / --|-- \
-						//					 \  ^  /	/\   \   |   /
-						//					  |||||           \  |  /
-						//					  |||||            \___/
-						//
-						saveKill(attackingAIUnit, encounter.attacker, attackingPlayer);
-						correctRevealStatus(defendingAIUnit, defendingPlayer);
-						defendingAIUnit.clearProbabilities();
-						defendingAIUnit.setProbabilityFor(encounter.defender, 1f);
-						if (!defendingAIUnit.isRevealed()) {
-							defendingPlayer.addToRevealedFor(encounter.defender, +1);
-						}
-						defendingAIUnit.setRevealed(true);
-						encounterOutcome.setAIUnit(fromX, fromY, air);
-					} else {
-						if (encounter.getResult() == MUTUAL_DEFEAT) {
-							//					  _____            _____
-							//					 /     \          /     \
-							//					| () () |	\/   | () () |
-							//					 \  ^  /	/\	  \  ^  /
-							//					  |||||            |||||
-							//					  |||||            |||||
-							//
-							saveKill(attackingAIUnit, encounter.attacker, attackingPlayer);
-							saveKill(defendingAIUnit, encounter.defender, defendingPlayer);
-							encounterOutcome.setAIUnit(fromX, fromY, air);
-							encounterOutcome.setAIUnit(toX, toY, air);
-						}
-					}
-				}
+				Encounter.CombatResult result = encounter.getResult();
+				UnitType attacker = encounter.attacker;
+				UnitType defender = encounter.defender;
+				resolveEncounter(fromX, fromY, toX, toY, encounterOutcome, attackingAIUnit, defendingAIUnit, attackingPlayer, defendingPlayer, result, attacker, defender);
 				encounterOutcome.setProbability(encounterOutcome.getProbability() * encounter.probability);
 				encounterOutcome.setContext(encounter);
 				normalize(encounterOutcome);
@@ -455,7 +416,63 @@ public abstract class AI extends Player {
 		return outcome;
 	}
 
-    public static AIGameState compressedState(List<AIGameState> states) {
+	private static void resolveEncounter(int fromX, int fromY, int toX, int toY, AIGameState encounterOutcome, AIUnit attackingAIUnit, AIUnit defendingAIUnit, AIGameState.PlayerInformation attackingPlayer, AIGameState.PlayerInformation defendingPlayer, Encounter.CombatResult result, UnitType attacker, UnitType defender) {
+		switch (result) {
+			case VICTORIOUS_ATTACK:
+				//					    ^              _____
+				//					    |             /     \
+				//					    |       \/   | () () |
+				//					    |       /\    \  ^  /
+				//					   o+o             |||||
+				//					    0              |||||
+				//
+				saveKill(defendingAIUnit, defender, defendingPlayer);
+				correctRevealStatus(attackingAIUnit, attackingPlayer);
+				attackingAIUnit.clearProbabilities();
+				attackingAIUnit.setProbabilityFor(attacker, 1f);
+				if (!attackingAIUnit.isRevealed()) {
+					attackingPlayer.addToRevealedFor(attacker, +1);
+				}
+				attackingAIUnit.setRevealed(true);
+				attackingAIUnit.setMoved(true);
+				encounterOutcome.replaceAIUnit(toX, toY, attackingAIUnit);
+				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
+				break;
+			case VICTORIOUS_DEFENSE:
+				//					  _____            _____
+				//					 /     \          /  |  \ <-- shield, not coffin
+				//					| () () |	\/   / --|-- \
+				//					 \  ^  /	/\   \   |   /
+				//					  |||||           \  |  /
+				//					  |||||            \___/
+				//
+				saveKill(attackingAIUnit, attacker, attackingPlayer);
+				correctRevealStatus(defendingAIUnit, defendingPlayer);
+				defendingAIUnit.clearProbabilities();
+				defendingAIUnit.setProbabilityFor(defender, 1f);
+				if (!defendingAIUnit.isRevealed()) {
+					defendingPlayer.addToRevealedFor(defender, +1);
+				}
+				defendingAIUnit.setRevealed(true);
+				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
+				break;
+			case MUTUAL_DEFEAT:
+				//					  _____            _____
+				//					 /     \          /     \
+				//					| () () |	\/   | () () |
+				//					 \  ^  /	/\	  \  ^  /
+				//					  |||||            |||||
+				//					  |||||            |||||
+				//
+				saveKill(attackingAIUnit, attacker, attackingPlayer);
+				saveKill(defendingAIUnit, defender, defendingPlayer);
+				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
+				encounterOutcome.setAIUnit(toX, toY, AIR_AI_UNIT);
+				break;
+		}
+	}
+
+	public static AIGameState compressedState(List<AIGameState> states) {
         AIGameState compressedState = new AIGameState(states.get(0));
 
         for (int cx = 0; cx < compressedState.getWidth(); cx++) {
@@ -531,7 +548,35 @@ public abstract class AI extends Player {
         return compressedState;
     }
 
-	public static void reevaluateGameState(AIGameState gameState) {
+	public static AIGameState advanceGameState(AIGameState gameState, Move move) {
+		AIGameState advancedState =  new AIGameState(gameState);
+		int fromX = move.getFromX();
+		int fromY = move.getFromY();
+		int toX = move.getToX();
+		int toY = move.getToY();
+		AIUnit air = new AIUnit()
+				.setOwner(NEMO)
+				.setUnitReference(Unit.AIR)
+				.setRevealed(true);
+		if (move.hasEncounter()) {
+			Encounter encounter = move.getEncounter();
+			AIUnit attackingAIUnit = advancedState.getAIUnit(fromX, fromY);
+			AIUnit defendingAIUnit = advancedState.getAIUnit(toX, toY);
+			AIGameState.PlayerInformation attackingPlayer = advancedState.getPlayerInformation(attackingAIUnit.getOwner());
+			AIGameState.PlayerInformation defendingPlayer = advancedState.getPlayerInformation(defendingAIUnit.getOwner());
+			Encounter.CombatResult result = encounter.getResult();
+			UnitType attacker = encounter.getAttackingUnit().getType();
+			UnitType defender = encounter.getDefendingUnit().getType();
+			resolveEncounter(fromX, fromY, toX, toY, advancedState, attackingAIUnit, defendingAIUnit, attackingPlayer, defendingPlayer, result, attacker, defender);
+		} else {
+			advancedState.setAIUnit(toX, toY, advancedState.getAIUnit(fromX, fromY));
+			advancedState.setAIUnit(fromX, fromY, air);
+		}
+		normalize(advancedState);
+		return advancedState;
+	}
+
+	private static void reevaluateGameState(AIGameState gameState) {
 		for (int cx = 0; cx < gameState.getWidth(); cx++) {
 			for (int cy = 0; cy < gameState.getHeight(); cy++) {
 				AIUnit aiUnit = gameState.getAIUnit(cx, cy);
