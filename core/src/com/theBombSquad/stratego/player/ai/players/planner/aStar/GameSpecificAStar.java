@@ -7,6 +7,7 @@ import lombok.Data;
 
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 
+@Data
 public class GameSpecificAStar {
 	
 	private Node[][] map;
@@ -25,10 +26,10 @@ public class GameSpecificAStar {
 		}
 		Node source = map[targetY][targetX];
 		source.setParent(source, 0);
-		setParents(source);
+		setChild(source);
 	}
 	
-	private void setParents(Node root){
+	private void setChild(Node root){
 		int cx = root.x;
 		int cy = root.y;
 		for(int[] dir : new int[][]{new int[]{cx, cy-1}, new int[]{cx+1, cy}, new int[]{cx, cy+1}, new int[]{cx-1, cy}}){
@@ -36,9 +37,9 @@ public class GameSpecificAStar {
 			int dirY = dir[1];
 			if(dirX>=0 && dirX<map[0].length && dirY>=0 && dirY<map.length){
 				Node n = map[dirY][dirX];
-				if(!n.hasParent() || (n.hasParent() && n.getDebth()>root.getDebth()+1)){
+				if(!n.hasParent() || (n.hasParent() && n.getDebth()>root.getDebth()+1) && !n.isCollision()){
 					n.setParent(root, root.getDebth()+1);
-					setParents(n);
+					setChild(n);
 				}
 			}
 		}

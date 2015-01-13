@@ -16,8 +16,9 @@ import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 
 public class PlanKillWeakerHidden implements Plan{
 	
-	private AIGameState state;
+	private static final float NEGATIVITY_BIAS = 5.2f;
 	
+	private AIGameState state;
 	
 	@Override
 	public float evaluateMove(GameView view, Move move) {
@@ -38,7 +39,10 @@ public class PlanKillWeakerHidden implements Plan{
 					loseProb += opp.getProbabilityFor(type);
 				}
 			}
-			value = winPoints - (TheQueen.getUnitValue(self.getType())*loseProb);
+			value = winPoints - ((TheQueen.getUnitValue(self.getType())*loseProb)*NEGATIVITY_BIAS);
+		}
+		if(value<0){
+			value = 0;
 		}
 		return value;
 	}

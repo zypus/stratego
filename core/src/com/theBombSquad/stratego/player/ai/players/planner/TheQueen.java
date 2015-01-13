@@ -14,8 +14,11 @@ import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAttackWeakerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAvoidHiddenStronger;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanBlindMarchKill;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanDoNOTAttackStrongerPiece;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanFleeStrongerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanKillWeakerHidden;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanStrongestPieceAttackPlan;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 
@@ -42,10 +45,13 @@ public class TheQueen extends AI{
 		plans.add(new PlanDefendFlag());
 		plans.add(new PlanReveal());
 		plans.add(new PlanKillWeakerHidden());
+		plans.add(new PlanStrongestPieceAttackPlan());
+		plans.add(new PlanDoNOTAttackStrongerPiece());
 		for(int cy=0; cy<10; cy++){
 			for(int cx=0; cx<10; cx++){
 				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
 					plans.add(new PlanMarchKill(gameView.getUnit(cx, cy)));
+					plans.add(new PlanBlindMarchKill(gameView.getUnit(cx, cy)));
 				}
 			}
 		}

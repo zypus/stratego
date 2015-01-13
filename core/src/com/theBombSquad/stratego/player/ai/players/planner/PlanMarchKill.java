@@ -48,10 +48,17 @@ public class PlanMarchKill implements Plan{
 					}
 				}
 			}
+			else if(result.equals(CombatResult.MUTUAL_DEFEAT)){
+				List<GameSpecificAStar.Node> nodes = star.findPath(move.getFromX(), move.getFromY());
+				for(int c=0; c<nodes.size(); c++){
+					GameSpecificAStar.Node tNode = nodes.get(c);
+					if(tNode.getX()==move.getToX() && tNode.getY()==move.getToY()){
+						//System.out.println(self.getType()+" "+target.getType()+" "+(nodes.size()-c));
+						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c) / 2;
+					}
+				}
+			}
 		}
-//		if(value>0){
-//			System.out.println(value);
-//		}
 		return value;
 	}
 
