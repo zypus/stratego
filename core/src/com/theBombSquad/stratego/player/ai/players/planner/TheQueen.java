@@ -11,9 +11,11 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AI;
+import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAttackWeakerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAvoidHiddenStronger;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanFleeStrongerRevealedAdjacent;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanKillWeakerHidden;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
 
@@ -35,11 +37,11 @@ public class TheQueen extends AI{
 	
 	private void planSetup(){
 		plans = new ArrayList<Plan>();
-		//plans.add(new PlanRandom());
 		plans.add(new PlanAttackWeakerRevealedAdjacent());
 		plans.add(new PlanFleeStrongerRevealedAdjacent());
 		plans.add(new PlanDefendFlag());
 		plans.add(new PlanReveal());
+		plans.add(new PlanKillWeakerHidden());
 		for(int cy=0; cy<10; cy++){
 			for(int cx=0; cx<10; cx++){
 				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
