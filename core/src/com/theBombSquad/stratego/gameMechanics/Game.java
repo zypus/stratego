@@ -480,7 +480,7 @@ public class Game {
 							e.printStackTrace();
 						}
 					}
-					//					System.out.println("It is PLAYER_2s move.");
+					//System.out.println("It is PLAYER_2s move.");
 					becomeBlind();
 					player2.startMove();
 					player1.startIdle();

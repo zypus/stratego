@@ -323,7 +323,7 @@ public class Stratego extends ApplicationAdapter {
 	}
 
 	private void startGame() {
-		game.setAI_delay(0);
+		game.setAI_delay(AI_DELAY);
 		game.startSetupPhase();
 
 	}
