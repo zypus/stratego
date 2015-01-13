@@ -60,7 +60,7 @@ public class EvaluationFunction {
 
 	private void evaluateForEncounter() {
 		if (encounterUnit != null) {
-			if(rank==2&&encounterUnit.getUnitReference().getType().getRank()==2){
+			if(rank==2&&encounterUnit.getUnitReference().getType().getRank()==-2){
 				evaluation=evaluation+30*(encounterUnit.getHighestProbabilityRank()-rank);
 			}
 			// if it is probable to attack the flag
@@ -276,9 +276,9 @@ public class EvaluationFunction {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				if ((j <= 2 - i && j <= 2 + i && j >= -2 + i && j >= -2 - i)
-						&& ((toY > fromY && j >= toY)
-								|| (toY < fromY && j <= toY)
-								|| (toX > fromX && i >= toX) || (toX < fromX && i <= toX))) {
+						&& ((toY > fromY && j >= 0)
+								|| (toY < fromY && j <= 0)
+								|| (toX > fromX && i >=0) || (toX < fromX &&i <= 0))) {
 					if (toX + i >= 0 && toX + i <= 9 && toY + j >= 0
 							&& toY + j <= 9) {
 						if (!state.getAIUnit(toX + i, toY + j)
@@ -288,9 +288,11 @@ public class EvaluationFunction {
 							if (unit.getOwner().getOpponent() == state
 									.getAIUnit(toX + i, toY + j)
 									.getUnitReference().getOwner()) {
-								if (i == 0 && j == 0) {
+								
+								if (i==0 && j==0) {
 									encounterUnit = state.getAIUnit(toX + i,
 											toY + j);
+									System.out.println("Encounter");
 								}
 
 								else if (state.getAIUnit(toX + i, toY + j)
@@ -314,9 +316,9 @@ public class EvaluationFunction {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				if ((j <= 2 - i && j <= 2 + i && j >= -2 + i && j >= -2 - i)
-						&& ((toY > fromY && j <= toY)
-								|| (toY < fromY && j >= toY)
-								|| (toX > fromX && i <= toX) || (toX < fromX && i >= toX))) {
+						&& ((toY > fromY && j <= 0)
+								|| (toY < fromY && j >= 0)
+								|| (toX > fromX && i <= 0) || (toX < fromX && i >= 0))) {
 					if (fromX + i >= 0 && fromX + i <= 9 && fromY + j >= 0
 							&& fromY + j <= 9) {
 						if (!state.getAIUnit(fromX + i, fromY + j)

@@ -16,7 +16,6 @@ public class BluffingMoveEvaluation {
 	private ArrayList<AIUnit> toUnitsUnrevealed;
 	private ArrayList<AIUnit> fromUnitsRevealed;
 	private ArrayList<AIUnit> fromUnitsUnrevealed;
-	private Move move;
 	private AIGameState state;
 	private int fromX;
 	private int fromY;
@@ -25,7 +24,6 @@ public class BluffingMoveEvaluation {
 	private int rank;
 	private Unit unit;
 	private double evaluation;
-	
 
 	public double evaluateBluff(Move move, AIGameState state) {
 		evaluation = 0;
@@ -40,7 +38,6 @@ public class BluffingMoveEvaluation {
 		toUnitsUnrevealed = new ArrayList<AIUnit>();
 		fromUnitsRevealed = new ArrayList<AIUnit>();
 		fromUnitsUnrevealed = new ArrayList<AIUnit>();
-		this.move = move;
 		this.state = state;
 
 		findUnitsAround();
@@ -93,12 +90,12 @@ public class BluffingMoveEvaluation {
 				if (rank - threeMostProbableRanks.get(j) > 0) {
 
 					evaluation = evaluation
-							+ (100 - (rank - threeMostProbableRanks.get(j))*10)
+							+ (100 - (rank - threeMostProbableRanks.get(j)) * 10)
 							/ 2;
 				} else if (rank - threeMostProbableRanks.get(j) < 0) {
 
 					evaluation = evaluation
-							+ (-100 - (rank - threeMostProbableRanks.get(j))*10)
+							+ (-100 - (rank - threeMostProbableRanks.get(j)) * 10)
 							/ 2;
 				}
 			}
@@ -211,9 +208,8 @@ public class BluffingMoveEvaluation {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				if ((j <= 2 - i && j <= 2 + i && j >= -2 + i && j >= -2 - i)
-						&& ((toY > fromY && j >= toY)
-								|| (toY < fromY && j <= toY)
-								|| (toX > fromX && i >= toX) || (toX < fromX && i <= toX))) {
+						&& ((toY > fromY && j >= 0) || (toY < fromY && j <= 0)
+								|| (toX > fromX && i >= 0) || (toX < fromX && i <= 0))) {
 					if (toX + i >= 0 && toX + i <= 9 && toY + j >= 0
 							&& toY + j <= 9) {
 						if (!state.getAIUnit(toX + i, toY + j)
@@ -244,9 +240,8 @@ public class BluffingMoveEvaluation {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				if ((j <= 2 - i && j <= 2 + i && j >= -2 + i && j >= -2 - i)
-						&& ((toY > fromY && j <= toY)
-								|| (toY < fromY && j >= toY)
-								|| (toX > fromX && i <= toX) || (toX < fromX && i >= toX))) {
+						&& ((toY > fromY && j <= 0) || (toY < fromY && j >= 0)
+								|| (toX > fromX && i <= 0) || (toX < fromX && i >= 0))) {
 					if (fromX + i >= 0 && fromX + i <= 9 && fromY + j >= 0
 							&& fromY + j <= 9) {
 						if (!state.getAIUnit(fromX + i, fromY + j)
