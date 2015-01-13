@@ -9,7 +9,7 @@ public class ProbabilityTile {
 	private boolean isKnown = false;
 	
 	
-	private ProbabilityTile(PlayerID playerid, double[] probabilities){
+	public ProbabilityTile(PlayerID playerid, double[] probabilities){
 		
 		this.playerID = playerid;
 		this.probs = probabilities;
@@ -49,14 +49,14 @@ public class ProbabilityTile {
 		}
 	}
 	
-	private void setKnown(){
+	private void setRevealed(){
 		this.isKnown = true;
 	}
 	
-	public void checkKnown(){
+	public void checkRevealed(){
 		for(int i = 0; i < probs.length; i++){
 			if(probs[i] == 1){
-				setKnown();
+				setRevealed();
 			}
 		}
 	}
