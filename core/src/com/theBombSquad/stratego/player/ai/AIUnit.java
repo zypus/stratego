@@ -37,6 +37,17 @@ public class AIUnit {
 		}
 		return unitTypeProbabilities[ordinal - 3];
 	}
+	public int getHighestProbabilityRank(){
+		int maxRank=0;
+		double maxProb=0;
+		for(int i =0; i<unitTypeProbabilities.length;i++){
+			if(maxProb<unitTypeProbabilities[i]){
+				maxProb=unitTypeProbabilities[i];
+				maxRank=i;
+			}
+		}
+		return maxRank;
+	}
 
 	public AIUnit setProbabilityFor(Unit.UnitType unitType, float prob) {
 		int ordinal = unitType.ordinal();

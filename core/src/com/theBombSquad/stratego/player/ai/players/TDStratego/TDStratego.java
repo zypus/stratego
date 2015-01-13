@@ -10,6 +10,7 @@ import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
 import com.theBombSquad.stratego.player.ai.BluffingAI.BluffingMoveEvaluation;
+import com.theBombSquad.stratego.player.ai.BluffingAI.EvaluationFunction;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
 import lombok.AllArgsConstructor;
@@ -41,6 +42,7 @@ public class TDStratego
 	private AIGameState lastBoard;
 	private Random random = new Random();
 	BluffingMoveEvaluation e = new BluffingMoveEvaluation();
+	EvaluationFunction f = new EvaluationFunction();
 
 	@Getter @Setter private boolean learning = false;
 	@Getter private TDPlayer tdPlayer;
@@ -77,7 +79,7 @@ public class TDStratego
 		}
 
 		lastBoard = bestBoard;
-		System.out.println(e.evaluateBluff(bestMove, board));
+		System.out.println("Bluff value - "+e.evaluateBluff(bestMove, board)+" Move value - "+f.evaluateMove(bestMove, board));
 		gameView.performMove(bestMove);
 		if (learning) {
             tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
