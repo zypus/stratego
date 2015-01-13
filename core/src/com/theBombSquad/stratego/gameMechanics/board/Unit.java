@@ -87,7 +87,7 @@ public class Unit implements Serializable {
 	}
 
 	public boolean wasMoved(int turn) {
-		return turn >= movedInTurn;
+		return movedInTurn != UNMOVED && turn >= movedInTurn;
 	}
 
 	public boolean wasRevealed(int turn) {
@@ -149,8 +149,20 @@ public class Unit implements Serializable {
 	}
 
 	private static class Unknown extends Unit {
+		final Unit reference;
 		private Unknown(Unit unit) {
 			super(UnitType.UNKNOWN, unit.getOwner(), unit.getId());
+			reference = unit;
+		}
+
+		@Override
+		public boolean wasMoved(int turn) {
+			return reference.wasMoved(turn);
+		}
+
+		@Override
+		public boolean wasRevealed(int turn) {
+			return reference.wasRevealed(turn);
 		}
 	}
 

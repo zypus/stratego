@@ -46,21 +46,26 @@ public class RandomAI extends AI {
 	}
 
 	@Override protected Setup setup() {
-//		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
-		Setup setup = new Setup(10,4);
-		List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
-		// shuffle the list containing all available units
-		Collections.shuffle(availableUnits);
-		//go through the list and place them on the board as the units appear in the randomly shuffled list
-		for (int y = 0; y < 4; y++) {
-			for (int x = 0; x < 10; x++) {
-				setup.setUnit(x, y, availableUnits.get(y * 10 + x));
-			}
+		boolean f = true;
+		if(f){
+			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
 		}
-		// no need to check if the setup is valid because it cannot be invalid by the way it is created
-		// so simply sending the setup over to the game
-		gameView.setSetup(setup);
-		return setup;
+		else{
+			Setup setup = new Setup(10,4);
+			List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
+			// shuffle the list containing all available units
+			Collections.shuffle(availableUnits);
+			//go through the list and place them on the board as the units appear in the randomly shuffled list
+			for (int y = 0; y < 4; y++) {
+				for (int x = 0; x < 10; x++) {
+					setup.setUnit(x, y, availableUnits.get(y * 10 + x));
+				}
+			}
+			// no need to check if the setup is valid because it cannot be invalid by the way it is created
+			// so simply sending the setup over to the game
+			gameView.setSetup(setup);
+			return setup;
+		}
 	}
 
 }

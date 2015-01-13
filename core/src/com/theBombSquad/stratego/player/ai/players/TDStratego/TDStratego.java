@@ -8,6 +8,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.AIGameState;
+import com.theBombSquad.stratego.player.ai.AIGameStateDebugger;
 import com.theBombSquad.stratego.player.ai.AIUnit;
 import com.theBombSquad.stratego.player.ai.BluffingAI.BluffingMoveEvaluation;
 import com.theBombSquad.stratego.player.ai.BluffingAI.EvaluationFunction;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID.PLAYER_1;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID.PLAYER_2;
+import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
 
 /**
@@ -47,53 +47,75 @@ public class TDStratego
 	@Getter @Setter private boolean learning = false;
 	@Getter private TDPlayer tdPlayer;
 
+	private Game.GameView optionalGameview = null;
+	private boolean endResultReceived = false;
+
+	public TDStratego(Game.GameView gameView1, Game.GameView gameView2) {
+		super(gameView1);
+		optionalGameview = gameView2;
+//		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
+		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress20.net");
+		tdPlayer = new TDPlayer(net, 0.75f, new float[] { 0.5f, 0.5f });
+	}
+
 	public TDStratego(Game.GameView gameView) {
 		super(gameView);
-//		TDNeuralNet net = new TDNeuralNet(new int[]{TDPlayer.INFO_SIZE, 100, 2}, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
-		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/player1.net");
+		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
+		//		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/nn.net");
 		tdPlayer = new TDPlayer(net, 0.75f, new float[] { 0.5f, 0.5f });
 	}
 
 	@Override
 	protected Move move() {
-		AIGameState board = AI.createAIGameState(gameView);
-		PlayerID playerID = gameView.getPlayerID();
-		List<Move> moves = AI.createAllLegalMoves(gameView, gameView.getCurrentState());
+		Game.GameView currentGameview = gameView;
+		if (optionalGameview != null) {
+			currentGameview = (gameView.getCurrentTurn() % 2 == 1)
+							  ? gameView
+							  : optionalGameview;
+		}
+		AIGameState board = AI.createAIGameState(currentGameview);
+		PlayerID playerID = currentGameview.getPlayerID();
+		List<Move> moves = AI.createAllLegalMoves(currentGameview, currentGameview.getCurrentState());
 		Move bestMove = null;
 		AIGameState bestBoard = null;
 		float max = -Float.MAX_VALUE;
-        float v = random.nextFloat();
-        if (v < epsilon) {
+		float v = random.nextFloat();
+		if (v < epsilon) {
 			bestMove = moves.get(random.nextInt(moves.size()));
-			bestBoard = AI.compressedState(AI.createOutcomesOfMove(board, bestMove));
+			bestBoard = AI.createOutcomeOfMove(board, bestMove);
 		} else {
 			for (Move move : moves) {
-				AIGameState b = AI.compressedState(AI.createOutcomesOfMove(board, move));
+				AIGameState b = AI.createOutcomeOfMove(board, move);
 				float sum = tdPlayer.utilityForState(b);
-                if (sum > max) {
+				if (sum > max) {
 					bestMove = move;
 					bestBoard = b;
                     max = sum;
 				}
 			}
 		}
+		if (gameView.getCurrentTurn() % 1000 == 0) {
+			AIGameStateDebugger.debug(board);
+		}
 
 		lastBoard = bestBoard;
 		System.out.println("Bluff value - "+e.evaluateBluff(bestMove, board)+" Move value - "+f.evaluateMove(bestMove, board));
 		gameView.performMove(bestMove);
 		if (learning) {
-            tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
+			tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
 		}
+		currentGameview.performMove(bestMove);
 		return bestMove;
 	}
 
 	@Override
 	protected void cleanup() {
-		if (learning) {
+		if (learning && !endResultReceived) {
 			Matrix endResult = new Matrix(2,1);
 			endResult.set(0, 0, (gameView.getWinnerId() == PLAYER_1) ? 1 : 0) ;
 			endResult.set(1, 0, (gameView.getWinnerId() == PLAYER_2) ? 1 : 0) ;
 			tdPlayer.learnBasedOnFinalResult(lastBoard, endResult, 1);
+			endResultReceived = true;
 		}
 		super.cleanup();
 	}
@@ -118,6 +140,7 @@ public class TDStratego
 
 	public void reset() {
 		tdPlayer.eraseTraces();
+		endResultReceived = false;
 	}
 
 	private float negamax(SchrodingersBoard board, float alpha, float beta, int depth, PlayerID playerID) {
@@ -174,7 +197,7 @@ public class TDStratego
 		/** Owner of the unit*/
 		private static final int             NUMBER_OF_LAKES     = 8;
 		private static final Unit.UnitType[] RELEVANT_UNIT_TYPES = { SPY, SCOUT, SAPPER, SERGEANT, LIEUTENANT, CAPTAIN, MAJOR, COLONEL, GENERAL, MARSHAL, BOMB, FLAG };
-		public static final  int             INFO_SIZE           = (GRID_WIDTH * GRID_HEIGHT - NUMBER_OF_LAKES) * (RELEVANT_UNIT_TYPES.length + PLAYER_FLAG)
+		public static final  int             INFO_SIZE           = (GRID_WIDTH * GRID_HEIGHT - NUMBER_OF_LAKES) * (PLAYER_FLAG * RELEVANT_UNIT_TYPES.length + PLAYER_FLAG)
 																   + PLAYER_FLAG * RELEVANT_UNIT_TYPES.length;
 
 		private TDPlayer(TDNeuralNet net, float lambda, float[] learningRates) {
@@ -189,19 +212,16 @@ public class TDStratego
 				for (int y = 0; y < state.getHeight(); y++) {
 					AIUnit unit = state.getAIUnit(x, y);
 					if (!unit.getUnitReference().isLake()) {
-						// owner
-						activation.set(index++, 0, (unit.getOwner() == PLAYER_1)
-												   ? 1
-												   : 0);
-						activation.set(index++, 0, (unit.getOwner() == PLAYER_2)
-												   ? 1
-												   : 0);
-						// unit probabilities
-						for (Unit.UnitType unitType : RELEVANT_UNIT_TYPES) {
-							if (unit.getUnitReference().isAir()) {
-								activation.set(index++, 0, 0);
-							} else {
-								activation.set(index++, 0, unit.getProbabilityFor(unitType));
+						for (PlayerID playerID : new PlayerID[] { PLAYER_1, PLAYER_2 }) {
+							AIUnit playerUnit = state.getAIUnitFor(x, y, playerID);
+							// unit probabilities
+							for (Unit.UnitType unitType : RELEVANT_UNIT_TYPES) {
+								if (playerUnit.getUnitReference() == null || playerUnit.getUnitReference()
+										.isAir()) {
+									activation.set(index++, 0, 0);
+								} else {
+									activation.set(index++, 0, playerUnit.getProbabilityFor(unitType));
+								}
 							}
 						}
 					}
@@ -217,7 +237,16 @@ public class TDStratego
 														.getDefeatedFor(unitType) / (float) unitType.getQuantity());
 			}
 
-			//			for (int i = 0; i < activation.getRowDimension(); i++) {
+			// set active player
+			// owner
+//			activation.set(index++, 0, (state.getCurrentPlayer() == PLAYER_1)
+//									   ? 1
+//									   : 0);
+//			activation.set(index++, 0, (state.getCurrentPlayer() == PLAYER_2)
+//									   ? 1
+//									   : 0);
+
+					//			for (int i = 0; i < activation.getRowDimension(); i++) {
 			//				for (int j = 0; j < activation.getColumnDimension(); j++) {
 			//					System.out.print(activation.get(i, j));
 			//				}

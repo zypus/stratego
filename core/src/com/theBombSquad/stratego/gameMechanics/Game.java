@@ -138,6 +138,7 @@ public class Game {
 		List<Unit> units = (playerID == PLAYER_1) ? player1Units : player2Units;
 		for (Unit unit : units) {
 			unit.setRevealedInTurn(UNREVEALED);
+			unit.setMovedInTurn(UNMOVED);
 		}
 	}
 

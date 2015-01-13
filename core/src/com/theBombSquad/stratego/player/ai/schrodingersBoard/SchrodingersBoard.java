@@ -363,7 +363,8 @@ public class SchrodingersBoard {
 
 	/** Evaluates This Board */
 	public float evaluate(EvaluationFunctionX eval, PlayerID player){
-		return eval.evaluate(this, player);
+		return 0;//eval.evaluate(gameView, move)
+		//return eval.evaluate(this, player);
 	}
 
 	public SchrodingersUnit getUnit(int x, int y) {

@@ -192,4 +192,10 @@ public class SimpleEvaluationFunction implements EvaluationFunctionX
 	public float evaluate(SchrodingersBoard state, PlayerID player) {
 		return 0;
 	}
+
+	@Override
+	public float evaluate(GameView gameView, Move move) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

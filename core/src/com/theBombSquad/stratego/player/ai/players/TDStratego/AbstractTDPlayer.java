@@ -48,7 +48,8 @@ public abstract class AbstractTDPlayer<S> {
 	 * @return Utility for the state.
 	 */
 	public final float utilityForState(S state) {
-		return utilityValue(state, outputForState(state));
+		Matrix output = outputForState(state);
+		return utilityValue(state, output);
 	}
 
 	/**
