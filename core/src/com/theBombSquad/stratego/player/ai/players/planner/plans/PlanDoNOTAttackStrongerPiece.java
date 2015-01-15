@@ -18,7 +18,8 @@ public class PlanDoNOTAttackStrongerPiece implements Plan{
 		Unit target = board.getUnit(move.getToX(), move.getToY());
 		if(!target.isAir() && !target.isLake() && !target.isUnknown() && target.getOwner().equals(view.getOpponentID())){
 			if(!Encounter.resolveFight(self.getType(), target.getType()).equals(Encounter.CombatResult.VICTORIOUS_ATTACK)){
-				value = -TheQueen.getUnitValue(target.getType())*10;
+				System.out.println("Fuck, That Thing's Strong ... Will I Attack?");
+				value = -TheQueen.getUnitValue(target.getType())*10000;
 			}
 		}
 		return value;

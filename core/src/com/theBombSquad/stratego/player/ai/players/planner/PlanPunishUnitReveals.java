@@ -39,7 +39,7 @@ public class PlanPunishUnitReveals implements Plan{
 		}
 		
 		//As This Is Punishment The Value Should Be Subtracted From Complete
-		return revealHiddenUnitPenalty;
+		return 0;//revealHiddenUnitPenalty;
 	}
 
 	@Override

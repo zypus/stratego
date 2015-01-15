@@ -12,6 +12,9 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 
 	@Override
 	public float evaluateMove(GameView view, Move move) {
+		
+		float value = 0;
+		
 		Unit self = view.getCurrentState().getUnit(move.getFromX(), move.getFromY());
 		
 		//If Unit Hasn't Moved Before And Hasn't Been Revealed Before We Do Not Encourage Fleeing (Plays Bomb)
@@ -37,11 +40,29 @@ public class PlanFleeStrongerRevealedAdjacent implements Plan{
 		
 		//Evaluate
 		if(knownThreats>0){
-			return -TheQueen.getUnitValue(self.getType());
+			
+			x = move.getToX();
+			y = move.getToY();
+			knownThreats = 0;
+			if(couldDie(view, move, x, y-1)){
+				knownThreats++;
+			}
+			if(couldDie(view, move, x+1, y)){
+				knownThreats++;
+			}
+			if(couldDie(view, move, x, y+1)){
+				knownThreats++;
+			}
+			if(couldDie(view, move, x-1, y)){
+				knownThreats++;
+			}
+			
+			if(knownThreats==0){
+				value = TheQueen.getUnitValue(self.getType());
+			}
 		}
-		else{
-			return 0;
-		}
+		
+		return value;
 	}
 
 	@Override

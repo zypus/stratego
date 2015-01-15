@@ -43,7 +43,7 @@ public class PlanMarchKill implements Plan{
 				for(int c=0; c<nodes.size(); c++){
 					GameSpecificAStar.Node tNode = nodes.get(c);
 					if(tNode.getX()==move.getToX() && tNode.getY()==move.getToY()){
-						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c);
+						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c) * 10;
 					}
 				}
 			}
