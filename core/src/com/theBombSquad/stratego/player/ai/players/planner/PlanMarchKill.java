@@ -59,7 +59,7 @@ public class PlanMarchKill implements Plan{
 		}
 		return value;
 	}
-
+	
 	@Override
 	public void postMoveUpdate(GameView view) {
 		GameBoard board = view.getCurrentState();
