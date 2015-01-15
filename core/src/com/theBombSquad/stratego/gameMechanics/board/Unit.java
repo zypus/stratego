@@ -164,6 +164,11 @@ public class Unit implements Serializable {
 		public boolean wasRevealed(int turn) {
 			return reference.wasRevealed(turn);
 		}
+
+		@Override
+		public int getId() {
+			return reference.getId();
+		}
 	}
 
 	public static class UnknownUnitPool {

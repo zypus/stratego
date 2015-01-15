@@ -26,10 +26,14 @@ import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
  */
 public abstract class AI extends Player {
 
+	public static final int POSITIVE_MARSHAL_FLAG_MODIFIER = 2;
+	public static final float NEGATIVE_MARSHAL_FLAG_MODIFIER = 0.5f;
 	private static AIUnit AIR_AI_UNIT = new AIUnit()
 			.setOwner(NEMO)
 			.setUnitReference(Unit.AIR)
 			.setRevealed(true);
+
+	private static AIGameState[] setupReferences = new AIGameState[] { null, null };
 
 	public AI(GameView gameView) {
 		super(gameView);
@@ -286,24 +290,7 @@ public abstract class AI extends Player {
 		int counter = 0;
 		boolean failed = false;
 		while (error > THRESHOLD) {
-			for (int cx = 0; cx < gameState.getWidth(); cx++) {
-				for (int cy = 0; cy < gameState.getHeight(); cy++) {
-					for (PlayerID playerID : new PlayerID[] { PLAYER_1, PLAYER_2 }) {
-						AIUnit aiUnit = gameState.getAIUnitFor(cx, cy, playerID);
-						if (aiUnit.getOwner() != null && aiUnit.getOwner() != NEMO) {
-							float sum = aiUnit.getProbabilitySum();
-							for (int i = 3; i < UnitType.values().length; i++) {
-								UnitType unitType = UnitType.values()[i];
-								if (aiUnit.getProbabilityFor(unitType) < 0.000001f) {
-									aiUnit.setProbabilityFor(unitType, 0);
-								} else {
-									aiUnit.setProbabilityFor(unitType, aiUnit.getProbabilityFor(unitType) / sum);
-								}
-							}
-						}
-					}
-				}
-			}
+			normalizeUnits(gameState);
 			if (failed) {
 				AIGameStateDebugger.debug(new AIGameState(gameState));
 			}
@@ -351,6 +338,34 @@ public abstract class AI extends Player {
 				}
 			}
 		}
+		normalizeUnits(gameState);
+	}
+
+	private static void normalizeUnits(AIGameState gameState) {
+		int[] unmovedAndUnrevealed = new int[2];
+		for (int cx = 0; cx < gameState.getWidth(); cx++) {
+			for (int cy = 0; cy < gameState.getHeight(); cy++) {
+				for (PlayerID playerID : new PlayerID[] { PLAYER_1, PLAYER_2 }) {
+					AIUnit aiUnit = gameState.getAIUnitFor(cx, cy, playerID);
+					if (aiUnit.getOwner() != null && aiUnit.getOwner() != NEMO) {
+						float sum = aiUnit.getProbabilitySum();
+						for (int i = 3; i < UnitType.values().length; i++) {
+							UnitType unitType = UnitType.values()[i];
+							if (aiUnit.getProbabilityFor(unitType) < 0.0001f) {
+								aiUnit.setProbabilityFor(unitType, 0);
+							} else {
+								aiUnit.setProbabilityFor(unitType, aiUnit.getProbabilityFor(unitType) / sum);
+							}
+						}
+						if (aiUnit.isUntouched()) {
+							unmovedAndUnrevealed[playerID.ordinal()]++;
+						}
+					}
+				}
+			}
+		}
+		gameState.getPlayerInformation(PLAYER_1).setUnrevealedAndUnmovedUnitCount(unmovedAndUnrevealed[0]);
+		gameState.getPlayerInformation(PLAYER_2).setUnrevealedAndUnmovedUnitCount(unmovedAndUnrevealed[1]);
 	}
 
 	/**
@@ -366,35 +381,58 @@ public abstract class AI extends Player {
 		int fromY = move.getFromY();
 		int toX = move.getToX();
 		int toY = move.getToY();
-		AIUnit movingAIUnit = new AIUnit(gameState.getAIUnit(fromX, fromY));
+		AIUnit movingAIUnit = new AIUnit(movement.getAIUnit(fromX, fromY));
 		movingAIUnit.setProbabilityFor(FLAG, 0);
 		movingAIUnit.setProbabilityFor(BOMB, 0);
 		AIGameState.PlayerInformation movementPlayerInformation = movement.getPlayerInformation(movingAIUnit.getOwner());
-		movementPlayerInformation.setUnrevealedAndUnmovedUnitCount(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount() - 1);
 		movingAIUnit.normalize();
+		boolean movingRevealed = movingAIUnit.isRevealed();
+		boolean scout = false;
 		if (move.getDistance() > 1) {
+			scout = true;
 			movingAIUnit.clearProbabilities();
 			movingAIUnit.setProbabilityFor(SCOUT, 1f);
-			movingAIUnit.setRevealed(true);
-			movementPlayerInformation.addToRevealedFor(SCOUT, -1);
-			movementPlayerInformation.setUnrevealedUnitCount(movementPlayerInformation.getUnrevealedUnitCount()-1);
 		}
-		AIUnit destination = new AIUnit(gameState.getAIUnit(toX, toY));
-		boolean opponentsMove = movingAIUnit.getOwner() != gameState.getCurrentPlayer();
+		AIUnit destination = new AIUnit(movement.getAIUnit(toX, toY));
+		boolean opponentsMove = movingAIUnit.getOwner() != movement.getCurrentPlayer();
+		if (move.hasEncounter()) {
+			Encounter encounter = move.getEncounter();
+			movingAIUnit.clearProbabilities();
+			if (encounter.getAttackingUnit()
+						 .getType() == FLAG) {
+				System.out.println("FUCK");
+			}
+			movingAIUnit.setProbabilityFor(encounter.getAttackingUnit().getType(), 1f);
+			destination.clearProbabilities();
+			destination.setProbabilityFor(encounter.getDefendingUnit()
+													.getType(), 1f);
+		}
 		List<ProbabilityEncounter> encounters = computePossibleEncounters(movingAIUnit, destination);
 		// moving to air
 		if (encounters.isEmpty()) {
-			outcome = new AIGameState(gameState);
-			outcome.setAIUnit(fromX, fromY, destination);
-			outcome.setAIUnit(toX, toY, movingAIUnit);
+			movement.setAIUnit(fromX, fromY, destination);
+			movement.setAIUnit(toX, toY, movingAIUnit);
+			if (!movingAIUnit.isMoved()) {
+				movementPlayerInformation
+					   .setUnrevealedAndUnmovedUnitCount(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount() - 1);
+			}
+			if (scout && !movingRevealed) {
+				movementPlayerInformation.addToRevealedFor(SCOUT, 1);
+				movementPlayerInformation.setUnrevealedUnitCount(movementPlayerInformation.getUnrevealedUnitCount() - 1);
+			}
 			movingAIUnit.setMoved(true);
-			outcome.setContext(move);
-//			reevaluateGameState(outcome);
-			normalize(outcome);
+			if (scout && !movingRevealed) {
+				movingAIUnit.setRevealed(true);
+				updateReveal(movement, movingAIUnit);
+			}
+			movement.setContext(move);
+//			reevaluateGameState(movement);
+			normalize(movement);
+			outcome = movement;
 		} else {
 			List<AIGameState> encounterOutcomes = new ArrayList<AIGameState>();
 			for (ProbabilityEncounter encounter : encounters) {
-				AIGameState encounterOutcome = new AIGameState(gameState);
+				AIGameState encounterOutcome = new AIGameState(movement);
 				AIUnit attackingAIUnit = encounterOutcome.getAIUnit(fromX, fromY);
 				AIUnit defendingAIUnit = encounterOutcome.getAIUnit(toX, toY);
 				AIGameState.PlayerInformation attackingPlayer = encounterOutcome.getPlayerInformation(movingAIUnit.getOwner());
@@ -412,11 +450,40 @@ public abstract class AI extends Player {
 			}
 			outcome = compressedState(encounterOutcomes);
 		}
+		flagBombLocalisation(outcome, movingAIUnit);
 //		AIGameStateDebugger.debug(outcome);
 		return outcome;
 	}
 
+	private static void flagBombLocalisation(AIGameState outcome, AIUnit movingAIUnit) {
+		AIGameState.PlayerInformation outcomeInformation = outcome.getPlayerInformation(movingAIUnit.getOwner());
+		checkAndUpdateBombsAndFlagsFor(outcome, movingAIUnit.getOwner(), outcomeInformation);
+		AIGameState.PlayerInformation outcomeOpponentInformation = outcome.getPlayerInformation(movingAIUnit.getOwner().getOpponent());
+		checkAndUpdateBombsAndFlagsFor(outcome, movingAIUnit.getOwner().getOpponent(), outcomeOpponentInformation);
+	}
+
+	private static void checkAndUpdateBombsAndFlagsFor(AIGameState outcome, PlayerID owner, AIGameState.PlayerInformation outcomeInformation) {
+		if (!outcomeInformation.isBombsAndFlagsPositionsKnown() &&outcomeInformation.getUnrevealedAndUnmovedUnitCount() == FLAG.getQuantity() - outcomeInformation.getRevealedFor(FLAG) - outcomeInformation.getDefeatedFor(FLAG) + BOMB.getQuantity() - outcomeInformation.getRevealedFor(BOMB) - outcomeInformation.getDefeatedFor(BOMB)) {
+			for (int cx = 0; cx < outcome.getWidth(); cx++) {
+				for (int cy = 0; cy < outcome.getHeight(); cy++) {
+					AIUnit aiUnit = outcome.getAIUnit(cx, cy);
+					if (aiUnit.getOwner() == owner) {
+						if (!aiUnit.isMoved()) {
+							for (int i = 5; i < UnitType.values().length; i++) {
+								UnitType unitType = UnitType.values()[i];
+								aiUnit.setProbabilityFor(unitType, 0);
+							}
+						}
+					}
+				}
+			}
+			outcomeInformation.setBombsAndFlagsPositionsKnown(true);
+		}
+	}
+
 	private static void resolveEncounter(int fromX, int fromY, int toX, int toY, AIGameState encounterOutcome, AIUnit attackingAIUnit, AIUnit defendingAIUnit, AIGameState.PlayerInformation attackingPlayer, AIGameState.PlayerInformation defendingPlayer, Encounter.CombatResult result, UnitType attacker, UnitType defender) {
+		boolean attackingRevealed = attackingAIUnit.isRevealed();
+		boolean defendingRevealed = defendingAIUnit.isRevealed();
 		switch (result) {
 			case VICTORIOUS_ATTACK:
 				//					    ^              _____
@@ -435,6 +502,8 @@ public abstract class AI extends Player {
 				}
 				attackingAIUnit.setRevealed(true);
 				attackingAIUnit.setMoved(true);
+				defendingAIUnit.clearProbabilities();
+				defendingAIUnit.setProbabilityFor(defender, 1f);
 				encounterOutcome.replaceAIUnit(toX, toY, attackingAIUnit);
 				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
 				break;
@@ -454,6 +523,8 @@ public abstract class AI extends Player {
 					defendingPlayer.addToRevealedFor(defender, +1);
 				}
 				defendingAIUnit.setRevealed(true);
+				attackingAIUnit.clearProbabilities();
+				attackingAIUnit.setProbabilityFor(attacker, 1f);
 				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
 				break;
 			case MUTUAL_DEFEAT:
@@ -466,10 +537,104 @@ public abstract class AI extends Player {
 				//
 				saveKill(attackingAIUnit, attacker, attackingPlayer);
 				saveKill(defendingAIUnit, defender, defendingPlayer);
+				attackingAIUnit.clearProbabilities();
+				attackingAIUnit.setProbabilityFor(attacker, 1f);
+				defendingAIUnit.clearProbabilities();
+				defendingAIUnit.setProbabilityFor(defender, 1f);
 				encounterOutcome.setAIUnit(fromX, fromY, AIR_AI_UNIT);
 				encounterOutcome.setAIUnit(toX, toY, AIR_AI_UNIT);
 				break;
 		}
+		if (!attackingRevealed) {
+			updateReveal(encounterOutcome, attackingAIUnit);
+		}
+		if (!defendingRevealed) {
+			updateReveal(encounterOutcome, defendingAIUnit);
+		}
+	}
+
+	private static void updateReveal(AIGameState updatedState, AIUnit unit) {
+		PlayerID owner = unit.getOwner();
+		AIGameState setupReference = setupReferences[owner.ordinal()];
+		// find the unit in the setup
+//		System.out.println(unit);
+//		AIGameStateDebugger.debug(setupReference);
+		int[] xy = setupReference.getCorrespondingCoordinates(unit.getUnitReference());
+		int sx = xy[0];
+		int sy = xy[1];
+		// update front
+		adjacencyUpdate(unit, updatedState, owner, setupReference, sx, sy+((owner == updatedState.getCurrentPlayer())
+																					 ? 1
+																					 : -1), AdjacencyTables.Direction.UP);
+		// update behind
+		adjacencyUpdate(unit, updatedState, owner, setupReference, sx, sy + ((owner == updatedState.getCurrentPlayer())
+																					? -1
+																					: 1), AdjacencyTables.Direction.DOWN);
+		// update left
+		adjacencyUpdate(unit, updatedState, owner, setupReference, sx-1, sy, AdjacencyTables.Direction.SIDE);
+		// update right
+		adjacencyUpdate(unit, updatedState, owner, setupReference, sx+1, sy, AdjacencyTables.Direction.SIDE);
+
+		if (unit.getConfirmedUnitType() == MARSHAL) {
+			marshalUpdate(updatedState, unit, setupReference, sx);
+		}
+	}
+
+	private static void marshalUpdate(AIGameState updatedState, AIUnit unit, AIGameState setupReference, int sx) {
+		int h1 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 6 : 0;
+		int h2 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 5 : 10;
+		for (int cx = 0; cx < setupReference.getWidth(); cx++) {
+			for (int cy = h1; cy < h2; cy++) {
+				AIUnit refUnit = setupReference.getAIUnit(cx, cy);
+				AIUnit currentUnit = updatedState.getCorresponding(refUnit.getUnitReference());
+				if (currentUnit != null) {
+					if (sx >= 5) {
+						if (cx >= 5) {
+							currentUnit.setProbabilityFor(FLAG, currentUnit.getProbabilityFor(FLAG) * POSITIVE_MARSHAL_FLAG_MODIFIER);
+						} else {
+							currentUnit.setProbabilityFor(FLAG, currentUnit.getProbabilityFor(FLAG) * NEGATIVE_MARSHAL_FLAG_MODIFIER);
+						}
+					} else {
+						if (cx >= 5) {
+							currentUnit.setProbabilityFor(FLAG, currentUnit.getProbabilityFor(FLAG) * NEGATIVE_MARSHAL_FLAG_MODIFIER);
+						} else {
+							currentUnit.setProbabilityFor(FLAG, currentUnit.getProbabilityFor(FLAG) * POSITIVE_MARSHAL_FLAG_MODIFIER);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static void adjacencyUpdate(AIUnit unit, AIGameState updatedState, PlayerID owner, AIGameState setupReference, int sx, int sy, AdjacencyTables.Direction direction) {
+		AIUnit adjacentUnit = setupReference.getAIUnit(sx, sy);
+		if (adjacentUnit != null) {
+			AIUnit currentUnit = updatedState.getCorresponding(adjacentUnit.getUnitReference());
+			if (currentUnit != null) {
+				if (adjacentUnit.getOwner() != null && adjacentUnit.getOwner() != NEMO) {
+					for (int i = 3; i < UnitType.values().length; i++) {
+						UnitType unitType = UnitType.values()[i];
+						if (unit.getConfirmedUnitType() == null) {
+							System.out.println(unit);
+						}
+						currentUnit.setProbabilityFor(unitType, currentUnit.getProbabilityFor(unitType) * AdjacencyTables.factorFor(unit.getConfirmedUnitType(), unitType, direction));
+					}
+				}
+			}
+		}
+	}
+
+	public static void setSetupReferences(AIGameState reference, PlayerID playerID) {
+		if (playerID != null && playerID != NEMO) {
+			setupReferences[playerID.ordinal()] = reference;
+		}
+	}
+
+	public static AIGameState getSetupReferences(PlayerID playerID) {
+		if (playerID != null && playerID != NEMO) {
+			return setupReferences[playerID.ordinal()];
+		}
+		return null;
 	}
 
 	public static AIGameState compressedState(List<AIGameState> states) {
@@ -549,7 +714,12 @@ public abstract class AI extends Player {
     }
 
 	public static AIGameState advanceGameState(AIGameState gameState, Move move) {
+		return createOutcomeOfMove(gameState, move);
+	}
+
+	public static AIGameState advanceGameState2(AIGameState gameState, Move move) {
 		AIGameState advancedState =  new AIGameState(gameState);
+		advancedState.setContext(move);
 		int fromX = move.getFromX();
 		int fromY = move.getFromY();
 		int toX = move.getToX();
@@ -558,6 +728,14 @@ public abstract class AI extends Player {
 				.setOwner(NEMO)
 				.setUnitReference(Unit.AIR)
 				.setRevealed(true);
+		AIUnit movingAIUnit = advancedState.getAIUnit(fromX, fromY);
+		movingAIUnit.setProbabilityFor(FLAG, 0f);
+		movingAIUnit.setProbabilityFor(BOMB, 0f);
+		boolean movingRevealed = movingAIUnit.isRevealed();
+		AIGameState.PlayerInformation movementPlayerInformation = advancedState.getPlayerInformation(movingAIUnit.getOwner());
+
+//		System.out.println(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount());
+
 		if (move.hasEncounter()) {
 			Encounter encounter = move.getEncounter();
 			AIUnit attackingAIUnit = advancedState.getAIUnit(fromX, fromY);
@@ -568,11 +746,53 @@ public abstract class AI extends Player {
 			UnitType attacker = encounter.getAttackingUnit().getType();
 			UnitType defender = encounter.getDefendingUnit().getType();
 			resolveEncounter(fromX, fromY, toX, toY, advancedState, attackingAIUnit, defendingAIUnit, attackingPlayer, defendingPlayer, result, attacker, defender);
+//			System.out.println("encounter");
 		} else {
-			advancedState.setAIUnit(toX, toY, advancedState.getAIUnit(fromX, fromY));
+			boolean scout = false;
+			if (move.getDistance() > 1) {
+				scout = true;
+				movingAIUnit.clearProbabilities();
+				movingAIUnit.setProbabilityFor(SCOUT, 1f);
+				movingAIUnit.setRevealed(true);
+				if (!movingRevealed) {
+					movementPlayerInformation.addToRevealedFor(SCOUT, 1);
+					movementPlayerInformation.setUnrevealedUnitCount(movementPlayerInformation.getUnrevealedUnitCount() - 1);
+				}
+				if (!movingAIUnit.isMoved()) {
+					movementPlayerInformation.setUnrevealedAndUnmovedUnitCount(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount() - 1);
+				}
+			}
+			if (!scout && !movingAIUnit.isMoved()) {
+				movementPlayerInformation.setUnrevealedAndUnmovedUnitCount(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount() - 1);
+			}
+			movingAIUnit.setMoved(true);
+			if (scout && !movingRevealed) {
+				updateReveal(advancedState, movingAIUnit);
+			}
+			advancedState.setAIUnit(toX, toY, movingAIUnit);
 			advancedState.setAIUnit(fromX, fromY, air);
+//			System.out.println("move");
+		}
+//		System.out.println(movementPlayerInformation.getUnrevealedAndUnmovedUnitCount());
+		// check if all unmoved units needs to be BOMBs or the FLAG
+		if (movementPlayerInformation.getUnrevealedAndUnmovedUnitCount() == FLAG.getQuantity() - movementPlayerInformation.getRevealedFor(FLAG) - movementPlayerInformation.getDefeatedFor(FLAG) + BOMB.getQuantity() - movementPlayerInformation.getRevealedFor(BOMB) - movementPlayerInformation.getDefeatedFor(BOMB) ) {
+			System.out.println("Its happening for "+movingAIUnit.getOwner());
+			for (int cx = 0; cx < advancedState.getWidth(); cx++) {
+				for (int cy = 0; cy < advancedState.getHeight(); cy++) {
+					AIUnit aiUnit = advancedState.getAIUnit(cx, cy);
+					if (aiUnit.getOwner() == movingAIUnit.getOwner()) {
+						if (!aiUnit.isMoved()) {
+							for (int i = 5; i < UnitType.values().length; i++) {
+								UnitType unitType = UnitType.values()[i];
+								aiUnit.setProbabilityFor(unitType, 0);
+							}
+						}
+					}
+				}
+			}
 		}
 		normalize(advancedState);
+//		AIGameStateDebugger.debug(advancedState);
 		return advancedState;
 	}
 

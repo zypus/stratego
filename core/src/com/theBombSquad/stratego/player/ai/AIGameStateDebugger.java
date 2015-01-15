@@ -36,7 +36,7 @@ public class AIGameStateDebugger extends JFrame {
 
 	static final boolean enabled = true;
 	static final boolean hold = true;
-	static final boolean single = true;
+	static final boolean single = false;
 
 	static List<WeakReference<AIGameState>> gameStates = new ArrayList<WeakReference<AIGameState>>();
 	static List<AIGameState> onHoldStates = new ArrayList<AIGameState>();
@@ -95,6 +95,7 @@ public class AIGameStateDebugger extends JFrame {
 		private final JLabel totalProbs2;
 		private final JLabel left1;
 		private final JLabel left2;
+		private final JLabel context;
 
 		public AIGameStateDebuggerPanel() {
 			final AIGameStateDebuggerPanel self = this;
@@ -140,10 +141,24 @@ public class AIGameStateDebugger extends JFrame {
 					}
 				}
 			});
+			JButton end = new JButton("->>");
+			end.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (activeState < gameStates.size() - 1) {
+						activeState = gameStates.size() - 1;
+						pos.setText("" + (activeState + 1));
+						count.setText("" + gameStates.size());
+						recompute();
+						self.repaint();
+					}
+				}
+			});
 			bar.add(left);
 			bar.add(pos);
 			bar.add(right);
 			bar.add(count);
+			bar.add(end);
 			add(bar);
 			JPanel stateInfo = new JPanel();
 			JScrollPane stateScroller = new JScrollPane(stateInfo);
@@ -154,12 +169,14 @@ public class AIGameStateDebugger extends JFrame {
 			player2Info = new JLabel("player2Info");
 			totalProbs2 = new JLabel("totalProbs2");
 			left2 = new JLabel("left2");
+			context = new JLabel("context");
 			stateInfo.add(player1Info);
 			stateInfo.add(totalProbs1);
 			stateInfo.add(left1);
 			stateInfo.add(player2Info);
 			stateInfo.add(totalProbs2);
 			stateInfo.add(left2);
+			stateInfo.add(context);
 			add(stateScroller);
 			recompute();
 		}
@@ -189,6 +206,12 @@ public class AIGameStateDebugger extends JFrame {
 				totalProbs2.setText(probString2);
 				left1.setText(l1);
 				left2.setText(l2);
+				if (state.getContext() != null) {
+					context.setText(state.getContext()
+										 .toString());
+				} else {
+					context.setText("No context");
+				}
 			}
 		}
 

@@ -34,7 +34,8 @@ public class TDStratego
 		extends AI {
 
 	private static final int MAX_DEPTH = 1;
-	private static final float epsilon = 0.2f;
+	private static final float epsilon = 0.5f;
+	private static final boolean player3Mode = false;
 	private AIGameState lastBoard;
 	private Random random = new Random();
 
@@ -43,6 +44,8 @@ public class TDStratego
 
 	private Game.GameView optionalGameview = null;
 	private boolean endResultReceived = false;
+
+	private AIGameState[] currentState = new AIGameState[]{null, null};
 
 	public TDStratego(Game.GameView gameView1, Game.GameView gameView2) {
 		super(gameView1);
@@ -56,7 +59,7 @@ public class TDStratego
 	public TDStratego(Game.GameView gameView) {
 		super(gameView);
 //		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
-		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress90.net");
+		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/nn42.net");
 		tdPlayer = new TDPlayer(net, 0.75f, new float[] { 0.5f, 0.5f });
 	}
 
@@ -67,9 +70,35 @@ public class TDStratego
 			currentGameview = (gameView.getCurrentTurn() % 2 == 1)
 							  ? gameView
 							  : optionalGameview;
+			if (currentState[0] == null) {
+				currentState[0] = AI.getSetupReferences(PLAYER_1);
+			}
+			if (currentState[1] == null) {
+				currentState[1] = AI.getSetupReferences(PLAYER_2);
+			}
+			Move p1Move = gameView.getLastMove();
+			Move p2Move = optionalGameview.getLastMove();
+			if (p1Move != null) {
+				currentState[0] = AI.advanceGameState(currentState[0], p1Move);
+				currentState[1] = AI.advanceGameState(currentState[1], p2Move);
+			}
+		} else {
+			int ordinal = currentGameview.getPlayerID()
+										 .ordinal();
+			if (currentState[ordinal] == null) {
+				currentState[ordinal] = AI.getSetupReferences(currentGameview.getPlayerID());
+			}
+			Move move = currentGameview.getLastMove();
+			if (move != null) {
+				Move moveBefore = currentGameview.getMove(currentGameview.getCurrentTurn() - 3);
+				if (moveBefore != null) {
+					currentState[ordinal] = AI.advanceGameState(currentState[ordinal], moveBefore);
+				}
+				currentState[ordinal] = AI.advanceGameState(currentState[ordinal], move);
+			}
 		}
-		AIGameState board = AI.createAIGameState(currentGameview);
 		PlayerID playerID = currentGameview.getPlayerID();
+		AIGameState board = currentState[playerID.ordinal()];
 		List<Move> moves = AI.createAllLegalMoves(currentGameview, currentGameview.getCurrentState());
 		Move bestMove = null;
 		AIGameState bestBoard = null;
@@ -134,6 +163,7 @@ public class TDStratego
 	public void reset() {
 		tdPlayer.eraseTraces();
 		endResultReceived = false;
+		currentState = new AIGameState[]{null, null};
 	}
 
 	private float negamax(SchrodingersBoard board, float alpha, float beta, int depth, PlayerID playerID) {
@@ -213,7 +243,19 @@ public class TDStratego
 										.isAir()) {
 									activation.set(index++, 0, 0);
 								} else {
-									activation.set(index++, 0, playerUnit.getProbabilityFor(unitType));
+									if (player3Mode) {
+										activation.set(index++, 0, playerUnit.getProbabilityFor(unitType));
+									} else {
+										if (playerUnit.getOwner() == state.getCurrentPlayer()) {
+											if (playerUnit.getUnitReference().getType() == unitType) {
+												activation.set(index++, 0, 1f);
+											} else {
+												activation.set(index++, 0, 0f);
+											}
+										} else {
+											activation.set(index++, 0, playerUnit.getProbabilityFor(unitType));
+										}
+									}
 								}
 							}
 						}

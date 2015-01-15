@@ -324,7 +324,6 @@ public class Stratego extends ApplicationAdapter {
 
 	private void startGame() {
 		game.startSetupPhase();
-
 	}
 
 	private void listenForRemoteGameCreation() {

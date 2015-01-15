@@ -4,8 +4,8 @@ import com.theBombSquad.stratego.StrategoConstants;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
-import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
+import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
 /**
  * TODO Add description
@@ -39,10 +39,10 @@ public class TDStrategoLearner implements Game.GameListener {
 
 		stratego1 = new TDStratego(playerOneView, playerTwoView);
 		player1 = new HybridAI(playerOneView).setMover(stratego1)
-											 .setSetuper(new RandomAI(playerOneView));
+											 .setSetuper(new SetupPlayerAI(playerOneView));
 		opp = new TheQueen(playerTwoView);
 		player2 = new HybridAI(playerTwoView).setMover(stratego1)
-											 .setSetuper(new RandomAI(playerTwoView));
+											 .setSetuper(new SetupPlayerAI(playerTwoView));
 
 		stratego1.setLearning(true);
 

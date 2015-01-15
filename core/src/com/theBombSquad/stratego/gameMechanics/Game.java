@@ -7,6 +7,7 @@ import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import lombok.AccessLevel;
@@ -420,6 +421,8 @@ public class Game {
         if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
 			finishedSetup = true;
 //            System.out.println("Starting game.");
+			AI.setSetupReferences(AI.createAIGameState(player1.getGameView()), PLAYER_1);
+			AI.setSetupReferences(AI.createAIGameState(player2.getGameView()), PLAYER_2);
             nextTurn();
 		}
 	}
@@ -1142,6 +1145,9 @@ public class Game {
 			List<Move> moves = game.getMoves();
 			// if the player is player 2 then translate all uncashed moves and add them to the cashed list
 			if (playerID.equals(PLAYER_2)) {
+				if (cashedRotatedMoves.size() > game.getMoves().size()) {
+					cashedRotatedMoves.clear();
+				}
 				for (int t = cashedRotatedMoves.size(); t < moves.size(); t++) {
 					Move move = moves.get(t);
 
@@ -1163,7 +1169,7 @@ public class Game {
 
 			// TODO Check if the turns start at 0
 			// TODO Check if the turn number is out of bounds.
-			if (turn >= getMoves().size()) {
+			if (getMoves().isEmpty() || turn >= getMoves().size() || turn < 0) {
 				return null;
 			}
 			return getMoves().get(turn);
