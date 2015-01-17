@@ -10,8 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class SetupPlayerAI extends AI {
+	
 	public SetupPlayerAI(Game.GameView gameView) {
 		super(gameView);
+		
 	}
 
 	@Override
@@ -33,6 +35,8 @@ public class SetupPlayerAI extends AI {
 //		}
 		Collections.shuffle(possibleMoves);
 		move = possibleMoves.get(0);
+		
+		
 		gameView.performMove(move);
 		return move;
 	}
