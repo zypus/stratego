@@ -13,8 +13,16 @@ public class ProbabilityTile {
 	public ProbabilityTile(PlayerID playerid, double[] probabilities) {
 
 		this.playerID = playerid;
-		this.probs = probabilities;
+		System.arraycopy(probabilities, 0, probs, 0, 12);
 
+	}
+
+	public ProbabilityTile(ProbabilityTile pt) {
+		this.playerID = pt.playerID;
+		System.arraycopy(pt.probs, 0, probs, 0, 12);
+		this.isRevealed = pt.isRevealed;
+		this.hasMoved = pt.hasMoved;
+		this.isEmpty = pt.isEmpty;
 	}
 
 	public PlayerID getPlayerID() {
@@ -64,17 +72,17 @@ public class ProbabilityTile {
 	public boolean getRevealed() {
 		return isRevealed;
 	}
-	
+
 	public void hasMoved(){
 		hasMoved= true;
 		probs[0] = 0;
 		probs[11]= 0;
 	}
-	
+
 	public boolean getMoved(){
 		return hasMoved;
 	}
-	
+
 	public boolean getEmpty(){
 		return isEmpty;
 	}

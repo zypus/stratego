@@ -1,10 +1,13 @@
 package com.theBombSquad.stratego.player.ai;
 
+import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.board.Encounter;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.opponentModelling.GameStateConverter;
+import com.theBombSquad.stratego.player.ai.opponentModelling.ProbabilityBoard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -34,6 +37,8 @@ public abstract class AI extends Player {
 			.setRevealed(true);
 
 	private static AIGameState[] setupReferences = new AIGameState[] { null, null };
+
+	public static Game game;
 
 	public AI(GameView gameView) {
 		super(gameView);
@@ -285,7 +290,7 @@ public abstract class AI extends Player {
 
 	static final float THRESHOLD = 0.1f;
 
-	private static void normalize(AIGameState gameState) {
+	public static void normalize(AIGameState gameState) {
 		float error = 1;
 		int counter = 0;
 		boolean failed = false;
@@ -325,18 +330,18 @@ public abstract class AI extends Player {
 			if (counter > 1000) {
 				System.out.println("Stuck in normalization, "+error+" "+gameState);
 				AIGameStateDebugger.debug(new AIGameState(gameState));
-				break;
-//				if (failed) {
-//					while (true) {
-//						try {
-//							Thread.sleep(1000);
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
-//					}
-//				} else {
-//					failed = true;
-//				}
+//				break;
+				if (failed) {
+					while (true) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				} else {
+					failed = true;
+				}
 			}
 		}
 		normalizeUnits(gameState);
@@ -376,6 +381,10 @@ public abstract class AI extends Player {
 	 * @return Probability based game state after the move.
 	 */
 	public static AIGameState createOutcomeOfMove(AIGameState gameState, Move move) {
+		// Sharon update
+		ProbabilityBoard pb = GameStateConverter.convertToProbabilityBoard(gameState);
+		pb.moveMade(move, (gameState.getCurrentPlayer() == PLAYER_1) ? game.getPlayer1().getGameView() : game.getPlayer2().getGameView());
+		// Fabian update
 		AIGameState outcome;
 		AIGameState movement = new AIGameState(gameState);
 		int fromX = move.getFromX();
@@ -383,6 +392,13 @@ public abstract class AI extends Player {
 		int toX = move.getToX();
 		int toY = move.getToY();
 		AIUnit movingAIUnit = new AIUnit(movement.getAIUnit(fromX, fromY));
+		AIUnit destination = new AIUnit(movement.getAIUnit(toX, toY));
+
+		// merge
+		movement = GameStateConverter.convertToAIGameState(pb, movement);
+		movement.setAIUnit(fromX, fromY, movingAIUnit);
+		movement.setAIUnit(toX, toY, destination);
+
 		movingAIUnit.setProbabilityFor(FLAG, 0);
 		movingAIUnit.setProbabilityFor(BOMB, 0);
 		AIGameState.PlayerInformation movementPlayerInformation = movement.getPlayerInformation(movingAIUnit.getOwner());
@@ -394,15 +410,11 @@ public abstract class AI extends Player {
 			movingAIUnit.clearProbabilities();
 			movingAIUnit.setProbabilityFor(SCOUT, 1f);
 		}
-		AIUnit destination = new AIUnit(movement.getAIUnit(toX, toY));
+
 		boolean opponentsMove = movingAIUnit.getOwner() != movement.getCurrentPlayer();
 		if (move.hasEncounter()) {
 			Encounter encounter = move.getEncounter();
 			movingAIUnit.clearProbabilities();
-			if (encounter.getAttackingUnit()
-						 .getType() == FLAG) {
-				System.out.println("FUCK");
-			}
 			movingAIUnit.setProbabilityFor(encounter.getAttackingUnit().getType(), 1f);
 			destination.clearProbabilities();
 			destination.setProbabilityFor(encounter.getDefendingUnit()

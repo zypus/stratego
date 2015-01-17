@@ -129,7 +129,7 @@ public class TDStratego
 				}
 			}
 		}
-		if (gameView.getCurrentTurn() % 1000 == 0) {
+		if (currentGameview.getCurrentTurn() % 1000 == 0) {
 			AIGameStateDebugger.debug(board);
 		}
 		if (bestBoard == null) {
@@ -140,7 +140,6 @@ public class TDStratego
 
 		lastBoard = bestBoard;
 		System.out.println("Bluff value - "+e.evaluateBluff(bestMove, board)+" Move value - "+f.evaluateMove(bestMove, board)+" State value - " + g.evaluateState(board));
-		gameView.performMove(bestMove);
 		if (learning) {
 			tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
 		}

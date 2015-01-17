@@ -27,9 +27,9 @@ public class ProbabilityBoard {
 		int toX = move.getToX();
 		int fromY = move.getFromY();
 		int toY = move.getToY();
-		
+
 		board[fromY][fromX].hasMoved();
-		
+
 		ProbabilityTile attacker = board[fromY][fromX];
 		PlayerID defender = board[toY][toX].getPlayerID();
 
@@ -44,14 +44,16 @@ public class ProbabilityBoard {
 			} else if (player == attacker.getPlayerID()) {
 				// attacker wins
 				board[toY][toX] = attacker;
-				
-				
+
+
 				//
 			}
-		}		
-		
+		}
+
 		// if known through last move
-		if (!gameView.isUnknown(toX, toY) && !board[toY][toX].getRevealed()) {
+		if (!gameView.isUnknown(toX, toY) && !board[toY][toX].getRevealed() && gameView.getUnit(toX, toY)
+																					   .getType()
+																					   .getRank() != -1) {
 			int rank = gameView.getUnit(toX, toY).getType().getRank();
 			board[toY][toX].setRevealed(rank);
 			amountRevealed[rank]++;
@@ -71,22 +73,26 @@ public class ProbabilityBoard {
 					}
 				}
 			}
-			
+
 			//if 8/9, increase for spy
 			if(rank == 9 || rank == 8){
 				for(int i = 0; i < 3; i++){
 					for(int j = 0; j < 3; j++){
-						if(!board[toY+i][toX+j].getRevealed()&&!board[toY+i][toX+j].getEmpty()&&gameView.getUnit(toX, toY).getId()==gameView.getUnit(toX+j, toY+i).getId()){
-							double newProb = board[toY+i][toX+j].getProbAtRank(1)+ board[toY+i][toX+j].getProbAtRank(1)*0.25;
-							board[toY+i][toX+j].setProbAtRank(1, newProb);
+						if (toX+j < 10 && toY+i < 10) {
+							if (!board[toY + i][toX + j].getRevealed() && !board[toY + i][toX + j].getEmpty() && gameView.getUnit(toX, toY)
+																														 .getId() == gameView.getUnit(toX + j, toY + i)
+																																			 .getId()) {
+								double newProb = board[toY + i][toX + j].getProbAtRank(1) + board[toY + i][toX + j].getProbAtRank(1) * 0.25;
+								board[toY + i][toX + j].setProbAtRank(1, newProb);
+							}
 						}
 					}
 				}
 			}
-			
+
 			//if marshal, increase flag on that side
 			//if marshal, 9 on other side
-			
+
 			//if bomb
 			if(rank == 11){
 				if(board[toY][toX].getPlayerID() == playerID1){
@@ -108,22 +114,22 @@ public class ProbabilityBoard {
 					if(!board[toY][toX-1].getRevealed()&&!board[toY][toX-1].getEmpty()&&defender == board[toY][toX-1].getPlayerID()){
 						board[toY][toX-1].setProbAtRank(0, (board[toY][toX-1].getProbAtRank(0)+(board[toY][toX-1].getProbAtRank(0)*0.13)));
 					}
-				}	
+				}
 				if(fromX < toX||fromX == toX){
 					if(!board[toY][toX+1].getRevealed()&&!board[toY][toX+1].getEmpty()&&defender == board[toY][toX+1].getPlayerID()){
 						board[toY][toX+1].setProbAtRank(0, (board[toY][toX+1].getProbAtRank(0)+(board[toY][toX+1].getProbAtRank(0)*0.13)));
 					}
 				}
 			}
-			
+
 		}
-		
-		
+
+
 		//if moved piece is unrevealed (so, no encounter!)
 		if(!board[toY][toX].getRevealed()){
-			
+
 			//Moved, so not flag or bomb
-			
+
 		// 		going towards opponent units
 			for (int i = -2; i <= 2; i++) {
 				for (int j = -2; j <= 2; j++) {
@@ -137,21 +143,21 @@ public class ProbabilityBoard {
 										int rankOpp = gameView.getUnit(toX + i, toY + j).getType().getRank();
 										for (int r = rankOpp+1; r < board[toX][toY].getAllProbs().length - 1; r++) {
 											double oldProb = board[toX][toY].getProbAtRank(r);
-											double newProb = oldProb + ((0.8 / r)* board[toX][toY].getMaxProb(r) * 
+											double newProb = oldProb + ((0.8 / r)* board[toX][toY].getMaxProb(r) *
 													(0.5 / (Math.abs(i) * Math.abs(j))));
 											board[toX][toY].setProbAtRank(r,newProb);
 										}
 										//coming towards bomb = sapper
 										if (rankOpp==11) {
 											double oldProb = board[toX][toY].getProbAtRank(3);
-											double newProb = oldProb + ((0.8 / 3)* board[toX][toY].getMaxProb(3) * 
+											double newProb = oldProb + ((0.8 / 3)* board[toX][toY].getMaxProb(3) *
 													(0.5 / (Math.abs(i) * Math.abs(j))));
 											board[toX][toY].setProbAtRank(3,newProb);
 										}
 										//coming towards marshal = spy
 										if (rankOpp==10) {
 											double oldProb = board[toX][toY].getProbAtRank(1);
-											double newProb = oldProb + ((0.8 / 1)* board[toX][toY].getMaxProb(1) * 
+											double newProb = oldProb + ((0.8 / 1)* board[toX][toY].getMaxProb(1) *
 													(0.5 / (Math.abs(i) * Math.abs(j))));
 											board[toX][toY].setProbAtRank(1,newProb);
 										}
@@ -176,7 +182,7 @@ public class ProbabilityBoard {
 										int rankOpp = gameView.getUnit(toX + i, toY + j).getType().getRank();
 										for (int r = 1; r <= rankOpp; r++) {
 											double oldProb = board[toX][toY].getProbAtRank(r);
-											double newProb = oldProb- ((1 / r)* board[toX][toY].getMaxProb(r) 
+											double newProb = oldProb- ((1 / r)* board[toX][toY].getMaxProb(r)
 													* (0.5 / (Math.abs(i) * Math.abs(j))));
 											board[toX][toY].setProbAtRank(r,newProb);
 										}
@@ -187,8 +193,8 @@ public class ProbabilityBoard {
 					}
 				}
 			}
-		}	
-		//go through all units and make them add up to max prob, then divide through max prob, then * 100 
+		}
+		//go through all units and make them add up to max prob, then divide through max prob, then * 100
 		for(int u = 0; u < 12;u++){
 			double totalProb = 0;
 			for(int cy = 0; cy < board.length; cy++){
@@ -205,7 +211,7 @@ public class ProbabilityBoard {
 			}
 		}
 	}
-	
+
 	public double[] ruleProbabilityTile(int x, int y){
 		double totalProb = 0;
 		double[] tempProb = new double[12];
@@ -218,11 +224,11 @@ public class ProbabilityBoard {
 		}
 		return tempProb;
 	}
-	
+
 	public ProbabilityTile[][] ruleProbabilityBoard(){
 		return board;
 	}
-	
+
 	public double[][] ruleProbabilityRank(int rank){
 		double[][] newBoard = new double[10][10];
 		for(int cy = 0; cy < board.length; cy++){
@@ -261,62 +267,123 @@ public class ProbabilityBoard {
 		double[] a45 = { 0.25, 0.25, 40, 2.5, 10, 10, 12.5, 1.5, 1.5, 1, 1,
 				10.5 };
 
-		ProbabilityTile t111 = new ProbabilityTile(playerID1, a11);
-		ProbabilityTile t112 = new ProbabilityTile(playerID1, a12);
-		ProbabilityTile t113 = new ProbabilityTile(playerID1, a13);
-		ProbabilityTile t114 = new ProbabilityTile(playerID1, a14);
-		ProbabilityTile t115 = new ProbabilityTile(playerID1, a15);
-		ProbabilityTile t121 = new ProbabilityTile(playerID1, a21);
-		ProbabilityTile t122 = new ProbabilityTile(playerID1, a22);
-		ProbabilityTile t123 = new ProbabilityTile(playerID1, a23);
-		ProbabilityTile t124 = new ProbabilityTile(playerID1, a24);
-		ProbabilityTile t125 = new ProbabilityTile(playerID1, a25);
-		ProbabilityTile t131 = new ProbabilityTile(playerID1, a31);
-		ProbabilityTile t132 = new ProbabilityTile(playerID1, a32);
-		ProbabilityTile t133 = new ProbabilityTile(playerID1, a33);
-		ProbabilityTile t134 = new ProbabilityTile(playerID1, a34);
-		ProbabilityTile t135 = new ProbabilityTile(playerID1, a35);
-		ProbabilityTile t141 = new ProbabilityTile(playerID1, a41);
-		ProbabilityTile t142 = new ProbabilityTile(playerID1, a42);
-		ProbabilityTile t143 = new ProbabilityTile(playerID1, a43);
-		ProbabilityTile t144 = new ProbabilityTile(playerID1, a44);
-		ProbabilityTile t145 = new ProbabilityTile(playerID1, a45);
+		ProbabilityTile t111_01 = new ProbabilityTile(playerID1, a11);
+		ProbabilityTile t112_01 = new ProbabilityTile(playerID1, a12);
+		ProbabilityTile t113_01 = new ProbabilityTile(playerID1, a13);
+		ProbabilityTile t114_01 = new ProbabilityTile(playerID1, a14);
+		ProbabilityTile t115_01 = new ProbabilityTile(playerID1, a15);
+		ProbabilityTile t121_01 = new ProbabilityTile(playerID1, a21);
+		ProbabilityTile t122_01 = new ProbabilityTile(playerID1, a22);
+		ProbabilityTile t123_01 = new ProbabilityTile(playerID1, a23);
+		ProbabilityTile t124_01 = new ProbabilityTile(playerID1, a24);
+		ProbabilityTile t125_01 = new ProbabilityTile(playerID1, a25);
+		ProbabilityTile t131_01 = new ProbabilityTile(playerID1, a31);
+		ProbabilityTile t132_01 = new ProbabilityTile(playerID1, a32);
+		ProbabilityTile t133_01 = new ProbabilityTile(playerID1, a33);
+		ProbabilityTile t134_01 = new ProbabilityTile(playerID1, a34);
+		ProbabilityTile t135_01 = new ProbabilityTile(playerID1, a35);
+		ProbabilityTile t141_01 = new ProbabilityTile(playerID1, a41);
+		ProbabilityTile t142_01 = new ProbabilityTile(playerID1, a42);
+		ProbabilityTile t143_01 = new ProbabilityTile(playerID1, a43);
+		ProbabilityTile t144_01 = new ProbabilityTile(playerID1, a44);
+		ProbabilityTile t145_01 = new ProbabilityTile(playerID1, a45);
 
-		ProbabilityTile t211 = new ProbabilityTile(playerID2, a11);
-		ProbabilityTile t212 = new ProbabilityTile(playerID2, a12);
-		ProbabilityTile t213 = new ProbabilityTile(playerID2, a13);
-		ProbabilityTile t214 = new ProbabilityTile(playerID2, a14);
-		ProbabilityTile t215 = new ProbabilityTile(playerID2, a15);
-		ProbabilityTile t221 = new ProbabilityTile(playerID2, a21);
-		ProbabilityTile t222 = new ProbabilityTile(playerID2, a22);
-		ProbabilityTile t223 = new ProbabilityTile(playerID2, a23);
-		ProbabilityTile t224 = new ProbabilityTile(playerID2, a24);
-		ProbabilityTile t225 = new ProbabilityTile(playerID2, a25);
-		ProbabilityTile t231 = new ProbabilityTile(playerID2, a31);
-		ProbabilityTile t232 = new ProbabilityTile(playerID2, a32);
-		ProbabilityTile t233 = new ProbabilityTile(playerID2, a33);
-		ProbabilityTile t234 = new ProbabilityTile(playerID2, a34);
-		ProbabilityTile t235 = new ProbabilityTile(playerID2, a35);
-		ProbabilityTile t241 = new ProbabilityTile(playerID2, a41);
-		ProbabilityTile t242 = new ProbabilityTile(playerID2, a42);
-		ProbabilityTile t243 = new ProbabilityTile(playerID2, a43);
-		ProbabilityTile t244 = new ProbabilityTile(playerID2, a44);
-		ProbabilityTile t245 = new ProbabilityTile(playerID2, a45);
+		ProbabilityTile t111_02 = new ProbabilityTile(t111_01);
+		ProbabilityTile t112_02 = new ProbabilityTile(t112_01);
+		ProbabilityTile t113_02 = new ProbabilityTile(t113_01);
+		ProbabilityTile t114_02 = new ProbabilityTile(t114_01);
+		ProbabilityTile t115_02 = new ProbabilityTile(t115_01);
+		ProbabilityTile t121_02 = new ProbabilityTile(t121_01);
+		ProbabilityTile t122_02 = new ProbabilityTile(t122_01);
+		ProbabilityTile t123_02 = new ProbabilityTile(t123_01);
+		ProbabilityTile t124_02 = new ProbabilityTile(t124_01);
+		ProbabilityTile t125_02 = new ProbabilityTile(t125_01);
+		ProbabilityTile t131_02 = new ProbabilityTile(t131_01);
+		ProbabilityTile t132_02 = new ProbabilityTile(t132_01);
+		ProbabilityTile t133_02 = new ProbabilityTile(t133_01);
+		ProbabilityTile t134_02 = new ProbabilityTile(t134_01);
+		ProbabilityTile t135_02 = new ProbabilityTile(t135_01);
+		ProbabilityTile t141_02 = new ProbabilityTile(t141_01);
+		ProbabilityTile t142_02 = new ProbabilityTile(t142_01);
+		ProbabilityTile t143_02 = new ProbabilityTile(t143_01);
+		ProbabilityTile t144_02 = new ProbabilityTile(t144_01);
+		ProbabilityTile t145_02 = new ProbabilityTile(t145_01);
+
+		ProbabilityTile t211_01 = new ProbabilityTile(playerID2, a11);
+		ProbabilityTile t212_01 = new ProbabilityTile(playerID2, a12);
+		ProbabilityTile t213_01 = new ProbabilityTile(playerID2, a13);
+		ProbabilityTile t214_01 = new ProbabilityTile(playerID2, a14);
+		ProbabilityTile t215_01 = new ProbabilityTile(playerID2, a15);
+		ProbabilityTile t221_01 = new ProbabilityTile(playerID2, a21);
+		ProbabilityTile t222_01 = new ProbabilityTile(playerID2, a22);
+		ProbabilityTile t223_01 = new ProbabilityTile(playerID2, a23);
+		ProbabilityTile t224_01 = new ProbabilityTile(playerID2, a24);
+		ProbabilityTile t225_01 = new ProbabilityTile(playerID2, a25);
+		ProbabilityTile t231_01 = new ProbabilityTile(playerID2, a31);
+		ProbabilityTile t232_01 = new ProbabilityTile(playerID2, a32);
+		ProbabilityTile t233_01 = new ProbabilityTile(playerID2, a33);
+		ProbabilityTile t234_01 = new ProbabilityTile(playerID2, a34);
+		ProbabilityTile t235_01 = new ProbabilityTile(playerID2, a35);
+		ProbabilityTile t241_01 = new ProbabilityTile(playerID2, a41);
+		ProbabilityTile t242_01 = new ProbabilityTile(playerID2, a42);
+		ProbabilityTile t243_01 = new ProbabilityTile(playerID2, a43);
+		ProbabilityTile t244_01 = new ProbabilityTile(playerID2, a44);
+		ProbabilityTile t245_01 = new ProbabilityTile(playerID2, a45);
+
+		ProbabilityTile t211_02 = new ProbabilityTile(t211_01);
+		ProbabilityTile t212_02 = new ProbabilityTile(t212_01);
+		ProbabilityTile t213_02 = new ProbabilityTile(t213_01);
+		ProbabilityTile t214_02 = new ProbabilityTile(t214_01);
+		ProbabilityTile t215_02 = new ProbabilityTile(t215_01);
+		ProbabilityTile t221_02 = new ProbabilityTile(t221_01);
+		ProbabilityTile t222_02 = new ProbabilityTile(t222_01);
+		ProbabilityTile t223_02 = new ProbabilityTile(t223_01);
+		ProbabilityTile t224_02 = new ProbabilityTile(t224_01);
+		ProbabilityTile t225_02 = new ProbabilityTile(t225_01);
+		ProbabilityTile t231_02 = new ProbabilityTile(t231_01);
+		ProbabilityTile t232_02 = new ProbabilityTile(t232_01);
+		ProbabilityTile t233_02 = new ProbabilityTile(t233_01);
+		ProbabilityTile t234_02 = new ProbabilityTile(t234_01);
+		ProbabilityTile t235_02 = new ProbabilityTile(t235_01);
+		ProbabilityTile t241_02 = new ProbabilityTile(t241_01);
+		ProbabilityTile t242_02 = new ProbabilityTile(t242_01);
+		ProbabilityTile t243_02 = new ProbabilityTile(t243_01);
+		ProbabilityTile t244_02 = new ProbabilityTile(t244_01);
+		ProbabilityTile t245_02 = new ProbabilityTile(t245_01);
 
 		double[] a00 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		ProbabilityTile t000 = new ProbabilityTile(noPlayer, a00);
+		ProbabilityTile t000_01 = new ProbabilityTile(noPlayer, a00);
+		ProbabilityTile t000_02 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_03 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_04 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_05 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_06 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_07 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_08 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_09 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_10 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_11 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_12 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_13 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_14 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_15 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_16 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_17 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_18 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_19 = new ProbabilityTile(t000_01);
+		ProbabilityTile t000_20 = new ProbabilityTile(t000_01);
 
 		ProbabilityTile[][] basicBoard = {
-				{ t211, t212, t213, t214, t215, t215, t214, t213, t212, t211 },
-				{ t221, t222, t223, t224, t225, t225, t224, t223, t222, t221 },
-				{ t231, t232, t233, t234, t235, t235, t234, t233, t232, t231 },
-				{ t241, t242, t243, t244, t245, t245, t244, t243, t242, t241 },
-				{ t000, t000, t000, t000, t000, t000, t000, t000, t000, t000 },
-				{ t000, t000, t000, t000, t000, t000, t000, t000, t000, t000 },
-				{ t141, t142, t143, t144, t145, t145, t144, t143, t142, t141 },
-				{ t131, t132, t133, t134, t135, t135, t134, t133, t132, t131 },
-				{ t121, t122, t123, t124, t125, t125, t124, t123, t122, t121 },
-				{ t111, t112, t113, t114, t115, t115, t114, t113, t112, t111 } };
+				{ t211_01, t212_01, t213_01, t214_01, t215_01, t215_02, t214_02, t213_02, t212_02, t211_02 },
+				{ t221_01, t222_01, t223_01, t224_01, t225_01, t225_02, t224_02, t223_02, t222_02, t221_02 },
+				{ t231_01, t232_01, t233_01, t234_01, t235_01, t235_02, t234_02, t233_02, t232_02, t231_02 },
+				{ t241_01, t242_01, t243_01, t244_01, t245_01, t245_02, t244_02, t243_02, t242_02, t241_02 },
+				{ t000_01, t000_02, t000_03, t000_04, t000_05, t000_06, t000_07, t000_08, t000_09, t000_10 },
+				{ t000_11, t000_12, t000_13, t000_14, t000_15, t000_16, t000_17, t000_18, t000_19, t000_20 },
+				{ t141_01, t142_01, t143_01, t144_01, t145_01, t145_02, t144_02, t143_02, t142_02, t141_02 },
+				{ t131_01, t132_01, t133_01, t134_01, t135_01, t135_02, t134_02, t133_02, t132_02, t131_02 },
+				{ t121_01, t122_01, t123_01, t124_01, t125_01, t125_02, t124_02, t123_02, t122_02, t121_02 },
+				{ t111_01, t112_01, t113_01, t114_01, t115_01, t115_02, t114_02, t113_02, t112_02, t111_02 } };
 		return basicBoard;
 	}
 

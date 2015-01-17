@@ -77,7 +77,7 @@ public class AIGameStateDebugger extends JFrame {
 	}
 
 	public AIGameStateDebugger() {
-		setSize(new Dimension(800, 500));
+		setSize(new Dimension(1600, 1200));
 		Dimension dim = Toolkit.getDefaultToolkit()
 							   .getScreenSize();
 		setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);

@@ -8,6 +8,9 @@ import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.AI;
+import com.theBombSquad.stratego.player.ai.AIGameState;
+import com.theBombSquad.stratego.player.ai.opponentModelling.GameStateConverter;
+import com.theBombSquad.stratego.player.ai.opponentModelling.ProbabilityBoard;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
 import lombok.AccessLevel;
@@ -130,6 +133,7 @@ public class Game {
 				lastConsecutiveMoves.put(PLAYER_2, new ArrayList<Move>());
 				clearUnits(PLAYER_1);
 				clearUnits(PLAYER_2);
+				AI.game = this;
 			}
 		}
 
@@ -421,8 +425,17 @@ public class Game {
         if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
 			finishedSetup = true;
 //            System.out.println("Starting game.");
-			AI.setSetupReferences(AI.createAIGameState(player1.getGameView()), PLAYER_1);
-			AI.setSetupReferences(AI.createAIGameState(player2.getGameView()), PLAYER_2);
+			AIGameState state1 = AI.createAIGameState(player1.getGameView());
+			ProbabilityBoard pb1 = new ProbabilityBoard(PLAYER_1, PLAYER_2);
+			AIGameState setup1 = GameStateConverter.convertToAIGameState(pb1, state1);
+			AI.normalize(setup1);
+			AI.setSetupReferences(setup1, PLAYER_1);
+
+			AIGameState state2 = AI.createAIGameState(player2.getGameView());
+			ProbabilityBoard pb2 = new ProbabilityBoard(PLAYER_2, PLAYER_1);
+			AIGameState setup2 = GameStateConverter.convertToAIGameState(pb2, state2);
+			AI.normalize(setup2);
+			AI.setSetupReferences(setup2, PLAYER_2);
             nextTurn();
 		}
 	}
