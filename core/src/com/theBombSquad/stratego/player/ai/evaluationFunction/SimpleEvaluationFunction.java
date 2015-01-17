@@ -1,8 +1,10 @@
 package com.theBombSquad.stratego.player.ai.evaluationFunction;
 
 import com.theBombSquad.stratego.StrategoConstants.PlayerID;
+import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.gameMechanics.GameState;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
+import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.player.ai.evaluationFunctions.EvaluationFunctionX;
 import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersBoard;
 
@@ -188,13 +190,12 @@ public class SimpleEvaluationFunction implements EvaluationFunctionX
 		return 0;
 	}
 
-	@Override
 	public float evaluate(SchrodingersBoard state, PlayerID player) {
 		return 0;
 	}
 
 	@Override
-	public float evaluate(GameView gameView, Move move) {
+	public float evaluate(Game.GameView gameView, Move move) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

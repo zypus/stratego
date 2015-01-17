@@ -9,11 +9,10 @@ import com.theBombSquad.stratego.player.ai.schrodingersBoard.SchrodingersUnit;
 
 public class SimpleFunctionOfEvaluation implements EvaluationFunctionX{
 
-	@Override
 	public float evaluate(SchrodingersBoard board, PlayerID player) {
-		
-		
-		
+
+
+
 		float valueOfMarshal = 400;
 		float valueOfGeneral = 200;
 		float valueOfColonel = 100;
@@ -26,12 +25,12 @@ public class SimpleFunctionOfEvaluation implements EvaluationFunctionX{
 		float valueOfSpy = 200;
 		float valueOfBomb = 20;
 		float valueOfFlag = 10000;
-		
+
 		float[] unitValues = new float[]{1000f, 200f, 30f, 25f, 15f, 25f, 50f, 75f, 100f, 200f, 400f, 20f};
-		
+
 		float totalValue = 0;
-		
-		
+
+
 		for(int cy=0; cy<board.getHeight(); cy++){
 			for(int cx=0; cx<board.getWidth(); cx++){
 				SchrodingersUnit u = board.getUnit(cx, cy);
@@ -55,8 +54,8 @@ public class SimpleFunctionOfEvaluation implements EvaluationFunctionX{
 				}
 			}
 		}
-		
-		
+
+
 		return totalValue;
 	}
 

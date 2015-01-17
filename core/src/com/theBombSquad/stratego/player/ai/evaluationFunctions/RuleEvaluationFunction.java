@@ -130,7 +130,6 @@ public class RuleEvaluationFunction implements EvaluationFunctionX{
 		return 0;
 	}
 
-	@Override
 	public float evaluate(SchrodingersBoard state, PlayerID player) {
 		return 0;
 	}
