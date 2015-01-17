@@ -136,7 +136,7 @@ public class SchrodingersBoard {
 		return new SchrodingersBoard(cBoard, ownArmySize, opponentArmySize, view, relativeProbability);
 	}
 	/** Creates a new Board in which unit from origin is now at destination - Also executes Encounters! */
-	/** Creates a new Board in which unit from origin is now at destination - Also executes Enounters! */
+	/** Creates a new Board in which unit from origin is now at destination - Also executes Encounters! */
 	public ArrayList<SchrodingersBoard> moveUnit(int originX, int originY, int destX, int destY){
 		ArrayList<SchrodingersBoard> list = new ArrayList<SchrodingersBoard>();
 		SchrodingersBoard placeHolder = clone();
