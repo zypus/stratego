@@ -18,10 +18,16 @@ public class GameStateConverter {
 		for (int cx = 0; cx < convertedState.getWidth(); cx++) {
 			for (int cy = 0; cy < convertedState.getHeight(); cy++) {
 				AIUnit unit = convertedState.getAIUnit(cx,cy);
+				ProbabilityTile tile = pb.board[cy][cx];
 				for (int i = 3; i < Unit.UnitType.values().length; i++) {
 					Unit.UnitType unitType = Unit.UnitType.values()[i];
-					float prob = (float)pb.board[cy][cx].getProbAtRank(unitType.getRank());
+					float prob = (float) tile.getProbAtRank(unitType.getRank());
 					unit.setProbabilityFor(unitType, prob);
+				}
+				if (tile.getPlayerID() == null) {
+					unit.setOwner(StrategoConstants.PlayerID.NEMO);
+				} else {
+					unit.setOwner(tile.getPlayerID());
 				}
 			}
 		}

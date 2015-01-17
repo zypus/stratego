@@ -29,6 +29,7 @@ import static com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType.*;
  */
 public abstract class AI extends Player {
 
+	private static final boolean MERGE = false;
 	public static final int POSITIVE_MARSHAL_FLAG_MODIFIER = 2;
 	public static final float NEGATIVE_MARSHAL_FLAG_MODIFIER = 0.5f;
 	private static AIUnit AIR_AI_UNIT = new AIUnit()
@@ -382,8 +383,15 @@ public abstract class AI extends Player {
 	 */
 	public static AIGameState createOutcomeOfMove(AIGameState gameState, Move move) {
 		// Sharon update
-		ProbabilityBoard pb = GameStateConverter.convertToProbabilityBoard(gameState);
-		pb.moveMade(move, (gameState.getCurrentPlayer() == PLAYER_1) ? game.getPlayer1().getGameView() : game.getPlayer2().getGameView());
+		ProbabilityBoard pb;
+		if (MERGE) {
+			pb = GameStateConverter.convertToProbabilityBoard(gameState);
+			pb.moveMade(move, (gameState.getCurrentPlayer() == PLAYER_1)
+							  ? game.getPlayer1()
+									.getGameView()
+							  : game.getPlayer2()
+									.getGameView());
+		}
 		// Fabian update
 		AIGameState outcome;
 		AIGameState movement = new AIGameState(gameState);
@@ -395,9 +403,11 @@ public abstract class AI extends Player {
 		AIUnit destination = new AIUnit(movement.getAIUnit(toX, toY));
 
 		// merge
-		movement = GameStateConverter.convertToAIGameState(pb, movement);
-		movement.setAIUnit(fromX, fromY, movingAIUnit);
-		movement.setAIUnit(toX, toY, destination);
+		if (MERGE) {
+			movement = GameStateConverter.convertToAIGameState(pb, movement);
+			movement.setAIUnit(fromX, fromY, movingAIUnit);
+			movement.setAIUnit(toX, toY, destination);
+		}
 
 		movingAIUnit.setProbabilityFor(FLAG, 0);
 		movingAIUnit.setProbabilityFor(BOMB, 0);
