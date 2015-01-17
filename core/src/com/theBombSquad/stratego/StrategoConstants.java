@@ -38,7 +38,7 @@ public class StrategoConstants {
 	public static final int UNMOVED = 9999999;
 	public static final int FIRST_TURN = 0;
 
-	public static final int AI_DELAY = 500;
+	public static final int AI_DELAY = 0;
 
 	public static enum PlayerID {
 		PLAYER_1,

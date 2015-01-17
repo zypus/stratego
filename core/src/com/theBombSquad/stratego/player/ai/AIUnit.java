@@ -26,7 +26,7 @@ public class AIUnit {
 	@Getter @Setter private Unit unitReference;
 	@Getter @Setter private float[] unitTypeProbabilities = new float[12];
 	@Getter private int possibilities = 0;
-	@Getter private Unit.UnitType confirmedUnitType = null;
+	//@Getter private Unit.UnitType confirmedUnitType = null;
 
 	public float[] getProbabilities() {
 		return unitTypeProbabilities;
@@ -49,11 +49,6 @@ public class AIUnit {
 			possibilities++;
 		} else if (prob == 0 && unitTypeProbabilities[ordinal - 3] > 0) {
 			possibilities--;
-		}
-		if (prob == 1) {
-			confirmedUnitType = unitType;
-		} else if (prob > 0) {
-			confirmedUnitType = null;
 		}
 		unitTypeProbabilities[ordinal - 3] = prob;
 		return this;
@@ -81,6 +76,17 @@ public class AIUnit {
 
 	public boolean isUntouched() {
 		return !moved && !revealed;
+	}
+
+	public Unit.UnitType getConfirmedUnitType() {
+		if (possibilities == 1) {
+			for (int i = 0; i < unitTypeProbabilities.length; i++) {
+				if (unitTypeProbabilities[i] > 0) {
+					return Unit.UnitType.values()[i+3];
+				}
+			}
+		}
+		return null;
 	}
 
 	public AIUnit(AIUnit aiUnit) {

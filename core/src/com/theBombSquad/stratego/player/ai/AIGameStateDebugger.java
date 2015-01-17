@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -47,7 +48,7 @@ public class AIGameStateDebugger extends JFrame {
 	public static void debug(AIGameState gameState) {
 		if (enabled) {
 			if (hold) {
-				if (single && onHoldStates.size() > 0) {
+				if (single && !onHoldStates.isEmpty()) {
 					onHoldStates.set(0, gameState);
 				} else {
 					onHoldStates.add(gameState);
@@ -60,14 +61,18 @@ public class AIGameStateDebugger extends JFrame {
 					gameStates.remove(i);
 				}
 			}
-			gameStates.add(new WeakReference<AIGameState>(gameState));
+			if (single && !gameStates.isEmpty()) {
+				gameStates.set(0, new WeakReference<AIGameState>(gameState));
+			} else {
+				gameStates.add(new WeakReference<AIGameState>(gameState));
+			}
 
 			if (instance == null) {
 				instance = new AIGameStateDebugger();
 			}
 			instance.setVisible(true);
 			pane.recompute();
-			instance.repaint();
+			pane.repaint();
 		}
 	}
 
@@ -90,6 +95,7 @@ public class AIGameStateDebugger extends JFrame {
 		private final JLabel totalProbs2;
 		private final JLabel left1;
 		private final JLabel left2;
+		private final JLabel context;
 
 		public AIGameStateDebuggerPanel() {
 			final AIGameStateDebuggerPanel self = this;
@@ -135,10 +141,24 @@ public class AIGameStateDebugger extends JFrame {
 					}
 				}
 			});
+			JButton end = new JButton("->>");
+			end.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (activeState < gameStates.size() - 1) {
+						activeState = gameStates.size() - 1;
+						pos.setText("" + (activeState + 1));
+						count.setText("" + gameStates.size());
+						recompute();
+						self.repaint();
+					}
+				}
+			});
 			bar.add(left);
 			bar.add(pos);
 			bar.add(right);
 			bar.add(count);
+			bar.add(end);
 			add(bar);
 			JPanel stateInfo = new JPanel();
 			JScrollPane stateScroller = new JScrollPane(stateInfo);
@@ -149,12 +169,14 @@ public class AIGameStateDebugger extends JFrame {
 			player2Info = new JLabel("player2Info");
 			totalProbs2 = new JLabel("totalProbs2");
 			left2 = new JLabel("left2");
+			context = new JLabel("context");
 			stateInfo.add(player1Info);
 			stateInfo.add(totalProbs1);
 			stateInfo.add(left1);
 			stateInfo.add(player2Info);
 			stateInfo.add(totalProbs2);
 			stateInfo.add(left2);
+			stateInfo.add(context);
 			add(stateScroller);
 			recompute();
 		}
@@ -184,6 +206,12 @@ public class AIGameStateDebugger extends JFrame {
 				totalProbs2.setText(probString2);
 				left1.setText(l1);
 				left2.setText(l2);
+				if (state.getContext() != null) {
+					context.setText(state.getContext()
+										 .toString());
+				} else {
+					context.setText("No context");
+				}
 			}
 		}
 
@@ -241,6 +269,37 @@ public class AIGameStateDebugger extends JFrame {
 				}
 				g2.setColor(Color.black);
 				g2.draw(rect);
+
+				Font font = g2.getFont();
+				if (unit.getOwner() != null && unit.getOwner() != NEMO) {
+					if (unit.getOwner() == PLAYER_1) {
+						g2.setColor(Color.white);
+					} else {
+						g2.setColor(Color.black);
+					}
+					g2.setFont(new Font("Arial", Font.PLAIN, getHeight() / 4));
+					Unit.UnitType confirmedUnitType = unit.getConfirmedUnitType();
+					if (confirmedUnitType != null) {
+						g2.drawString(confirmedUnitType.toString(), 5, getHeight() / 4);
+					} else {
+						for (int i = 3; i < Unit.UnitType.values().length; i++) {
+							Unit.UnitType type = Unit.UnitType.values()[i];
+							float prob = unit.getProbabilityFor(type);
+							char c = type.toString()
+										 .charAt(0);
+							String text;
+							if (prob == 0) {
+								text = c+"  - ";
+							} else {
+								text = c+" "+ ((Math.round(prob * 100f)) / 100f);
+							}
+							int tx = (i - 3) / 4;
+							int ty = (i - 3) % 4;
+							g2.drawString(text,tx * getWidth() / 3 + 5, (1+ty) * getHeight() / 4);
+						}
+					}
+				}
+				g2.setFont(font);
 			}
 		}
 	}

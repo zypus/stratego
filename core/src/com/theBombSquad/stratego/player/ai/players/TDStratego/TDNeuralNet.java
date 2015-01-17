@@ -87,6 +87,12 @@ public class TDNeuralNet implements Serializable {
 		}
 	}
 
+	public void clearWeights() {
+		for (int i = 0; i < layers.size(); i++) {
+			layers.get(i).times(0);
+		}
+	}
+
 	/**
 	 * Computes the activation of a single layer.
 	 * @param activations The activation given to the layer.

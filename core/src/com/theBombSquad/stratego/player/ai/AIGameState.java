@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.ai;
 
 import com.theBombSquad.stratego.gameMechanics.board.Move;
+import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.player.ai.setup.AIGameStateUnit;
 import lombok.Data;
 import lombok.Getter;
@@ -36,8 +37,15 @@ public class AIGameState {
 		opponent = new PlayerInformation();
 	}
 
+	private boolean inBound(int x, int y) {
+		return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
+	}
+
 	public AIUnit getAIUnit(int x, int y) {
 
+		if (!inBound(x,y)) {
+			return null;
+		}
 		if ($aiUnits[y][x].getPlayer1Unit().getOwner() == PLAYER_1) {
 			return $aiUnits[y][x].getPlayer1Unit();
 		} else {
@@ -79,6 +87,9 @@ public class AIGameState {
 	}
 
 	public AIUnit getAIUnitFor(int x, int y, PlayerID playerID) {
+		if (!inBound(x, y)) {
+			return null;
+		}
 		if (playerID == PLAYER_1) {
 			return $aiUnits[y][x].getPlayer1Unit();
 		} else if (playerID == PLAYER_2) {
@@ -101,6 +112,7 @@ public class AIGameState {
 
 	public PlayerInformation getPlayerInformation(PlayerID playerID) {
 		if (playerID == NEMO) {
+			System.out.println("Should not happen");
 			return null;
 		} else
 			if (playerID == currentPlayer) {
@@ -131,6 +143,30 @@ public class AIGameState {
 		setAIUnit(move.getFromX(), move.getFromY(), temp);
 	}
 
+	public AIUnit getCorresponding(Unit unit) {
+		for (int cx = 0; cx < getWidth(); cx++) {
+			for (int cy = 0; cy < getHeight(); cy++) {
+				AIUnit aiUnit = getAIUnit(cx, cy);
+				if (aiUnit.getUnitReference().getId() == unit.getId()) {
+					return aiUnit;
+				}
+			}
+		}
+		return null;
+	}
+
+	public int[] getCorrespondingCoordinates(Unit unit) {
+		for (int cx = 0; cx < getWidth(); cx++) {
+			for (int cy = 0; cy < getHeight(); cy++) {
+				AIUnit aiUnit = getAIUnit(cx, cy);
+				if (aiUnit.getUnitReference().getId() == unit.getId()) {
+					return new int[]{cx, cy};
+				}
+			}
+		}
+		return null;
+	}
+
 	public AIGameState(AIGameState gameState) {
 		this.$aiUnits = new AIGameStateUnit[gameState.getHeight()][gameState.getWidth()];
 		for (int x = 0; x < getWidth(); x++) {
@@ -156,6 +192,7 @@ public class AIGameState {
 		public float unitCount;
 		public float unrevealedUnitCount;
 		public float unrevealedAndUnmovedUnitCount;
+		private boolean bombsAndFlagsPositionsKnown = false;
 
 		public PlayerInformation(PlayerInformation information) {
 			System.arraycopy(information.defeated, 0, this.defeated, 0, 12);
@@ -163,6 +200,7 @@ public class AIGameState {
 			this.unitCount = information.unitCount;
 			this.unrevealedUnitCount = information.unrevealedUnitCount;
 			this.unrevealedAndUnmovedUnitCount = information.unrevealedAndUnmovedUnitCount;
+			this.bombsAndFlagsPositionsKnown = information.bombsAndFlagsPositionsKnown;
 		}
 
 		public float getDefeatedFor(UnitType unitType) {
@@ -175,7 +213,7 @@ public class AIGameState {
 			if (ordinal < 3) {
 				throw new RuntimeException("Wrong unit type.");
 			}
-			return ordinal-3;
+			return ordinal - 3;
 		}
 
 		public float getRevealedFor(UnitType unitType) {
