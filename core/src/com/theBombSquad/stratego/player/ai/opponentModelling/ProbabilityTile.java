@@ -7,6 +7,8 @@ public class ProbabilityTile {
 	private PlayerID playerID;
 	private double[] probs = new double[12];
 	private boolean isRevealed = false;
+	private boolean hasMoved = false;
+	private boolean isEmpty = true;
 
 	public ProbabilityTile(PlayerID playerid, double[] probabilities) {
 
@@ -33,6 +35,7 @@ public class ProbabilityTile {
 
 	public void setProbAtRank(int rank, double newProb) {
 		probs[rank] = newProb;
+		isEmpty = false;
 	}
 
 	public void setAllProbsToZero() {
@@ -40,27 +43,45 @@ public class ProbabilityTile {
 			setProbAtRank(i, 0);
 		}
 		this.playerID = null;
+		isRevealed = false;
+		hasMoved = false;
+		isEmpty = true;
 	}
 
 	public void setAllProbs(double[] newProbs) {
 		for (int i = 0; i < newProbs.length; i++) {
 			this.probs[i] = newProbs[i];
 		}
+		isEmpty = false;
 	}
 
 	public void setRevealed(int rank) {
 		setAllProbsToZero();
-		setProbAtRank(rank, getMaxProb(rank)*100);
+		setProbAtRank(rank, 100);
 		isRevealed = true;
 	}
 
 	public boolean getRevealed() {
 		return isRevealed;
 	}
+	
+	public void hasMoved(){
+		hasMoved= true;
+		probs[0] = 0;
+		probs[11]= 0;
+	}
+	
+	public boolean getMoved(){
+		return hasMoved;
+	}
+	
+	public boolean getEmpty(){
+		return isEmpty;
+	}
 
 	public double getMaxProb(int rank) {
 		if (rank == 0) {
-			return 1;
+			return 100;
 		}
 		if (rank == 1) {
 			return 1;

@@ -85,31 +85,23 @@ public class RuleEvaluationFunction implements EvaluationFunctionX{
 				if (gameView.getCurrentTurn() < 300) {
 					if (ownRank == 2) {
 						eval = eval + 40;
-					} else
-						if (ownRank == 3) {
-							eval = eval + 10;
-						} else
-							if (ownRank == 4) {
-								eval = eval + 30;
-							} else
-								if (ownRank == 5) {
-									eval = eval + 30;
-								} else
-									if (ownRank == 6) {
-										eval = eval + 25;
-									} else
-										if (ownRank == 7) {
-											eval = eval + 22;
-										} else
-											if (ownRank == 8) {
-												eval = eval + 20;
-											} else
-												if (ownRank == 9) {
-													eval = eval + 15;
-												} else
-													if (ownRank == 10) {
-														eval = eval + 15;
-													}
+					} else if (ownRank == 3) {
+						eval = eval + 10;
+					} else if (ownRank == 4) {
+						eval = eval + 30;
+					} else if (ownRank == 5) {
+						eval = eval + 30;
+					} else if (ownRank == 6) {
+						eval = eval + 25;
+					} else if (ownRank == 7) {
+						eval = eval + 22;
+					} else if (ownRank == 8) {
+						eval = eval + 20;
+					} else if (ownRank == 9) {
+						eval = eval + 15;
+					} else if (ownRank == 10) {
+						eval = eval + 15;
+					}
 				} else {
 					eval = eval + 100;
 				}

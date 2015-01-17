@@ -44,6 +44,9 @@ public class ProbabilityBoard {
 			} else if (player == attacker.getPlayerID()) {
 				// attacker wins
 				board[toY][toX] = attacker;
+				
+				
+				//
 			}
 		}		
 		
@@ -118,6 +121,8 @@ public class ProbabilityBoard {
 		
 		//if moved piece is unrevealed (so, no encounter!)
 		if(!board[toY][toX].getRevealed()){
+			
+			//Moved, so not flag or bomb
 			
 		// 		going towards opponent units
 			for (int i = -2; i <= 2; i++) {
