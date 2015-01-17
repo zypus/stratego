@@ -34,7 +34,7 @@ public class TDStratego
 		extends AI {
 
 	private static final int MAX_DEPTH = 1;
-	private static final float epsilon = 0.5f;
+	private static final float epsilon = 0.2f;
 	private static final boolean player3Mode = false;
 	private AIGameState lastBoard;
 	private Random random = new Random();
@@ -50,10 +50,10 @@ public class TDStratego
 	public TDStratego(Game.GameView gameView1, Game.GameView gameView2) {
 		super(gameView1);
 		optionalGameview = gameView2;
-		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 100, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
+		TDNeuralNet net = new TDNeuralNet(new int[] { TDPlayer.INFO_SIZE, 48 ,24, 12, 2 }, new AbstractTDPlayer.Sigmoid(), new AbstractTDPlayer.SigmoidPrime());
 		net.clearWeights();
-//		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress20.net");
-		tdPlayer = new TDPlayer(net, 0.8f, new float[] { 0.25f, 0.25f });
+//		TDNeuralNet net = TDNeuralNet.loadNeuralNet("test/TDStratego/progress/player42_progress40.net");
+		tdPlayer = new TDPlayer(net, 0.3f, new float[] { 0.05f, 0.05f, 0.05f , 0.05f});
 	}
 
 	public TDStratego(Game.GameView gameView) {
@@ -111,6 +111,9 @@ public class TDStratego
 			for (Move move : moves) {
 				AIGameState b = AI.createOutcomeOfMove(board, move);
 				float sum = tdPlayer.utilityForState(b);
+				if (sum == Float.NaN) {
+					System.out.println("NaN encountered");
+				}
 				if (sum > max) {
 					bestMove = move;
 					bestBoard = b;
@@ -120,6 +123,11 @@ public class TDStratego
 		}
 		if (gameView.getCurrentTurn() % 1000 == 0) {
 			AIGameStateDebugger.debug(board);
+		}
+		if (bestBoard == null) {
+			System.out.println("Null state encountered");
+			bestMove = moves.get(random.nextInt(moves.size()));
+			bestBoard = AI.createOutcomeOfMove(board, bestMove);
 		}
 
 		lastBoard = bestBoard;

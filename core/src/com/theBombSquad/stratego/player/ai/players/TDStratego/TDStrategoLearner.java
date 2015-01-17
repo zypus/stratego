@@ -55,6 +55,9 @@ public class TDStrategoLearner implements Game.GameListener {
 	public void gameFinished(int ply, StrategoConstants.PlayerID winner) {
 		if (ply >= 0) {
 			System.out.println("Round ended at ply "+ply);
+			if (round == 1) {
+				stratego1.save("test/TDStratego/progress/player42_start.net");
+			}
 			if (round % 10 == 0) {
 				stratego1.save("test/TDStratego/progress/player42_progress" + round + ".net");
 				//            stratego2.save("test/TDStratego/player2_progress"+round+".net");

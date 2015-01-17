@@ -291,7 +291,7 @@ public class AIGameStateDebugger extends JFrame {
 							if (prob == 0) {
 								text = c+"  - ";
 							} else {
-								text = c+" "+ ((Math.round(prob * 10f)) / 10f);
+								text = c+" "+ ((Math.round(prob * 100f)) / 100f);
 							}
 							int tx = (i - 3) / 4;
 							int ty = (i - 3) % 4;

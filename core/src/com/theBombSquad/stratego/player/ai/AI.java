@@ -325,17 +325,18 @@ public abstract class AI extends Player {
 			if (counter > 1000) {
 				System.out.println("Stuck in normalization, "+error+" "+gameState);
 				AIGameStateDebugger.debug(new AIGameState(gameState));
-				if (failed) {
-					while (true) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				} else {
-					failed = true;
-				}
+				break;
+//				if (failed) {
+//					while (true) {
+//						try {
+//							Thread.sleep(1000);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
+//					}
+//				} else {
+//					failed = true;
+//				}
 			}
 		}
 		normalizeUnits(gameState);
@@ -351,7 +352,7 @@ public abstract class AI extends Player {
 						float sum = aiUnit.getProbabilitySum();
 						for (int i = 3; i < UnitType.values().length; i++) {
 							UnitType unitType = UnitType.values()[i];
-							if (aiUnit.getProbabilityFor(unitType) < 0.0001f) {
+							if (aiUnit.getProbabilityFor(unitType) < 0.0001f || aiUnit.getProbabilityFor(unitType) == Float.NaN) {
 								aiUnit.setProbabilityFor(unitType, 0);
 							} else {
 								aiUnit.setProbabilityFor(unitType, aiUnit.getProbabilityFor(unitType) / sum);
@@ -582,7 +583,7 @@ public abstract class AI extends Player {
 
 	private static void marshalUpdate(AIGameState updatedState, AIUnit unit, AIGameState setupReference, int sx) {
 		int h1 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 6 : 0;
-		int h2 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 5 : 10;
+		int h2 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 10 : 5;
 		for (int cx = 0; cx < setupReference.getWidth(); cx++) {
 			for (int cy = h1; cy < h2; cy++) {
 				AIUnit refUnit = setupReference.getAIUnit(cx, cy);
@@ -714,7 +715,11 @@ public abstract class AI extends Player {
     }
 
 	public static AIGameState advanceGameState(AIGameState gameState, Move move) {
-		return createOutcomeOfMove(gameState, move);
+		AIGameState state = createOutcomeOfMove(gameState, move);
+		if (gameState.getCurrentPlayer() == PLAYER_1) {
+			AIGameStateDebugger.debug(state);
+		}
+		return state;
 	}
 
 	public static AIGameState advanceGameState2(AIGameState gameState, Move move) {
