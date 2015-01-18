@@ -173,7 +173,7 @@ public abstract class AI extends Player {
 	 *
 	 * // Get the current AIGameState for the specified player									IMPORTANT
 	 * PlayerID playerID;																		<-------- Use this instead of gameview.getCurrentState()
-	 * AIGameState currentState = AI.getCurrentAIGameState(playerID);							<-------- to work with the AIGameState instead
+	 * AIGameState currentState = AI.getCurrentAIGameStateFor(playerID);							<-------- to work with the AIGameState instead
 	 *
 	 *
 	 *
