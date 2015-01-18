@@ -330,6 +330,9 @@ public class Game {
 				waitForEndTurnConfirmation();
 			}
 			currentTurn++;
+			// update AIGameStates with the current move
+			AI.updateCurrentAIGameStateWith(PLAYER_1, player1.getGameView().getLastMove());
+			AI.updateCurrentAIGameStateWith(PLAYER_2, player2.getGameView().getLastMove());
 			nextTurn();
 		}
 

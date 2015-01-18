@@ -78,35 +78,9 @@ public class TDStratego
 			currentGameview = (gameView.getCurrentTurn() % 2 == 1)
 							  ? gameView
 							  : optionalGameview;
-			if (currentState[0] == null) {
-				currentState[0] = AI.getSetupReferences(PLAYER_1);
-			}
-			if (currentState[1] == null) {
-				currentState[1] = AI.getSetupReferences(PLAYER_2);
-			}
-			Move p1Move = gameView.getLastMove();
-			Move p2Move = optionalGameview.getLastMove();
-			if (p1Move != null) {
-				currentState[0] = AI.advanceGameState(currentState[0], p1Move);
-				currentState[1] = AI.advanceGameState(currentState[1], p2Move);
-			}
-		} else {
-			int ordinal = currentGameview.getPlayerID()
-										 .ordinal();
-			if (currentState[ordinal] == null) {
-				currentState[ordinal] = AI.getSetupReferences(currentGameview.getPlayerID());
-			}
-			Move move = currentGameview.getLastMove();
-			if (move != null) {
-				Move moveBefore = currentGameview.getMove(currentGameview.getCurrentTurn() - 3);
-				if (moveBefore != null) {
-					currentState[ordinal] = AI.advanceGameState(currentState[ordinal], moveBefore);
-				}
-				currentState[ordinal] = AI.advanceGameState(currentState[ordinal], move);
-			}
 		}
 		PlayerID playerID = currentGameview.getPlayerID();
-		AIGameState board = currentState[playerID.ordinal()];
+		AIGameState board = AI.getCurrentAIGameStateFor(playerID);
 		List<Move> moves = AI.createAllLegalMoves(currentGameview, currentGameview.getCurrentState());
 		Move bestMove = null;
 		AIGameState bestBoard = null;
@@ -139,7 +113,7 @@ public class TDStratego
 		}
 
 		lastBoard = bestBoard;
-		System.out.println("Bluff value - "+e.evaluateBluff(bestMove, board)+" Move value - "+f.evaluateMove(bestMove, board)+" State value - " + g.evaluateState(board));
+		System.out.println("Bluff value - " + e.evaluateBluff(bestMove, board) + " Move value - " + f.evaluateMove(bestMove, board) + " State value - " + g.evaluateState(board));
 		if (learning) {
 			tdPlayer.learnBasedOnSelectedState(bestBoard, 1);
 		}

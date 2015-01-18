@@ -38,6 +38,7 @@ public abstract class AI extends Player {
 			.setRevealed(true);
 
 	private static AIGameState[] setupReferences = new AIGameState[] { null, null };
+	private static AIGameState[] currentState = new AIGameState[]{null, null};
 
 	public static Game game;
 
@@ -166,6 +167,16 @@ public abstract class AI extends Player {
 	 * // Advance the gameState by an actual taken move.
 	 * Move performedMove;
 	 * AIGameState advancedState = AI.advanceGameState(state, performedMove);
+	 *
+	 *
+	 * IMPORTANT
+	 *
+	 * // Get the current AIGameState for the specified player									IMPORTANT
+	 * PlayerID playerID;																		<-------- Use this instead of gameview.getCurrentState()
+	 * AIGameState currentState = AI.getCurrentAIGameState(playerID);							<-------- to work with the AIGameState instead
+	 *
+	 *
+	 *
 	 *
 	 * // The AIGameState is composed out of AIUnits
 	 * int x, y;
@@ -650,6 +661,7 @@ public abstract class AI extends Player {
 	public static void setSetupReferences(AIGameState reference, PlayerID playerID) {
 		if (playerID != null && playerID != NEMO) {
 			setupReferences[playerID.ordinal()] = reference;
+			currentState[playerID.ordinal()] = reference;
 		}
 	}
 
@@ -658,6 +670,19 @@ public abstract class AI extends Player {
 			return setupReferences[playerID.ordinal()];
 		}
 		return null;
+	}
+
+	public static AIGameState getCurrentAIGameStateFor(PlayerID playerID) {
+		if (playerID != null && playerID != NEMO) {
+			return currentState[playerID.ordinal()];
+		}
+		return null;
+	}
+
+	public static void updateCurrentAIGameStateWith(PlayerID playerID, Move move) {
+		if (playerID != null && playerID != NEMO) {
+			currentState[playerID.ordinal()] = advanceGameState(currentState[playerID.ordinal()], move);
+		}
 	}
 
 	public static AIGameState compressedState(List<AIGameState> states) {
