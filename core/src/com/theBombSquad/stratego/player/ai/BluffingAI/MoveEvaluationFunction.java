@@ -430,8 +430,22 @@ public class MoveEvaluationFunction {
 			}
 		}
 
-
-
+		if (toUnitsRevealed.size() == 0) {
+			if (toY < fromY) {
+				evaluation = evaluation + 50;
+			} else
+				if (toX > fromX || (toX < fromX)) {
+					evaluation = evaluation + 20;
+				}
+			if (toFarUnitsRevealed.size() == 0) {
+				if (toY < fromY) {
+					evaluation = evaluation + 50;
+				} else
+					if (toX > fromX || (toX < fromX)) {
+						evaluation = evaluation + 20;
+					}
+			}
+		}
 
 		// adding from units
 		for (int i = -2; i <= 2; i++) {
