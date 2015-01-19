@@ -517,8 +517,7 @@ public class Game {
 			}
 		} else {
 			// stop the game!
-			System.out.println("GAME OVER! Winner is " + winner.getGameView()
-															   .getPlayerID());
+			
 			revealBoard();
 			player1FinishedCleanup = false;
 			player2FinishedCleanup = false;
@@ -649,7 +648,7 @@ public class Game {
 			activeGameView = player1.getGameView();
 		}
 		reseted = false;
-		System.out.println("PLAYER_1 is asked to setup.");
+		
 		player1.startSetup();
 		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
 			while (!player1FinishedSetup) {
@@ -660,7 +659,6 @@ public class Game {
 				}
 			}
 		}
-		System.out.println("PLAYER_2 is asked to setup.");
 		becomeBlind();
 		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
 											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {

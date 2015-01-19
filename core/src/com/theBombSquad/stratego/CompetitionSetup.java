@@ -73,7 +73,7 @@ public class CompetitionSetup implements Game.GameListener {
 		flagTactics.add(new FlagTactic10());
 		flagTactics.add(new FlagTactic11());
 
-		mover1 = new TheQueen(playerOneView);
+		mover1 = new MoveEvalAI(playerOneView);
 		mover2 = new TheQueen(playerTwoView);
 
 		player1 = new HybridAI(playerOneView).setMover(mover1).setSetuper(
@@ -107,7 +107,6 @@ public class CompetitionSetup implements Game.GameListener {
 		if (round < NUM_OF_GAMES) {
 			round++;
 			// mover1.reset();
-			System.out.println("Starting round "+round);
 			game.reset();
 			game.setPlayer1(player1);
 			game.setPlayer2(player2);
@@ -126,7 +125,7 @@ public class CompetitionSetup implements Game.GameListener {
 			totalPlys = 0;
 
 			j++;
-			if (j > i) {
+			if (j >= 11) {
 				i++;
 				j = 0;
 			}
@@ -149,10 +148,8 @@ public class CompetitionSetup implements Game.GameListener {
 	public boolean performPly(final int ply) {
 		
 		if (ply % 1000 == 0) {
-			System.out.println("Ply " + ply);
 		}
 		if (ply > 3000) {
-			System.out.println("Round interrupted!");
 			round--;
 			// mover1.reset();
 			// player2.reset();

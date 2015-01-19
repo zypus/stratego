@@ -34,7 +34,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
  */
 public class AIGameStateDebugger extends JFrame {
 
-	static final boolean enabled = true;
+	static final boolean enabled = false;
 	static final boolean hold = true;
 	static final boolean single = false;
 
