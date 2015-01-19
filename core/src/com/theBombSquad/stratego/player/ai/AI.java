@@ -343,7 +343,9 @@ public abstract class AI extends Player {
 			if (counter > 1000) {
 				System.out.println("Stuck in normalization, "+error+" "+gameState);
 				AIGameStateDebugger.debug(new AIGameState(gameState));
-//				break;
+				if (error < 1.5) {
+					break;
+				}
 				if (failed) {
 					while (true) {
 						try {

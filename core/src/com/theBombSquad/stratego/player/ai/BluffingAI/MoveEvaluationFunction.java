@@ -19,7 +19,7 @@ public class MoveEvaluationFunction {
 	private ArrayList<AIUnit> toUnitsUnrevealed;
 	private ArrayList<AIUnit> toFarUnitsRevealed;
 	private ArrayList<AIUnit> toFarUnitsUnrevealed;
-	
+
 	private ArrayList<AIUnit> fromUnitsRevealed;
 	private ArrayList<AIUnit> fromUnitsUnrevealed;
 	private AIUnit encounterUnit;
@@ -48,6 +48,8 @@ public class MoveEvaluationFunction {
 		toUnitsUnrevealed = new ArrayList<AIUnit>();
 		fromUnitsRevealed = new ArrayList<AIUnit>();
 		fromUnitsUnrevealed = new ArrayList<AIUnit>();
+		toFarUnitsRevealed = new ArrayList<AIUnit>();
+		toFarUnitsUnrevealed = new ArrayList<AIUnit>();
 		encounterUnit = null;
 		this.move = move;
 		this.state = state;
@@ -271,9 +273,9 @@ public class MoveEvaluationFunction {
 			}
 
 		}
-		
-		
-		
+
+
+
 	}
 
 	private void evaluateForUnitsRevealed() {
@@ -299,7 +301,7 @@ public class MoveEvaluationFunction {
 			}
 
 		}
-		
+
 		for (int i = 0; i < toFarUnitsRevealed.size(); i++) {
 
 			if (rank
@@ -322,7 +324,7 @@ public class MoveEvaluationFunction {
 
 		}
 
-		
+
 		// calculating evaluation for fromUnitsRevealed
 		for (int i = 0; i < fromUnitsRevealed.size(); i++) {
 
@@ -394,10 +396,10 @@ public class MoveEvaluationFunction {
 				}
 			}
 		}
-		
+
 		for (int i = -5; i <= 5; i++) {
 			for (int j = -5; j <= 5; j++) {
-				if ((j > 2 - i && j > 2 + i && j < -2 + i && j < -2 - i)
+				if ((j > 2 - i || j > 2 + i || j < -2 + i || j < -2 - i)
 						&& ((toY > fromY && j >= 0)
 								|| (toY < fromY && j <= 0)
 								|| (toX > fromX && i >=0) || (toX < fromX &&i <= 0))) {
@@ -428,8 +430,8 @@ public class MoveEvaluationFunction {
 			}
 		}
 
-		
-		
+
+
 
 		// adding from units
 		for (int i = -2; i <= 2; i++) {

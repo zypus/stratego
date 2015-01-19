@@ -42,12 +42,10 @@ public class StateMoveEvalAI extends AI {
 			AIGameState nextState = AI.createOutcomeOfMove(gameState, move);
 			double stateValue = stateEval.evaluateState(nextState);
 			double moveValue = moveEval.evaluateMove(move, gameState);
-			Move lastMove = gameView.getMove(gameView.getCurrentTurn() - 3);
-			if (lastMove != null) {
-				if (lastMove.isSameMovementAs(new Move(move.getToX(), move.getToY(), move.getFromX(), move.getFromY()))) {
-					moveValue -= 50;
-				}
-			}
+			moveValue = checkRepitition(move, moveValue, 1);
+			moveValue = checkRepitition(move, moveValue, 2);
+			moveValue = checkRepitition(move, moveValue, 3);
+			moveValue = checkRepitition(move, moveValue, 4);
 			if (stateValue > maxState) {
 				maxState = stateValue;
 			}
@@ -75,6 +73,16 @@ public class StateMoveEvalAI extends AI {
 		}
 		gameView.performMove(bestMove);
 		return bestMove;
+	}
+
+	private double checkRepitition(Move move, double moveValue, int past) {
+		Move lastMove = gameView.getMove(gameView.getCurrentTurn() - 1 -(2*past));
+		if (lastMove != null) {
+			if (lastMove.isSameMovementAs(new Move(move.getToX(), move.getToY(), move.getFromX(), move.getFromY()))) {
+				moveValue -= 50;
+			}
+		}
+		return moveValue;
 	}
 
 	private void normalize(List<Double> values, double min, double max) {
