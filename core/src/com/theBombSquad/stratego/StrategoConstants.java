@@ -7,6 +7,7 @@ import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
+import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
 import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
@@ -66,6 +67,7 @@ public class StrategoConstants {
 	public static enum PlayerType {
 		HUMAN(HumanPlayer.class),
 		RANDOM(RandomAI.class),
+		RULE(MctsAI.class),
 		SETUPAI(SetupPlayerAI.class),
 		TDSTRATEGO(TDStratego.class),
 		ONE_PLYER(OnePlyDeepAI.class),
@@ -93,7 +95,7 @@ public class StrategoConstants {
 			return playerInstance;
 		}
 
-	}
+		}
 
 	/** Remote constants */
 	public static final String LOCAL_HOST     = "127.0.0.1";

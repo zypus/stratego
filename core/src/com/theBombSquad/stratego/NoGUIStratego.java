@@ -2,10 +2,14 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
-import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * TODO Add description
@@ -28,6 +32,8 @@ public class NoGUIStratego implements Game.GameListener {
 	private final Player mover1;
 	private final Player mover2;
 
+	private List<Integer> rounds = new ArrayList<Integer>(MAX_ROUNDS);
+
 	public static void main(String[] args) {
 		new NoGUIStratego();
 	}
@@ -43,7 +49,7 @@ public class NoGUIStratego implements Game.GameListener {
 		mover1 = new TheQueen(playerOneView);
 		player1 = new HybridAI(playerOneView).setMover(mover1)
 											 .setSetuper(new SetupPlayerAI(playerOneView));
-		mover2 = new StateMoveEvalAI(playerTwoView);
+		mover2 = new RandomAI(playerTwoView);
 		player2 = new HybridAI(playerTwoView).setMover(mover2)
 											 .setSetuper(new SetupPlayerAI(playerTwoView));
 		//		player1.setLearning(true);
@@ -67,6 +73,7 @@ public class NoGUIStratego implements Game.GameListener {
 				}
 			}
 			totalPlys += ply;
+			rounds.add(ply);
 		}
 		if (round < MAX_ROUNDS) {
 			round++;
@@ -78,7 +85,14 @@ public class NoGUIStratego implements Game.GameListener {
 
 			game.startSetupPhase();
 		} else {
-			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws+" - average game length: "+totalPlys/MAX_ROUNDS);
+			int median;
+			Collections.sort(rounds);
+			if (MAX_ROUNDS % 2 == 0) {
+				median = (rounds.get(MAX_ROUNDS / 2 - 1) + rounds.get(MAX_ROUNDS / 2)) / 2;
+			} else {
+				median = rounds.get(MAX_ROUNDS/2);
+			}
+			System.out.println("Result: "+player1Wins+"/"+player2Wins+"/"+draws+" - average game length: "+totalPlys/MAX_ROUNDS+" median: "+median);
 		}
 	}
 
