@@ -19,7 +19,6 @@ public class PlanMarchKill implements Plan{
 	private Unit target;
 	private boolean currActive = false;
 	private GameSpecificAStar star = null;
-
 	
 	public PlanMarchKill(Unit target){
 		this.target = target;
