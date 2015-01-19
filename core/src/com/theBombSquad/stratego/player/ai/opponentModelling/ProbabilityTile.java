@@ -45,7 +45,7 @@ public class ProbabilityTile {
 		probs[rank] = newProb;
 		isEmpty = false;
 	}
-
+	
 	public void setAllProbsToZero() {
 		for (int i = 0; i < probs.length; i++) {
 			setProbAtRank(i, 0);

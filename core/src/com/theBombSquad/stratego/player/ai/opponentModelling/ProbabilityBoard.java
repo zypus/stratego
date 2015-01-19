@@ -30,7 +30,7 @@ public class ProbabilityBoard {
 
 		board[fromY][fromX].hasMoved();
 
-		ProbabilityTile attacker = board[fromY][fromX];
+		ProbabilityTile attacker = new ProbabilityTile(board[fromY][fromX]);
 		PlayerID defender = board[toY][toX].getPlayerID();
 
 		board[fromY][fromX].setAllProbsToZero();

@@ -42,6 +42,8 @@ public class GameStateConverter {
 			AIGameState.PlayerInformation information = gameState.getPlayerInformation(gameState.getCurrentPlayer());
 			revealed[unitType.getRank()] = (int)information.getDefeatedFor(unitType) + (int)information.getRevealedFor(unitType);
 		}
+		
+		//gameState.
 		pb.amountRevealed = revealed;
 		for (int cx = 0; cx < gameState.getWidth(); cx++) {
 			for (int cy = 0; cy < gameState.getHeight(); cy++) {
