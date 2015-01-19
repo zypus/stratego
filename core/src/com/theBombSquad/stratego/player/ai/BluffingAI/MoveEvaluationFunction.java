@@ -17,6 +17,9 @@ public class MoveEvaluationFunction {
 
 	private ArrayList<AIUnit> toUnitsRevealed;
 	private ArrayList<AIUnit> toUnitsUnrevealed;
+	private ArrayList<AIUnit> toFarUnitsRevealed;
+	private ArrayList<AIUnit> toFarUnitsUnrevealed;
+	
 	private ArrayList<AIUnit> fromUnitsRevealed;
 	private ArrayList<AIUnit> fromUnitsUnrevealed;
 	private AIUnit encounterUnit;
@@ -214,6 +217,63 @@ public class MoveEvaluationFunction {
 
 		}
 
+		for (int i = 0; i < toFarUnitsUnrevealed.size(); i++) {
+			float[] prob = toFarUnitsUnrevealed.get(i).getProbabilities();
+			ArrayList<Integer> threeMostProbableRanks = new ArrayList<Integer>();
+			ArrayList<Float> threeHighestProbabilities = new ArrayList<Float>();
+			for (int j = 0; j < prob.length; j++) {
+				if (threeMostProbableRanks.size() <= 2) {
+					threeMostProbableRanks.add(j);
+					threeHighestProbabilities.add(prob[j]);
+				} else {
+					threeMostProbableRanks.add(j);
+					threeHighestProbabilities.add(prob[j]);
+					int minRank = findMinRank(threeHighestProbabilities);
+					threeMostProbableRanks.remove(minRank);
+					threeHighestProbabilities.remove(minRank);
+				}
+
+			}
+
+			// filling arraylist to have the size of 3
+			if (threeMostProbableRanks.size() < 2) {
+				threeHighestProbabilities.add(threeHighestProbabilities.get(0));
+				threeMostProbableRanks.add(threeMostProbableRanks.get(0));
+			}
+
+			if (threeMostProbableRanks.size() < 3) {
+				if (Math.max(threeHighestProbabilities.get(0),
+						threeHighestProbabilities.get(1)) == threeHighestProbabilities
+						.get(0)) {
+					threeHighestProbabilities.add(threeHighestProbabilities
+							.get(0));
+					threeMostProbableRanks.add(threeMostProbableRanks.get(0));
+				} else {
+					threeHighestProbabilities.add(threeHighestProbabilities
+							.get(1));
+					threeMostProbableRanks.add(threeMostProbableRanks.get(1));
+				}
+			}
+			// evaluating
+			for (int j = 0; j < threeMostProbableRanks.size(); j++) {
+				if (rank - threeMostProbableRanks.get(j) > 0) {
+
+					evaluation = evaluation
+							+ (100 - (rank - threeMostProbableRanks.get(j)) * 10)
+							/ 2/2;
+				} else if (rank - threeMostProbableRanks.get(j) < 0) {
+
+					evaluation = evaluation
+							+ (-100 - (rank - threeMostProbableRanks.get(j)) * 10)
+							/ 2/2;
+				}
+
+			}
+
+		}
+		
+		
+		
 	}
 
 	private void evaluateForUnitsRevealed() {
@@ -239,7 +299,30 @@ public class MoveEvaluationFunction {
 			}
 
 		}
+		
+		for (int i = 0; i < toFarUnitsRevealed.size(); i++) {
 
+			if (rank
+					- toFarUnitsRevealed.get(i).getUnitReference().getType()
+							.getRank() > 0) {
+				evaluation = evaluation
+						+ 3
+						* (100 - (rank - toFarUnitsRevealed.get(i)
+								.getUnitReference().getType().getRank()) * 10)/2;
+
+			} else if (rank
+					- toFarUnitsRevealed.get(i).getUnitReference().getType()
+							.getRank() < 0) {
+				evaluation = evaluation
+						+ 3
+						* (-100 - (rank - toFarUnitsRevealed.get(i)
+								.getUnitReference().getType().getRank()) * 10)/2;
+
+			}
+
+		}
+
+		
 		// calculating evaluation for fromUnitsRevealed
 		for (int i = 0; i < fromUnitsRevealed.size(); i++) {
 
@@ -311,6 +394,42 @@ public class MoveEvaluationFunction {
 				}
 			}
 		}
+		
+		for (int i = -5; i <= 5; i++) {
+			for (int j = -5; j <= 5; j++) {
+				if ((j > 2 - i && j > 2 + i && j < -2 + i && j < -2 - i)
+						&& ((toY > fromY && j >= 0)
+								|| (toY < fromY && j <= 0)
+								|| (toX > fromX && i >=0) || (toX < fromX &&i <= 0))) {
+					if (toX + i >= 0 && toX + i <= 9 && toY + j >= 0
+							&& toY + j <= 9) {
+						if (!state.getAIUnit(toX + i, toY + j)
+								.getUnitReference().isAir()
+								&& !state.getAIUnit(toX + i, toY + j)
+										.getUnitReference().isLake()) {
+							if (unit.getOwner().getOpponent() == state
+									.getAIUnit(toX + i, toY + j)
+									.getUnitReference().getOwner()) {
+
+								if (state.getAIUnit(toX + i, toY + j)
+										.getUnitReference().getType().getRank() == -2) {
+									toFarUnitsUnrevealed.add(state.getAIUnit(toX
+											+ i, toY + j));
+
+								} else {
+									toFarUnitsRevealed.add(state.getAIUnit(
+											toX + i, toY + j));
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		
+		
 
 		// adding from units
 		for (int i = -2; i <= 2; i++) {
