@@ -103,7 +103,10 @@ public class Move implements Serializable {
 	}
 
 	public boolean isSameMovementAs(Move move) {
-		return this.fromX == move.getFromX() && this.fromY == move.getFromY() && this.toX == move.getToX() && this.toY == move.getToY();
+		return (this.fromX == move.getFromX() 
+				&& this.fromY == move.getFromY() 
+				&& this.toX == move.getToX()
+				&& this.toY == move.getToY());
 	}
 
 	public boolean isMovementInBetween(Move move) {
