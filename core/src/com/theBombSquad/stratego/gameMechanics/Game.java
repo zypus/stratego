@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 import static com.theBombSquad.stratego.rendering.StrategoUtil.*;
 
 /**
@@ -72,7 +71,9 @@ public class Game {
 	@Getter @Setter private long AI_delay = 0;
 
 	@Getter @Setter GameListener gameListener = null;
-
+	static PlayerID PLAYER_1=PlayerID.PLAYER_1;
+	static PlayerID PLAYER_2=PlayerID.PLAYER_2;
+	static PlayerID NEMO=PlayerID.NEMO;
 	public interface GameListener {
 		void gameFinished(int ply, PlayerID winner);
 		boolean performPly(int ply);
@@ -403,18 +404,21 @@ public class Game {
 	}
 
 	private void setSetup(Setup setup, PlayerID playerID) {
+		
 		/**
 		 * puts setup to the main grid depending on a player player 1 on the
 		 * bottom player 2 on the top
 		 */
 		if (playerID == PLAYER_1) {
-			//Set Setup for Player 1
+			//Set Setup for PlayerID.PlayerID.PlayerID.PLAYER_ 1
 			for (int i = 0; i < setup.getWidth(); i++) {
 				for (int j = 0; j < setup.getHeight(); j++) {
 					current.setUnit(i, j + 6, setup.getUnit(i, j));
 				}
 			}
+			
 			player1FinishedSetup = true;
+			
 		} else {
 			//Set Setup for Player 2
 			for (int i = 0; i < setup.getWidth(); i++) {
@@ -423,9 +427,14 @@ public class Game {
 				}
 			}
 			player2FinishedSetup = true;
+			
+	
 		}
 //        System.out.println(playerID +" is finished setting up.");
         if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+        	
+        	
+        	
 			finishedSetup = true;
 //            System.out.println("Starting game.");
 			AIGameState state1 = AI.createAIGameState(player1.getGameView());
@@ -439,6 +448,7 @@ public class Game {
 			AIGameState setup2 = GameStateConverter.convertToAIGameState(pb2, state2);
 			AI.normalize(setup2);
 			AI.setSetupReferences(setup2, PLAYER_2);
+			
             nextTurn();
 		}
 	}

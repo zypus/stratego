@@ -25,6 +25,7 @@ public class AISetup extends Setup{
 	private  ArrayList<Unit> availableUnits;
 	@Getter
 	private Game.GameView view;
+	private int flag;
 
 	public AISetup(Game.GameView view) {
 		super(10, 4);
@@ -33,6 +34,16 @@ public class AISetup extends Setup{
 		pickFlagTactic();
 		executeTactics();
 	}
+	
+	public AISetup(Game.GameView view, int flag) {
+		super(10, 4);
+		this.view = view;
+		this.flag=flag;
+		initAvailableUnits();
+		pickFlagTactic();
+		executeTactics();
+	}
+	
 
 	private void initAvailableUnits() {
 		//		availableUnits= new ArrayList<Unit>();
@@ -92,7 +103,11 @@ public class AISetup extends Setup{
 
 		// add them all one by one
 		int random= (int)(Math.random()*flagTactics.size());
-		flagTactic=flagTactics.get(random);
+		if(flag==-1){
+		flagTactic=flagTactics.get(random);}
+		else{
+			flagTactic=flagTactics.get(flag);
+		}
 		random= (int)(Math.random()*flagTactic.getStrategies().size());
 		strategy= flagTactic.getStrategies().get(random);
 	}

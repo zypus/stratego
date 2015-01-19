@@ -1,19 +1,29 @@
 package com.theBombSquad.stratego.player.ai.players.random;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
+import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.ai.AI;
 import com.theBombSquad.stratego.player.ai.setup.AISetup;
+import com.theBombSquad.stratego.player.ai.setup.FlagTactic;
 
 import java.util.Collections;
 import java.util.List;
 
 public class SetupPlayerAI extends AI {
 	
+	private int flagTactic;
+
 	public SetupPlayerAI(Game.GameView gameView) {
 		super(gameView);
+		flagTactic=-1;
 		
+	}
+
+	public SetupPlayerAI(Game.GameView gameView, int j) {
+		super(gameView);
+		this.flagTactic=j;
 	}
 
 	@Override
@@ -43,7 +53,13 @@ public class SetupPlayerAI extends AI {
 
 	@Override
 	protected Setup setup() {
-		AISetup setup = new AISetup(gameView);
+		AISetup setup;
+		if(flagTactic==-1){
+			 setup = new AISetup(gameView);
+		}
+		else{
+			 setup = new AISetup(gameView,flagTactic);
+		}
 		gameView.setSetup(setup);
 		//System.out.println(gameView.getPlayerID());
 //		Setup setup2 = new Setup(10,4);
