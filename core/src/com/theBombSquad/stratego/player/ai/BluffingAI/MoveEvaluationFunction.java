@@ -1,12 +1,12 @@
 package com.theBombSquad.stratego.player.ai.BluffingAI;
 
-import java.util.ArrayList;
-
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIUnit;
+
+import java.util.ArrayList;
 
 public class MoveEvaluationFunction {
 
@@ -67,8 +67,8 @@ public class MoveEvaluationFunction {
 			if (encounterUnit.getProbabilityFor(UnitType.FLAG) > 0.4) {
 				evaluation = evaluation + flagReward;
 			}
-			//if a spy attacks and uncover 
-			
+			//if a spy attacks and uncover
+
 			// else if it is bomb
 			else if (encounterUnit.getProbabilityFor(UnitType.BOMB) > 0.4
 					|| encounterUnit.getUnitReference().getType().getRank() == 11) {
@@ -96,11 +96,11 @@ public class MoveEvaluationFunction {
 					if (encounterUnit.getUnitReference().getType().getRank() == -2) {
 						evaluation = evaluation + marshalRevealReward
 								- (rank - 2) * 10;
-						System.out.println("Encounter marshal hidden");
+//						System.out.println("Encounter marshal hidden");
 					} else {
 						evaluation = evaluation - 2*marshalReward + (10 - rank)
 								* 10;
-						System.out.println("encounter marshal revealed");
+//						System.out.println("encounter marshal revealed");
 					}
 				}
 			} else {
@@ -288,11 +288,11 @@ public class MoveEvaluationFunction {
 							if (unit.getOwner().getOpponent() == state
 									.getAIUnit(toX + i, toY + j)
 									.getUnitReference().getOwner()) {
-								
+
 								if (i==0 && j==0) {
 									encounterUnit = state.getAIUnit(toX + i,
 											toY + j);
-									System.out.println("Encounter");
+//									System.out.println("Encounter");
 								}
 
 								else if (state.getAIUnit(toX + i, toY + j)

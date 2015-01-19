@@ -1,11 +1,8 @@
 package com.theBombSquad.stratego.player.ai.BluffingAI;
 
-import com.theBombSquad.stratego.StrategoConstants.PlayerID;
-import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit.UnitType;
 import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.AIGameState.PlayerInformation;
-import com.theBombSquad.stratego.player.ai.AIUnit;
 
 public class StateEvaluationFunction {
 
@@ -113,7 +110,7 @@ public class StateEvaluationFunction {
 			}
 		}
 		evaluation = evaluation + (20 - dist) * 10;
-		
+
 
 	}
 
@@ -153,9 +150,9 @@ public class StateEvaluationFunction {
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		int min = 100;
 		int dist = 0;
 		for (int i = 0; i < 10; i++) {
@@ -165,7 +162,7 @@ public class StateEvaluationFunction {
 					dist = Math.abs(flagX - i) + Math.abs(flagY - j);
 					if (dist < min) {
 						min = dist;
-						System.out.println(dist);
+//						System.out.println(dist);
 					}
 				}
 			}

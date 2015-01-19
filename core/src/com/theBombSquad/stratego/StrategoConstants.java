@@ -1,11 +1,12 @@
 package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.BluffingAI.MoveEvalAI;
+import com.theBombSquad.stratego.player.ai.BluffingAI.StateEvalAI;
+import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
-import com.theBombSquad.stratego.player.ai.players.random.MctsAI;
-import com.theBombSquad.stratego.player.ai.players.random.NegamaxAI;
 import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
@@ -65,12 +66,13 @@ public class StrategoConstants {
 	public static enum PlayerType {
 		HUMAN(HumanPlayer.class),
 		RANDOM(RandomAI.class),
-		MCTS(MctsAI.class),
 		SETUPAI(SetupPlayerAI.class),
 		TDSTRATEGO(TDStratego.class),
 		ONE_PLYER(OnePlyDeepAI.class),
 		THE_QUEEN(TheQueen.class),
-		NEGAMAX(NegamaxAI.class);
+		MOVE_EVAL(MoveEvalAI.class),
+		STATE_EVAL(StateEvalAI.class),
+		STATE_MOVE_EVAL(StateMoveEvalAI.class);
 
 		private Class<? extends Player> playerClass;
 

@@ -41,6 +41,7 @@ public abstract class AI extends Player {
 	private static AIGameState[] currentState = new AIGameState[]{null, null};
 
 	public static Game game;
+	private static boolean DEBUG_STATES = false;
 
 	public AI(GameView gameView) {
 		super(gameView);
@@ -91,15 +92,15 @@ public abstract class AI extends Player {
 
 	private static void addScoutMoves(GameView gameView, List<Move> list, int cx, int cy) {
 		// TODO Auto-generated method stub
-		boolean up=true;
-		boolean left=true;
-		boolean right=true;
-		boolean down=true;
-		int counter=1;
-		while(up){
-			Move move=new Move(cx,cy,cx+counter,cy);
-			if(gameView.validateMove(move)){
-				list.add(new Move(cx,cy,cx+counter,cy));
+		boolean up = true;
+		boolean left = true;
+		boolean right = true;
+		boolean down = true;
+		int counter = 1;
+		while (up) {
+			Move move = new Move(cx, cy, cx + counter, cy);
+			if (gameView.validateMove(move)) {
+				list.add(new Move(cx, cy, cx + counter, cy));
 				counter++;
 			}
 			else{
@@ -763,7 +764,7 @@ public abstract class AI extends Player {
 
 	public static AIGameState advanceGameState(AIGameState gameState, Move move) {
 		AIGameState state = createOutcomeOfMove(gameState, move);
-		if (gameState.getCurrentPlayer() == PLAYER_1) {
+		if (gameState.getCurrentPlayer() == PLAYER_1 && DEBUG_STATES) {
 			AIGameStateDebugger.debug(state);
 		}
 		return state;
