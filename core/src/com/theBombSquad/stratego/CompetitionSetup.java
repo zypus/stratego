@@ -114,7 +114,7 @@ public class CompetitionSetup implements Game.GameListener {
 			game.startSetupPhase();
 		
 		} else {
-			round=0;
+			round=1;
 
 			System.out.println("FlagTact: " + (i + 1) + " vs FlagTact: "
 					+ (j + 1) + " Result: " + player1Wins + "/" + player2Wins
@@ -153,6 +153,7 @@ public class CompetitionSetup implements Game.GameListener {
 		}
 		if (ply > 3000) {
 			System.out.println("Round interrupted!");
+			round--;
 			// mover1.reset();
 			// player2.reset();
 			game.reset();
