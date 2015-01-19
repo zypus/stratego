@@ -47,9 +47,9 @@ public class RandomAI extends AI {
 	}
 
 	@Override protected Setup setup() {
-		boolean f = true;
+		boolean f = false;
 		if(f){
-			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+			return null;
 		}
 		else{
 			Setup setup = new Setup(10,4);

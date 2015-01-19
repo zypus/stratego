@@ -1,6 +1,7 @@
 package com.theBombSquad.stratego.player.ai.players.planner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 
@@ -10,15 +11,14 @@ import com.theBombSquad.stratego.gameMechanics.board.Encounter.CombatResult;
 import com.theBombSquad.stratego.gameMechanics.board.GameBoard;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Unit;
-import com.theBombSquad.stratego.player.ai.players.planner.aStar.AStar;
+import com.theBombSquad.stratego.player.ai.players.planner.aStar.GameSpecificAStar;
 
 /** Gives Points For Getting A Unit Able To Defeat A Specific Revealed Opponent Unit To A Space Next To It */
 public class PlanMarchKill implements Plan{
 	
 	private Unit target;
 	private boolean currActive = false;
-	private AStar star = null;
-
+	private GameSpecificAStar star = null;
 	
 	public PlanMarchKill(Unit target){
 		this.target = target;
@@ -38,28 +38,34 @@ public class PlanMarchKill implements Plan{
 		if(target.wasRevealed(view.getCurrentTurn())){
 			CombatResult result = Encounter.resolveFight(self.getType(), target.getType());
 			if(result.equals(CombatResult.VICTORIOUS_ATTACK)){
-				ArrayList<AStar.Node> nodes = star.getPath(move.getToX(), move.getToY());
-				if(nodes.size()>0){
-					ArrayList<AStar.Node> nodesX = star.getPath(move.getFromX(), move.getFromY());
-					if(nodesX.size()>nodes.size()){
-						value = TheQueen.getUnitValue(target.getType())*10/(nodes.size()+1);
+				List<GameSpecificAStar.Node> nodes = star.findPath(move.getFromX(), move.getFromY());
+				for(int c=0; c<nodes.size(); c++){
+					GameSpecificAStar.Node tNode = nodes.get(c);
+					if(tNode.getX()==move.getToX() && tNode.getY()==move.getToY()){
+						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c) * 10;
+					}
+				}
+			}
+			else if(result.equals(CombatResult.MUTUAL_DEFEAT)){
+				List<GameSpecificAStar.Node> nodes = star.findPath(move.getFromX(), move.getFromY());
+				for(int c=0; c<nodes.size(); c++){
+					GameSpecificAStar.Node tNode = nodes.get(c);
+					if(tNode.getX()==move.getToX() && tNode.getY()==move.getToY()){
+						value = TheQueen.getUnitValue(target.getType())/(nodes.size()-c) / 2;
 					}
 				}
 			}
 		}
-		
 		return value;
 	}
-
+	
 	@Override
 	public void postMoveUpdate(GameView view) {
 		GameBoard board = view.getCurrentState();
-		boolean[][] collMap = new boolean[board.getHeight()][board.getWidth()];
 		int destX = -1;
 		int destY = -1;
 		for(int cy=0; cy<board.getHeight(); cy++){
 			for(int cx=0; cx<board.getWidth(); cx++){
-				collMap[cy][cx] = !board.getUnit(cx, cy).isAir();
 				if(board.getUnit(cx, cy).getId()==target.getId()){
 					this.target = board.getUnit(cx, cy);
 					destX = cx;
@@ -72,7 +78,7 @@ public class PlanMarchKill implements Plan{
 		}
 		else{
 			currActive = true;
-			this.star = new AStar(collMap, destX, destY);
+			this.star = new GameSpecificAStar(board, destX, destY);
 		}
 	}
 

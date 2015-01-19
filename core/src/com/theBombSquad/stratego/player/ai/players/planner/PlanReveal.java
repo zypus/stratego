@@ -14,11 +14,9 @@ public class PlanReveal implements Plan{
 		GameBoard board = view.getCurrentState();
 		Unit self = board.getUnit(move.getFromX(), move.getFromY());
 		Unit target = board.getUnit(move.getToX(), move.getToY());
-		//If Not Enemy Unit, Plan Won't Judge
-		if(!target.isAir()){
-			if(!target.wasRevealed(view.getCurrentTurn())){
-				value = calcRevBonus(view) * view.getCurrentState().getAliveUnits(self.getType(), view.getPlayerID());
-			}
+		//If Not Unknown Enemy Unit, Plan Won't Judge
+		if(target.isUnknown()){
+			value = calcRevBonus(view) - TheQueen.getUnitValue(self.getType());
 		}
 		return value;
 	}
@@ -26,40 +24,31 @@ public class PlanReveal implements Plan{
 	
 	/** Calc Bonus That Should Be Handed Out For Uncovering Opponent Piece */
 	private float calcRevBonus(GameView view){
-		//See How Many Units Of Opponent Of Certain Type Have Been Revealed
-		int opponentHiddenArmySize = 0;
-		int[] revealedOfType = new int[12];
 		GameBoard board = view.getCurrentState();
+		int[] opponentUnitUncovered = new int[12];
 		for(int cy=0; cy<board.getHeight(); cy++){
 			for(int cx=0; cx<board.getWidth(); cx++){
 				Unit unit = board.getUnit(cx, cy);
-				if(unit.getOwner().equals(view.getOpponentID())){
-					if(unit.wasRevealed(view.getCurrentTurn())){
-						revealedOfType[unit.getType().getRank()]++;
-					}
-					else{
-						opponentHiddenArmySize++;
+				if(unit.getOwner()==view.getOpponentID()){
+					if(!unit.isUnknown()){
+						opponentUnitUncovered[unit.getType().getRank()] += 1;
 					}
 				}
 			}
 		}
-		//Default To Scout, Weakest UnitType As Strongest Hidden Alive Opponent Unit
-		UnitType strongestAliveHiddenUnit = Unit.UnitType.SCOUT;
-		for(int c=10; c>=0; c--){
-			if(board.getAliveUnits(Unit.getUnitTypeOfRank(c), view.getOpponentID())>0){
-				if(revealedOfType[c]<Unit.getUnitTypeOfRank(c).getQuantity()){
-					strongestAliveHiddenUnit = Unit.getUnitTypeOfRank(c);
-				}
-			}
+		float bonus = 0;
+		int totalNumber = 0;
+		for(int c=0; c<12; c++){
+			UnitType type = Unit.getUnitTypeOfRank(c);
+			int opponentFeasible = type.getQuantity() - opponentUnitUncovered[c] - view.getNumberOfDefeatedOpponentUnits(c);
+			totalNumber += opponentFeasible;
+			bonus += TheQueen.getUnitValue(type) * opponentFeasible;
 		}
-		//Calculate Value Of Maybe Revealing This Unit
-		return TheQueen.getUnitValue(strongestAliveHiddenUnit)/opponentHiddenArmySize;
+		return bonus/totalNumber;
 	}
 	
 
 	@Override
-	public void postMoveUpdate(GameView view) {
-		// TODO Auto-generated method stub
-	}
+	public void postMoveUpdate(GameView view) {}
 
 }
