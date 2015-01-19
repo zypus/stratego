@@ -36,7 +36,6 @@ public class OnePlyDeepAI extends AI{
 						currentScore += possibleResult.evaluate(eval, super.gameView.getPlayerID())*possibleResult.getRelativeProbability();
 					}
 					currentScore = currentScore / relProb;
-					System.out.println(currentScore);
 					if(currentScore==bestScore){
 						bestMoves.add(move);
 					}
