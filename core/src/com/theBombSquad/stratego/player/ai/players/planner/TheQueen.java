@@ -35,34 +35,61 @@ public class TheQueen extends AI{
 	private List<Plan> plans;
 	private boolean planSetupFinished = false;
 	
+	private boolean specMode = false;
+	
 	public TheQueen(GameView gameView) {
 		super(gameView);
 	}
 	
+	public TheQueen(GameView gameView, boolean specMode) {
+		super(gameView);
+		this.specMode = specMode;
+	}
+	
 	private void planSetup(){
-		plans = new ArrayList<Plan>();
-		plans.add(new PlanAttackWeakerRevealedAdjacent());
-		plans.add(new PlanFleeStrongerRevealedAdjacent());
-		plans.add(new PlanDefendFlag());
-		plans.add(new PlanReveal());
-		plans.add(new PlanKillWeakerHidden());
-		plans.add(new PlanStrongestPieceAttackPlan());
-		plans.add(new PlanDiscourageLoops());
-		plans.add(new PlanDoNOTAttackStrongerPiece());
-		for(int cy=0; cy<10; cy++){
-			for(int cx=0; cx<10; cx++){
-				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
-					plans.add(new PlanMarchKill(gameView.getUnit(cx, cy)));
-					plans.add(new PlanBlindMarchKill(gameView.getUnit(cx, cy)));
+		if(!specMode){
+			plans = new ArrayList<Plan>();
+			plans.add(new PlanAttackWeakerRevealedAdjacent());
+			plans.add(new PlanFleeStrongerRevealedAdjacent());
+			plans.add(new PlanDefendFlag());
+			plans.add(new PlanReveal());
+			plans.add(new PlanKillWeakerHidden());
+			plans.add(new PlanStrongestPieceAttackPlan());
+			plans.add(new PlanDiscourageLoops());
+			plans.add(new PlanDoNOTAttackStrongerPiece());
+			for(int cy=0; cy<10; cy++){
+				for(int cx=0; cx<10; cx++){
+					if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
+						plans.add(new PlanMarchKill(gameView.getUnit(cx, cy)));
+						plans.add(new PlanBlindMarchKill(gameView.getUnit(cx, cy)));
+					}
+				}
+			}
+			for(int c=0; c<12; c++){
+				UnitType type = Unit.getUnitTypeOfRank(c);
+				if(!type.equals(Unit.UnitType.BOMB) && !type.equals(Unit.UnitType.FLAG)){
+					plans.add(new PlanAvoidHiddenStronger(type));
 				}
 			}
 		}
-		for(int c=0; c<12; c++){
-			UnitType type = Unit.getUnitTypeOfRank(c);
-			if(!type.equals(Unit.UnitType.BOMB) && !type.equals(Unit.UnitType.FLAG)){
-				plans.add(new PlanAvoidHiddenStronger(type));
+		else{
+			plans = new ArrayList<Plan>();
+			plans.add(new PlanAttackWeakerRevealedAdjacent());
+			plans.add(new PlanFleeStrongerRevealedAdjacent());
+			plans.add(new PlanDefendFlag());
+			plans.add(new PlanReveal());
+			plans.add(new PlanKillWeakerHidden());
+			plans.add(new PlanStrongestPieceAttackPlan());
+			plans.add(new PlanDiscourageLoops());
+			plans.add(new PlanDoNOTAttackStrongerPiece());
+			for(int c=0; c<12; c++){
+				UnitType type = Unit.getUnitTypeOfRank(c);
+				if(!type.equals(Unit.UnitType.BOMB) && !type.equals(Unit.UnitType.FLAG)){
+					plans.add(new PlanAvoidHiddenStronger(type));
+				}
 			}
 		}
+		
 		this.planSetupFinished = true;
 	}
 	

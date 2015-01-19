@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.humanoid.HumanPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteListeningPlayer;
 import com.theBombSquad.stratego.player.remote.RemoteServingPlayer;
@@ -42,6 +43,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -84,11 +86,29 @@ public class Stratego extends ApplicationAdapter {
 		// TODO setup everything
 		AtlasPacker.pack();
 		windowScale = (float)Gdx.graphics.getWidth() / (float)ASSUMED_WINDOW_WIDTH;
-		setupGame();
+		
+		experimentalGame();
+		
+	}
+	
+	
+	private void experimentalGame(){
+		
+		
+		this.game = new Game();
+		GameView playerOneView = new GameView(game, StrategoConstants.PlayerID.PLAYER_1);
+		GameView playerTwoView = new GameView(game, StrategoConstants.PlayerID.PLAYER_2);
+		Player p1 = new TheQueen(playerOneView, false);
+		Player p2 = new TheQueen(playerTwoView, true);
+		setupGame(p1, p2, game);
+		
+		this.currentExperiment = new Experiment(p1, p2);
+		
+		
 		this.batch = new SpriteBatch();
 		// TODO start the setup phase of the game
 
-		inputMultiplexer.addProcessor(new GameRestarter(game, this));
+		//inputMultiplexer.addProcessor(new GameRestarter(game, this));
 
 		// delayed method execution
 		new Thread(new Runnable() {
@@ -102,6 +122,7 @@ public class Stratego extends ApplicationAdapter {
 			}
 		}).start();
 	}
+	
 
 	@Override
 	public void render () {
@@ -110,6 +131,84 @@ public class Stratego extends ApplicationAdapter {
 		batch.begin();
 		layerRenderer.render(batch);
 		batch.end();
+		if(this.game.isGameOver() || this.game.getPlayer1().getGameView().getCurrentTurn()>3000){
+			game.reset();
+			experimentalGame();
+		}
+	}
+	
+	@Data
+	public class Experiment{
+		private Player player1;
+		private Player player2;
+		
+		public Experiment(Player player1, Player player2){
+			this.player1 = player1;
+			this.player2 = player2;
+		}
+		
+		private boolean victory1 = false;
+		private boolean victory2 = false;
+		private boolean draw = false;
+		
+		private int turns;
+		
+	}
+	
+	private Experiment currentExperiment;
+	private ArrayList<Experiment> games = new ArrayList<Experiment>();
+	
+	private int runs = 50;
+	
+	private void experimantalGameSetter(){
+		
+		if(game.getWinner().equals(currentExperiment.player1)){
+			currentExperiment.setVictory1(true);
+		}
+		else if(game.getWinner().equals(currentExperiment.player2)){
+			currentExperiment.setVictory2(true);
+		}
+		else{
+			currentExperiment.setDraw(true);
+		}
+		currentExperiment.setTurns(currentExperiment.getPlayer1().getGameView().getCurrentTurn());
+		
+		games.add(currentExperiment);
+		
+		if(games.size()>=runs){
+			eval();
+		}
+		else{
+			experimentalGame();
+		}
+		
+	}
+	
+	private void eval(){
+		ArrayList<Integer> turns = new ArrayList<Integer>();
+		int avgTurns = 0;
+		int p1 = 0;
+		int p2 = 0;
+		int draw = 0;
+		for(int c=0; c<games.size(); c++){
+			Experiment e = games.get(c);
+			turns.add(e.getTurns());
+			avgTurns += e.getTurns();
+			if(e.isVictory1()){
+				p1++;
+			}
+			else if(e.isVictory2()){
+				p2++;
+			}
+			else{
+				draw++;
+			}
+		}
+		Experiment e = games.get(0);
+		avgTurns = avgTurns/games.size();
+		Collections.sort(turns);
+		float median = turns.get(turns.size()/2);
+		System.out.println("P1: "+p1+" | P2: "+p2+" | Draw: "+draw+" | AvgTurns: "+avgTurns+" | Median: "+median);
 	}
 
 	protected JOptionPane getOptionPane(JComponent parent) {
@@ -274,6 +373,29 @@ public class Stratego extends ApplicationAdapter {
 		// TODO setup renderers
 		setupRenderer(game);
 	}
+	
+	private void setupGame(Player player1, Player player2, Game game) {
+		// TODO create the game instance
+		// creates the two game views, one for each player perspective
+		GameView playerOneView = new GameView(game, StrategoConstants.PlayerID.PLAYER_1);
+		GameView playerTwoView = new GameView(game, StrategoConstants.PlayerID.PLAYER_2);
+		// create some observer view
+		GameView renderView = new GameView(game, StrategoConstants.PlayerID.NEMO);
+
+		// TODO create the players or get the players?
+		Player[] player = new Player[]{player1, player2};//determinePlayers(playerOneView, playerTwoView);
+
+		// tell the game about the players
+		game.setPlayer1(player[0]);
+		game.setPlayer2(player[1]);
+		//TODO: this is only supposed to happen if the view is of Player 2, who is a human player:
+		//((HumanPlayer)player2).setFlippedBoard(true);
+		// TODO setup renderers
+		
+		game.setAI_delay(0);
+		
+		setupRenderer(game);
+	}
 
 	private Player[] determinePlayers(GameView playerOneView, GameView playerTwoView) {
 		Player[] player = new Player[2];
@@ -401,4 +523,7 @@ public class Stratego extends ApplicationAdapter {
 		}
 
 	}
+	
+	
+	
 }
