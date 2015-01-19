@@ -44,8 +44,6 @@ public class ProbabilityBoard {
 			} else if (player == attacker.getPlayerID()) {
 				// attacker wins
 				board[toY][toX] = attacker;
-
-
 				//
 			}
 		}
