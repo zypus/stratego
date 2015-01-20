@@ -1,7 +1,6 @@
 package com.theBombSquad.stratego.player.ai.BluffingAI;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
-import com.theBombSquad.stratego.gameMechanics.Game.GameView;
 import com.theBombSquad.stratego.gameMechanics.board.Move;
 import com.theBombSquad.stratego.gameMechanics.board.Setup;
 import com.theBombSquad.stratego.player.ai.AI;
@@ -12,14 +11,14 @@ import java.util.List;
 
 
 public class MoveEvalBluffingAI extends AI {
-	
+
 	int[] weights={175,191,188,178,164,155,111,185,179,191,87};
-	
-	double bluffingProb=0.1;
+
+	double bluffingProb=0.05;
 	double bluffMinimum=100;
 	MoveEvaluationFunction evaluationFunction = new MoveEvaluationFunction();
 	BluffingMoveEvaluation bluff= new BluffingMoveEvaluation();
-	
+
 	public MoveEvalBluffingAI(Game.GameView gameView) {
 		super(gameView);
 	}
@@ -46,7 +45,7 @@ public class MoveEvalBluffingAI extends AI {
 					max = value;
 				}
 			}
-			
+
 			if(bluffMinimum<=max){
 				bestMove = null;
 				 max = -Double.MAX_VALUE;
@@ -58,7 +57,7 @@ public class MoveEvalBluffingAI extends AI {
 					}
 				}
 			}
-			
+
 		}
 		gameView.performMove(bestMove);
 		return bestMove;

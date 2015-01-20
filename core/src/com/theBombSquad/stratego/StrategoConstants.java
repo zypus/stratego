@@ -2,9 +2,9 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.BluffingAI.MoveEvalAI;
+import com.theBombSquad.stratego.player.ai.BluffingAI.MoveEvalBluffingAI;
 import com.theBombSquad.stratego.player.ai.BluffingAI.StateEvalAI;
 import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
-import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalBluffingAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.TDStratego.TDStratego;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
@@ -76,7 +76,7 @@ public class StrategoConstants {
 		MOVE_EVAL(MoveEvalAI.class),
 		STATE_EVAL(StateEvalAI.class),
 		STATE_MOVE_EVAL(StateMoveEvalAI.class),
-		BLUFFING(StateMoveEvalBluffingAI.class);
+		THE_KING(MoveEvalBluffingAI.class);
 
 		private Class<? extends Player> playerClass;
 
@@ -97,7 +97,7 @@ public class StrategoConstants {
 			return playerInstance;
 		}
 
-		}
+	}
 
 	/** Remote constants */
 	public static final String LOCAL_HOST     = "127.0.0.1";
