@@ -41,7 +41,7 @@ public abstract class AI extends Player {
 	private static AIGameState[] currentState = new AIGameState[]{null, null};
 
 	public static Game game;
-	private static boolean DEBUG_STATES = false;
+	private static boolean DEBUG_STATES = true;
 
 	public AI(GameView gameView) {
 		super(gameView);
@@ -616,13 +616,13 @@ public abstract class AI extends Player {
 	}
 
 	private static void marshalUpdate(AIGameState updatedState, AIUnit unit, AIGameState setupReference, int sx) {
-		int h1 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 6 : 0;
-		int h2 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 10 : 5;
+//		int h1 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 0 : 6;
+//		int h2 = (updatedState.getCurrentPlayer() == unit.getOwner()) ? 5 : 10;
 		for (int cx = 0; cx < setupReference.getWidth(); cx++) {
-			for (int cy = h1; cy < h2; cy++) {
+			for (int cy = 0; cy < setupReference.getHeight(); cy++) {
 				AIUnit refUnit = setupReference.getAIUnit(cx, cy);
 				AIUnit currentUnit = updatedState.getCorresponding(refUnit.getUnitReference());
-				if (currentUnit != null) {
+				if (currentUnit != null && currentUnit.getOwner() == unit.getOwner()) {
 					if (sx >= 5) {
 						if (cx >= 5) {
 							currentUnit.setProbabilityFor(FLAG, currentUnit.getProbabilityFor(FLAG) * POSITIVE_MARSHAL_FLAG_MODIFIER);
@@ -663,6 +663,7 @@ public abstract class AI extends Player {
 		if (playerID != null && playerID != NEMO) {
 			setupReferences[playerID.ordinal()] = reference;
 			currentState[playerID.ordinal()] = reference;
+			AIGameStateDebugger.debug(new AIGameState(reference));
 		}
 	}
 

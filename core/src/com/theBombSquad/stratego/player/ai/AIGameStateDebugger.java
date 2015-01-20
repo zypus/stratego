@@ -8,6 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -34,7 +37,7 @@ import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
  */
 public class AIGameStateDebugger extends JFrame {
 
-	static final boolean enabled = true;
+	static final boolean enabled = false;
 	static final boolean hold = true;
 	static final boolean single = false;
 
@@ -44,6 +47,8 @@ public class AIGameStateDebugger extends JFrame {
 
 	static AIGameStateDebugger instance = null;
 	private static AIGameStateDebuggerPanel pane;
+
+	private static Unit.UnitType unitType = null;
 
 	public static void debug(AIGameState gameState) {
 		if (enabled) {
@@ -99,6 +104,8 @@ public class AIGameStateDebugger extends JFrame {
 
 		public AIGameStateDebuggerPanel() {
 			final AIGameStateDebuggerPanel self = this;
+			JPanel top = new JPanel();
+			top.setLayout(new BoxLayout(top, BoxLayout.LINE_AXIS));
 			setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 			JPanel grid = new JPanel(new GridLayout(10, 10));
 			AIUnitListener listener = new AIUnitListener();
@@ -109,19 +116,51 @@ public class AIGameStateDebugger extends JFrame {
 					grid.add(cell);
 				}
 			}
-			add(grid);
+			top.add(grid);
+			add(top);
 			JPanel bar = new JPanel();
 			final JLabel count = new JLabel("0");
 			count.setPreferredSize(new Dimension(50, 20));
-			final JLabel pos = new JLabel("0");
+			final JTextField pos = new JTextField("0");
 			pos.setPreferredSize(new Dimension(50, 20));
+			// Listen for changes in the text
+			pos.getDocument()
+					 .addDocumentListener(new DocumentListener() {
+						 public void changedUpdate(DocumentEvent e) {
+							 warn();
+						 }
+
+						 public void removeUpdate(DocumentEvent e) {
+							 warn();
+						 }
+
+						 public void insertUpdate(DocumentEvent e) {
+							 warn();
+						 }
+
+						 public void warn() {
+							 if (!pos.getText().equals("")) {
+								 try {
+									 int i = Integer.parseInt(pos.getText());
+									 if (i >= 0 && i < gameStates.size()) {
+										 activeState = i;
+										 count.setText("" + gameStates.size());
+										 recompute();
+										 self.repaint();
+									 }
+								 } catch (NumberFormatException e) {
+
+								 }
+							 }
+						 }
+					 });
 			JButton left = new JButton("<-");
 			left.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (activeState > 0) {
 						activeState--;
-						pos.setText("" + (activeState + 1));
+						pos.setText("" + activeState);
 						count.setText("" + gameStates.size());
 						recompute();
 						self.repaint();
@@ -134,7 +173,7 @@ public class AIGameStateDebugger extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					if (activeState < gameStates.size() - 1) {
 						activeState++;
-						pos.setText("" + (activeState + 1));
+						pos.setText("" + activeState);
 						count.setText("" + gameStates.size());
 						recompute();
 						self.repaint();
@@ -178,6 +217,27 @@ public class AIGameStateDebugger extends JFrame {
 			stateInfo.add(left2);
 			stateInfo.add(context);
 			add(stateScroller);
+
+			JPanel typePanel = new JPanel();
+			typePanel.setLayout(new BoxLayout(typePanel, BoxLayout.PAGE_AXIS));
+			for (int i = 3; i < Unit.UnitType.values().length; i++) {
+				final Unit.UnitType type = Unit.UnitType.values()[i];
+				JButton button = new JButton(type.toString());
+				button.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (unitType == type) {
+							unitType = null;
+						} else {
+							unitType = type;
+						}
+						self.repaint();
+					}
+				});
+				typePanel.add(button);
+			}
+			top.add(typePanel);
+
 			recompute();
 		}
 
@@ -251,9 +311,17 @@ public class AIGameStateDebugger extends JFrame {
 						g2.setColor(Color.white);
 					}
 				} else if (unit.getOwner() == PLAYER_1) {
-					g2.setColor(Color.blue.brighter());
+					if (unitType != null) {
+						g2.setColor(new Color(0,0, Math.min(5 * unit.getProbabilityFor(unitType), 1)));
+					} else {
+						g2.setColor(Color.blue.brighter());
+					}
 				} else {
-					g2.setColor(Color.red.brighter());
+					if (unitType != null) {
+						g2.setColor(new Color(Math.min(5*unit.getProbabilityFor(unitType), 1), 0, 0));
+					} else {
+						g2.setColor(Color.red.brighter());
+					}
 				}
 				if (state.isOverloaded(x, y)) {
 					float halfWidth = (float) getWidth() / 2f;
@@ -267,12 +335,26 @@ public class AIGameStateDebugger extends JFrame {
 				} else {
 					g2.fill(rect);
 				}
-				g2.setColor(Color.black);
+				if (unitType != null && unit.getOwner() != NEMO) {
+					if (unit.getOwner() == PLAYER_1) {
+						g2.setColor(Color.blue);
+					} else {
+						g2.setColor(Color.red);
+					}
+				} else {
+					g2.setColor(Color.black);
+				}
 				g2.draw(rect);
 
 				Font font = g2.getFont();
 				if (unit.getOwner() != null && unit.getOwner() != NEMO) {
-					if (unit.getOwner() == PLAYER_1) {
+					if (unitType != null) {
+						if (unit.getProbabilityFor(unitType)*5 > 0.5) {
+							g2.setColor(Color.lightGray);
+						} else {
+							g2.setColor(Color.gray);
+						}
+					} else if (unit.getOwner() == PLAYER_1) {
 						g2.setColor(Color.white);
 					} else {
 						g2.setColor(Color.black);
@@ -317,46 +399,48 @@ public class AIGameStateDebugger extends JFrame {
 			frame.setContentPane(pane);
 		}
 
-
+		private static boolean active = false;
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			JPanel panel = (JPanel)frame.getContentPane();
-			panel.removeAll();
-			if (activeState < gameStates.size()) {
-				WeakReference<AIGameState> reference = gameStates.get(activeState);
-				AIGameState state = reference.get();
-				if (state != null) {
-					JButton source = (JButton) e.getSource();
-					String label = source.getText();
-					String[] split = label.split(";");
-					int x = Integer.parseInt(split[0]);
-					int y = Integer.parseInt(split[1]);
-					AIUnit unit = state.getAIUnit(x, y);
-					panel.add(new JLabel(unit.getOwner()
-											 .toString()));
-					panel.add(new JLabel(""+unit.getUnitReference()));
-					panel.add(new JLabel("Moved: " + unit.isMoved()));
-					panel.add(new JLabel("Revealed: " + unit.isRevealed()));
-					for (int i = 3; i < Unit.UnitType.values().length; i++) {
-						Unit.UnitType type = Unit.UnitType.values()[i];
-						panel.add(new JLabel(type.toString()+": "+unit.getProbabilityFor(type)));
-					}
-					if (state.isOverloaded(x, y)) {
-						panel.add(new JLabel("Overload"));
-						AIUnit unit2 = state.getAIUnitFor(x, y, PLAYER_2);
-						panel.add(new JLabel(unit2.getOwner()
+			if (active) {
+				JPanel panel = (JPanel) frame.getContentPane();
+				panel.removeAll();
+				if (activeState < gameStates.size()) {
+					WeakReference<AIGameState> reference = gameStates.get(activeState);
+					AIGameState state = reference.get();
+					if (state != null) {
+						JButton source = (JButton) e.getSource();
+						String label = source.getText();
+						String[] split = label.split(";");
+						int x = Integer.parseInt(split[0]);
+						int y = Integer.parseInt(split[1]);
+						AIUnit unit = state.getAIUnit(x, y);
+						panel.add(new JLabel(unit.getOwner()
 												 .toString()));
-						panel.add(new JLabel("" + unit2.getUnitReference()));
-						panel.add(new JLabel("Moved: " + unit2.isMoved()));
-						panel.add(new JLabel("Revealed: " + unit2.isRevealed()));
+						panel.add(new JLabel("" + unit.getUnitReference()));
+						panel.add(new JLabel("Moved: " + unit.isMoved()));
+						panel.add(new JLabel("Revealed: " + unit.isRevealed()));
 						for (int i = 3; i < Unit.UnitType.values().length; i++) {
 							Unit.UnitType type = Unit.UnitType.values()[i];
-							panel.add(new JLabel(type.toString() + ": " + unit2.getProbabilityFor(type)));
+							panel.add(new JLabel(type.toString() + ": " + unit.getProbabilityFor(type)));
 						}
+						if (state.isOverloaded(x, y)) {
+							panel.add(new JLabel("Overload"));
+							AIUnit unit2 = state.getAIUnitFor(x, y, PLAYER_2);
+							panel.add(new JLabel(unit2.getOwner()
+													  .toString()));
+							panel.add(new JLabel("" + unit2.getUnitReference()));
+							panel.add(new JLabel("Moved: " + unit2.isMoved()));
+							panel.add(new JLabel("Revealed: " + unit2.isRevealed()));
+							for (int i = 3; i < Unit.UnitType.values().length; i++) {
+								Unit.UnitType type = Unit.UnitType.values()[i];
+								panel.add(new JLabel(type.toString() + ": " + unit2.getProbabilityFor(type)));
+							}
+						}
+						panel.repaint();
+						frame.setVisible(true);
 					}
-					panel.repaint();
-					frame.setVisible(true);
 				}
 			}
 		}

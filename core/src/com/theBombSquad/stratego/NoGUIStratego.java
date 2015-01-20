@@ -2,9 +2,9 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
-import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.List;
  * @created 10/12/14
  */
 public class NoGUIStratego implements Game.GameListener {
-	private static final int MAX_ROUNDS = 100;
+	private static final int MAX_ROUNDS = 200;
 
 	private int round = 0;
 	int player1Wins = 0;
@@ -46,10 +46,10 @@ public class NoGUIStratego implements Game.GameListener {
 		Game.GameView playerTwoView = new Game.GameView(game, StrategoConstants.PlayerID.PLAYER_2);
 		// create some observer view
 
-		mover1 = new TheQueen(playerOneView);
+		mover1 = new RandomAI(playerOneView);
 		player1 = new HybridAI(playerOneView).setMover(mover1)
 											 .setSetuper(new SetupPlayerAI(playerOneView));
-		mover2 = new RandomAI(playerTwoView);
+		mover2 = new StateMoveEvalAI(playerTwoView);
 		player2 = new HybridAI(playerTwoView).setMover(mover2)
 											 .setSetuper(new SetupPlayerAI(playerTwoView));
 		//		player1.setLearning(true);
@@ -101,10 +101,12 @@ public class NoGUIStratego implements Game.GameListener {
 		if (ply % 1000 == 0) {
 			System.out.println("Ply "+ply);
 		}
-		if (ply < 0) {
+		if (ply > 3000) {
 			System.out.println("Round interrupted!");
+			round--;
 //			mover1.reset();
 			//			player2.reset();
+			game.reset();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

@@ -438,7 +438,8 @@ public class Game {
 			ProbabilityBoard pb2 = new ProbabilityBoard(PLAYER_2, PLAYER_1);
 			AIGameState setup2 = GameStateConverter.convertToAIGameState(pb2, state2);
 			AI.normalize(setup2);
-			AI.setSetupReferences(setup2, PLAYER_2);
+			AI.setSetupReferences(AI.createAIGameState(player2.getGameView()), PLAYER_2);
+//			AI.setSetupReferences(setup2, PLAYER_2);
             nextTurn();
 		}
 	}
