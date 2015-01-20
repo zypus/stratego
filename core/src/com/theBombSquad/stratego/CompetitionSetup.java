@@ -7,7 +7,9 @@ import java.util.List;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.BluffingAI.MoveEvalAI;
+import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
+import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
 import com.theBombSquad.stratego.player.ai.players.random.OnePlyDeepAI;
 import com.theBombSquad.stratego.player.ai.players.random.SetupPlayerAI;
@@ -33,8 +35,8 @@ public class CompetitionSetup implements Game.GameListener {
 	int player2Wins =00;
 	int draws = 0;
 	int totalPlys = 0;
-	int i = 0;
-	int j = 0;
+	int i = 7;
+	int j = 2;
 
 	private Game game;
 	private Player player1;
@@ -74,8 +76,8 @@ public class CompetitionSetup implements Game.GameListener {
 		flagTactics.add(new FlagTactic10());
 		flagTactics.add(new FlagTactic11());
 
-		mover1 = new OnePlyDeepAI(playerOneView);
-		mover2 = new TheQueen(playerTwoView);
+		mover1 = new TheQueen(playerOneView);
+		mover2 = new StateMoveEvalAI(playerTwoView);
 
 		player1 = new HybridAI(playerOneView).setMover(mover1).setSetuper(
 				new SetupPlayerAI(playerOneView, i));
