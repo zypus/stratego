@@ -14,6 +14,7 @@ import java.util.List;
 public class SetupPlayerAI extends AI {
 	
 	private int flagTactic;
+	private int[] weights=null;
 
 	public SetupPlayerAI(Game.GameView gameView) {
 		super(gameView);
@@ -24,6 +25,10 @@ public class SetupPlayerAI extends AI {
 	public SetupPlayerAI(Game.GameView gameView, int j) {
 		super(gameView);
 		this.flagTactic=j;
+	}
+	public SetupPlayerAI(Game.GameView gameView, int[] j) {
+		super(gameView);
+		this.weights=j;
 	}
 
 	@Override
@@ -56,6 +61,9 @@ public class SetupPlayerAI extends AI {
 		AISetup setup;
 		if(flagTactic==-1){
 			 setup = new AISetup(gameView);
+		}
+		else if(weights!=null){
+			 setup = new AISetup(gameView,weights);
 		}
 		else{
 			 setup = new AISetup(gameView,flagTactic);

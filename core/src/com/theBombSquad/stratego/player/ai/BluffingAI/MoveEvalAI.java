@@ -18,6 +18,8 @@ import java.util.List;
 public class MoveEvalAI extends AI {
 
 	MoveEvaluationFunction evaluationFunction = new MoveEvaluationFunction();
+	int[] weights={175,191,188,178,164,155,111,185,179,191,87};
+	
 
 	public MoveEvalAI(Game.GameView gameView) {
 		super(gameView);
@@ -43,5 +45,8 @@ public class MoveEvalAI extends AI {
 	@Override
 	protected Setup setup() {
 		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+	}
+	public int[] getWeights(){
+		return weights;
 	}
 }

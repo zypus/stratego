@@ -14,7 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class OnePlyDeepAI extends AI{
-
+	private int[] weights={86,160,141,95,216,140,155,171,152,121,198};
+		
 	public OnePlyDeepAI(GameView gameView) {
 		super(gameView);
 	}
@@ -69,6 +70,9 @@ public class OnePlyDeepAI extends AI{
 //		// so simply sending the setup over to the game
 //		gameView.setSetup(setup);
 //		return setup;
+	}
+	public int[] getWeights(){
+		return weights;
 	}
 
 }

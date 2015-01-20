@@ -77,7 +77,7 @@ public class CompetitionSetup implements Game.GameListener {
 		flagTactics.add(new FlagTactic11());
 
 		mover1 = new TheQueen(playerOneView);
-		mover2 = new StateMoveEvalAI(playerTwoView);
+		mover2 = new MoveEvalAI(playerTwoView);
 
 		player1 = new HybridAI(playerOneView).setMover(mover1).setSetuper(
 				new SetupPlayerAI(playerOneView, i));

@@ -45,7 +45,7 @@ public class MoveEvalBluffingAI extends AI {
 				}
 			}
 			
-			if(bluffMinimum<=100){
+			if(bluffMinimum<=max){
 				bestMove = null;
 				 max = -Double.MAX_VALUE;
 				for (Move move : moves) {
