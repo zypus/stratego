@@ -34,6 +34,7 @@ public class AISetup extends Setup {
 		super(10, 4);
 		this.weights = weights;
 		this.view = view;
+		flag = -1;
 		initAvailableUnits();
 		pickFlagTactic();
 		executeTactics();
@@ -51,7 +52,7 @@ public class AISetup extends Setup {
 	public AISetup(Game.GameView view) {
 		super(10, 4);
 		this.view = view;
-		this.flag = flag;
+		this.flag = -1;
 		initAvailableUnits();
 		pickFlagTactic();
 		executeTactics();
@@ -143,6 +144,7 @@ public class AISetup extends Setup {
 			if (random - weights[i] >= 0) {
 				random = random - weights[i];
 			} else {
+				System.out.println(i);
 				return flagTactics.get(i);
 			}
 		}

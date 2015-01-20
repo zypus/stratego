@@ -54,7 +54,7 @@ public class TheQueen extends AI{
 		plans.add(new PlanStrongestPieceAttackPlan());
 		plans.add(new PlanDiscourageLoops());
 		plans.add(new PlanDoNOTAttackStrongerPiece());
-		plans.add(bluffing);
+		//plans.add(bluffing);
 		for(int cy=0; cy<10; cy++){
 			for(int cx=0; cx<10; cx++){
 				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
@@ -83,7 +83,7 @@ public class TheQueen extends AI{
 		}
 		List<Move> moves = super.createAllLegalMoves(gameView, gameView.getCurrentState());
 		for(Move move : moves){
-			bluffing.normalize(move);
+			//bluffing.normalize(move);
 		}
 		float bestProfit = Float.NEGATIVE_INFINITY;
 		ArrayList<Move> bestMoves = new ArrayList<Move>();
