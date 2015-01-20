@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.theBombSquad.stratego.StrategoConstants.*;
-import static com.theBombSquad.stratego.StrategoConstants.PlayerID.*;
 import static com.theBombSquad.stratego.rendering.StrategoUtil.*;
 
 /**
@@ -72,7 +71,9 @@ public class Game {
 	@Getter @Setter private long AI_delay = 0;
 
 	@Getter @Setter GameListener gameListener = null;
-
+	static PlayerID PLAYER_1=PlayerID.PLAYER_1;
+	static PlayerID PLAYER_2=PlayerID.PLAYER_2;
+	static PlayerID NEMO=PlayerID.NEMO;
 	public interface GameListener {
 		void gameFinished(int ply, PlayerID winner);
 		boolean performPly(int ply);
@@ -403,18 +404,21 @@ public class Game {
 	}
 
 	private void setSetup(Setup setup, PlayerID playerID) {
+		
 		/**
 		 * puts setup to the main grid depending on a player player 1 on the
 		 * bottom player 2 on the top
 		 */
 		if (playerID == PLAYER_1) {
-			//Set Setup for Player 1
+			//Set Setup for PlayerID.PlayerID.PlayerID.PLAYER_ 1
 			for (int i = 0; i < setup.getWidth(); i++) {
 				for (int j = 0; j < setup.getHeight(); j++) {
 					current.setUnit(i, j + 6, setup.getUnit(i, j));
 				}
 			}
+			
 			player1FinishedSetup = true;
+			
 		} else {
 			//Set Setup for Player 2
 			for (int i = 0; i < setup.getWidth(); i++) {
@@ -423,9 +427,14 @@ public class Game {
 				}
 			}
 			player2FinishedSetup = true;
+			
+	
 		}
 //        System.out.println(playerID +" is finished setting up.");
         if(player1FinishedSetup && player2FinishedSetup && !finishedSetup){
+        	
+        	
+        	
 			finishedSetup = true;
 //            System.out.println("Starting game.");
 			AIGameState state1 = AI.createAIGameState(player1.getGameView());
@@ -438,8 +447,8 @@ public class Game {
 			ProbabilityBoard pb2 = new ProbabilityBoard(PLAYER_2, PLAYER_1);
 			AIGameState setup2 = GameStateConverter.convertToAIGameState(pb2, state2);
 			AI.normalize(setup2);
-			AI.setSetupReferences(AI.createAIGameState(player2.getGameView()), PLAYER_2);
-//			AI.setSetupReferences(setup2, PLAYER_2);
+			AI.setSetupReferences(setup2, PLAYER_2);
+			
             nextTurn();
 		}
 	}
@@ -508,8 +517,7 @@ public class Game {
 			}
 		} else {
 			// stop the game!
-			System.out.println("GAME OVER! Winner is " + winner.getGameView()
-															   .getPlayerID());
+			
 			revealBoard();
 			player1FinishedCleanup = false;
 			player2FinishedCleanup = false;
@@ -640,7 +648,7 @@ public class Game {
 			activeGameView = player1.getGameView();
 		}
 		reseted = false;
-		System.out.println("PLAYER_1 is asked to setup.");
+		
 		player1.startSetup();
 		if (player1 instanceof HumanPlayer && player2 instanceof HumanPlayer) {
 			while (!player1FinishedSetup) {
@@ -651,7 +659,6 @@ public class Game {
 				}
 			}
 		}
-		System.out.println("PLAYER_2 is asked to setup.");
 		becomeBlind();
 		if (player2 instanceof HumanPlayer || (player2 instanceof RemoteServingPlayer
 											   && ((RemoteServingPlayer) player2).getLocalPlayer() instanceof HumanPlayer)) {

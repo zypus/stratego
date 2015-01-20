@@ -14,70 +14,99 @@ import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic6;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic7;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic8;
 import com.theBombSquad.stratego.player.ai.setup.FlagTactics.FlagTactic9;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
 
-public class AISetup extends Setup{
+public class AISetup extends Setup {
 	FlagTactic flagTactic;
 	Strategy strategy;
 	@Getter
-	private  ArrayList<Unit> availableUnits;
+	private ArrayList<Unit> availableUnits;
 	@Getter
 	private Game.GameView view;
+	private int flag;
+	private int[] weights;
+	ArrayList<FlagTactic> flagTactics;
+
+	public AISetup(Game.GameView view, int[] weights) {
+		super(10, 4);
+		this.weights = weights;
+		this.view = view;
+		flag = -1;
+		initAvailableUnits();
+		pickFlagTactic();
+		executeTactics();
+	}
+
+	public AISetup(Game.GameView view, int flag) {
+		super(10, 4);
+		this.view = view;
+		this.flag = flag;
+		initAvailableUnits();
+		pickFlagTactic();
+		executeTactics();
+	}
 
 	public AISetup(Game.GameView view) {
 		super(10, 4);
 		this.view = view;
+		this.flag = -1;
 		initAvailableUnits();
 		pickFlagTactic();
 		executeTactics();
 	}
 
 	private void initAvailableUnits() {
-		//		availableUnits= new ArrayList<Unit>();
-		//		Unit.UnitType[] unitTypeEnum = {Unit.UnitType.FLAG, Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT, Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT, Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR, Unit.UnitType.COLONEL, Unit.UnitType.GENERAL, Unit.UnitType.MARSHAL};//Unit.UnitType.values();
-//		// create a list containing all units that needs to be placed on the board
-//		for (Unit.UnitType type : unitTypeEnum) {
-//			if(type!=Unit.UnitType.AIR && type!=Unit.UnitType.LAKE && type!=Unit.UnitType.UNKNOWN){
-//				for (int i = 0; i < type.getQuantity(); i++) {
-//					availableUnits.add(new Unit(type, view.getPlayerID()));
-//				}
-//			}
-//		}
+		// availableUnits= new ArrayList<Unit>();
+		// Unit.UnitType[] unitTypeEnum = {Unit.UnitType.FLAG,
+		// Unit.UnitType.BOMB, Unit.UnitType.SPY, Unit.UnitType.SCOUT,
+		// Unit.UnitType.SAPPER, Unit.UnitType.SERGEANT,
+		// Unit.UnitType.LIEUTENANT, Unit.UnitType.CAPTAIN, Unit.UnitType.MAJOR,
+		// Unit.UnitType.COLONEL, Unit.UnitType.GENERAL,
+		// Unit.UnitType.MARSHAL};//Unit.UnitType.values();
+		// // create a list containing all units that needs to be placed on the
+		// board
+		// for (Unit.UnitType type : unitTypeEnum) {
+		// if(type!=Unit.UnitType.AIR && type!=Unit.UnitType.LAKE &&
+		// type!=Unit.UnitType.UNKNOWN){
+		// for (int i = 0; i < type.getQuantity(); i++) {
+		// availableUnits.add(new Unit(type, view.getPlayerID()));
+		// }
+		// }
+		// }
 		this.availableUnits = new ArrayList<Unit>(view.getAvailableUnits());
 	}
 
-	//executing the strategy step by step
+	// executing the strategy step by step
 	private void executeTactics() {
 		flagTactic.addSetup(this);
-		for(int i = 0; i < strategy.getTactics().size();i++){
+		for (int i = 0; i < strategy.getTactics().size(); i++) {
 			strategy.getTactics().get(i).addSetup(this);
-			this.board=strategy.getTactics().get(i).getSetup().getBoard();
+			this.board = strategy.getTactics().get(i).getSetup().getBoard();
 			strategy.getTactics().remove(i);
 			i--;
-			/*if(view.getPlayerID()==PlayerID.PLAYER_1){
-			for(int h =0; h<10;h++){
-				System.out.println();
-				for(int j=0;j<4;j++){
-					System.out.print(board[j][h].getType().getRank());
-				}
-			}
-			System.out.println();
-			System.out.println();
-
-		}*/
+			/*
+			 * if(view.getPlayerID()==PlayerID.PLAYER_1){ for(int h =0;
+			 * h<10;h++){ System.out.println(); for(int j=0;j<4;j++){
+			 * System.out.print(board[j][h].getType().getRank()); } }
+			 * System.out.println(); System.out.println();
+			 * 
+			 * }
+			 */
 		}
-//		for(int cy=0; cy<this.getHeight(); cy++){
-//			for(int cx=0; cx<this.getWidth(); cx++){
-//				System.out.print(this.getBoard()[cy][cx].getType()+" ");
-//			}
-//			System.out.println();
-//		}
+		// for(int cy=0; cy<this.getHeight(); cy++){
+		// for(int cx=0; cx<this.getWidth(); cx++){
+		// System.out.print(this.getBoard()[cy][cx].getType()+" ");
+		// }
+		// System.out.println();
+		// }
 	}
-	//picking random tactic and strategy possible for this tactic
+
+	// picking random tactic and strategy possible for this tactic
 	private void pickFlagTactic() {
-		ArrayList<FlagTactic> flagTactics= new ArrayList<FlagTactic>();
+		flagTactics = new ArrayList<FlagTactic>();
 		flagTactics.add(new FlagTactic1());
 		flagTactics.add(new FlagTactic2());
 		flagTactics.add(new FlagTactic3());
@@ -91,12 +120,34 @@ public class AISetup extends Setup{
 		flagTactics.add(new FlagTactic11());
 
 		// add them all one by one
-		int random= (int)(Math.random()*flagTactics.size());
-		flagTactic=flagTactics.get(random);
-		random= (int)(Math.random()*flagTactic.getStrategies().size());
-		strategy= flagTactic.getStrategies().get(random);
+		int random = (int) (Math.random() * flagTactics.size());
+		if (flag == -1) {
+			if (weights != null) {
+				flagTactic = randomizeFlagTactic();
+			} else
+				flagTactic = flagTactics.get(random);
+		} else {
+
+			flagTactic = flagTactics.get(flag);
+		}
+		random = (int) (Math.random() * flagTactic.getStrategies().size());
+		strategy = flagTactic.getStrategies().get(random);
 	}
 
-
-
+	public FlagTactic randomizeFlagTactic() {
+		int totalWeight = 0;
+		for (int i = 0; i < weights.length; i++) {
+			totalWeight = totalWeight + weights[i];
+		}
+		int random = ((int) (Math.random() * totalWeight));
+		for (int i = 0; i < weights.length; i++) {
+			if (random - weights[i] >= 0) {
+				random = random - weights[i];
+			} else {
+				System.out.println(i);
+				return flagTactics.get(i);
+			}
+		}
+		return flagTactics.get(weights.length-1);
+	}
 }

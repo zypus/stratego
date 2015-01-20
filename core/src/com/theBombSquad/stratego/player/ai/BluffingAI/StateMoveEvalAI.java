@@ -18,6 +18,8 @@ import java.util.Random;
  * @created 19/01/15
  */
 public class StateMoveEvalAI extends AI {
+	
+	int[] weights={175,191,188,178,164,155,111,185,179,191,87};
 
 	StateEvaluationFunction stateEval = new StateEvaluationFunction();
 	MoveEvaluationFunction moveEval = new MoveEvaluationFunction();
@@ -98,6 +100,6 @@ public class StateMoveEvalAI extends AI {
 
 	@Override
 	protected Setup setup() {
-		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+		return new SetupPlayerAI(gameView, weights).setup_directAccessOverwrite();
 	}
 }

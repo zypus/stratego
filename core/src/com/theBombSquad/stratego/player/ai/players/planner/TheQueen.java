@@ -16,6 +16,7 @@ import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAttackWeake
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAvoidHiddenStronger;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanBlindMarchKill;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanDiscourageLoops;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanBluffing;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanDoNOTAttackStrongerPiece;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanFleeStrongerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanKillWeakerHidden;
@@ -27,6 +28,7 @@ import com.theBombSquad.stratego.player.ai.setup.AISetup;
 public class TheQueen extends AI{
 	
 	private static final float[] unitValues = new float[]{600f, 200f, 30f, 25f, 15f, 25f, 50f, 75f, 100f, 200f, 400f, 20f};
+	private int[] weights={254,243,237,245,236,247,255,230,260,240,275};
 	
 	public static float getUnitValue(UnitType unit){
 		return unitValues[unit.getRank()];
@@ -39,7 +41,10 @@ public class TheQueen extends AI{
 		super(gameView);
 	}
 	
+	private PlanBluffing bluffing;
+	
 	private void planSetup(){
+		bluffing = new PlanBluffing();
 		plans = new ArrayList<Plan>();
 		plans.add(new PlanAttackWeakerRevealedAdjacent());
 		plans.add(new PlanFleeStrongerRevealedAdjacent());
@@ -49,6 +54,7 @@ public class TheQueen extends AI{
 		plans.add(new PlanStrongestPieceAttackPlan());
 		plans.add(new PlanDiscourageLoops());
 		plans.add(new PlanDoNOTAttackStrongerPiece());
+		//plans.add(bluffing);
 		for(int cy=0; cy<10; cy++){
 			for(int cx=0; cx<10; cx++){
 				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
@@ -76,6 +82,9 @@ public class TheQueen extends AI{
 			plan.postMoveUpdate(gameView);
 		}
 		List<Move> moves = super.createAllLegalMoves(gameView, gameView.getCurrentState());
+		for(Move move : moves){
+			//bluffing.normalize(move);
+		}
 		float bestProfit = Float.NEGATIVE_INFINITY;
 		ArrayList<Move> bestMoves = new ArrayList<Move>();
 		for(Move move : moves){
@@ -104,7 +113,7 @@ public class TheQueen extends AI{
 		boolean f = true;
 		
 		if(f){
-			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+			return new SetupPlayerAI(gameView,weights).setup_directAccessOverwrite();
 		}
 		else{
 			Setup setup = new Setup(10,4);
@@ -122,6 +131,9 @@ public class TheQueen extends AI{
 			gameView.setSetup(setup);
 			return setup;
 		}
+	}
+	public int[] getWeights(){
+		return weights;
 	}
 
 }

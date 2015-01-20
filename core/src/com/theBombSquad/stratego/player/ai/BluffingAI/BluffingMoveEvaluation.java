@@ -12,6 +12,7 @@ public class BluffingMoveEvaluation {
 	private double minerPenalty = 50;
 	private double encounterPenalty = 150;
 	private double scoutJumpPenalty = 100;
+	private double coveredPenalty=10000;
 	private ArrayList<AIUnit> toUnitsRevealed;
 	private ArrayList<AIUnit> toUnitsUnrevealed;
 	private ArrayList<AIUnit> fromUnitsRevealed;

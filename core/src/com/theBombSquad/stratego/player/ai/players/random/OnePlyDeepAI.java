@@ -14,7 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class OnePlyDeepAI extends AI{
-
+	private int[] weights={86,160,141,95,216,140,155,171,152,121,198};
+		
 	public OnePlyDeepAI(GameView gameView) {
 		super(gameView);
 	}
@@ -36,7 +37,6 @@ public class OnePlyDeepAI extends AI{
 						currentScore += possibleResult.evaluate(eval, super.gameView.getPlayerID())*possibleResult.getRelativeProbability();
 					}
 					currentScore = currentScore / relProb;
-					System.out.println(currentScore);
 					if(currentScore==bestScore){
 						bestMoves.add(move);
 					}
@@ -55,7 +55,7 @@ public class OnePlyDeepAI extends AI{
 	}
 
 	@Override protected Setup setup() {
-		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+		return new SetupPlayerAI(gameView, weights).setup_directAccessOverwrite();
 //		Setup setup = new Setup(10,4);
 //		List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
 //		// shuffle the list containing all available units
@@ -70,6 +70,9 @@ public class OnePlyDeepAI extends AI{
 //		// so simply sending the setup over to the game
 //		gameView.setSetup(setup);
 //		return setup;
+	}
+	public int[] getWeights(){
+		return weights;
 	}
 
 }
