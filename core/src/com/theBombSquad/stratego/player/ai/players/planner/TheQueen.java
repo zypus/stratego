@@ -15,6 +15,7 @@ import com.theBombSquad.stratego.player.ai.AIGameState;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAttackWeakerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanAvoidHiddenStronger;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanBlindMarchKill;
+import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanBluffing;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanDoNOTAttackStrongerPiece;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanFleeStrongerRevealedAdjacent;
 import com.theBombSquad.stratego.player.ai.players.planner.plans.PlanKillWeakerHidden;
@@ -38,7 +39,10 @@ public class TheQueen extends AI{
 		super(gameView);
 	}
 	
+	private PlanBluffing bluffing;
+	
 	private void planSetup(){
+		bluffing = new PlanBluffing();
 		plans = new ArrayList<Plan>();
 		plans.add(new PlanAttackWeakerRevealedAdjacent());
 		plans.add(new PlanFleeStrongerRevealedAdjacent());
@@ -47,6 +51,7 @@ public class TheQueen extends AI{
 		plans.add(new PlanKillWeakerHidden());
 		plans.add(new PlanStrongestPieceAttackPlan());
 		plans.add(new PlanDoNOTAttackStrongerPiece());
+		plans.add(bluffing);
 		for(int cy=0; cy<10; cy++){
 			for(int cx=0; cx<10; cx++){
 				if(gameView.getUnit(cx, cy).getOwner().equals(gameView.getOpponentID())){
@@ -74,6 +79,9 @@ public class TheQueen extends AI{
 			plan.postMoveUpdate(gameView);
 		}
 		List<Move> moves = super.createAllLegalMoves(gameView, gameView.getCurrentState());
+		for(Move move : moves){
+			bluffing.normalize(move);
+		}
 		float bestProfit = Float.NEGATIVE_INFINITY;
 		ArrayList<Move> bestMoves = new ArrayList<Move>();
 		for(Move move : moves){
