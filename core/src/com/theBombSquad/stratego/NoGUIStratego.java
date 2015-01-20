@@ -2,6 +2,7 @@ package com.theBombSquad.stratego;
 
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
+import com.theBombSquad.stratego.player.ai.BluffingAI.MoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
@@ -49,7 +50,7 @@ public class NoGUIStratego implements Game.GameListener {
 		mover1 = new TheQueen(playerOneView);
 		player1 = new HybridAI(playerOneView).setMover(mover1)
 											 .setSetuper(new SetupPlayerAI(playerOneView));
-		mover2 = new RandomAI(playerTwoView);
+		mover2 = new MoveEvalAI(playerTwoView);
 		player2 = new HybridAI(playerTwoView).setMover(mover2)
 											 .setSetuper(new SetupPlayerAI(playerTwoView));
 		//		player1.setLearning(true);
@@ -101,10 +102,11 @@ public class NoGUIStratego implements Game.GameListener {
 		if (ply % 1000 == 0) {
 			System.out.println("Ply "+ply);
 		}
-		if (ply < 0) {
+		if (ply > 3000) {
 			System.out.println("Round interrupted!");
 //			mover1.reset();
 			//			player2.reset();
+			game.reset();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

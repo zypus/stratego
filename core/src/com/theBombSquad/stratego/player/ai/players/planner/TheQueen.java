@@ -28,6 +28,7 @@ import com.theBombSquad.stratego.player.ai.setup.AISetup;
 public class TheQueen extends AI{
 	
 	private static final float[] unitValues = new float[]{600f, 200f, 30f, 25f, 15f, 25f, 50f, 75f, 100f, 200f, 400f, 20f};
+	private int[] weights={254,243,237,245,236,247,255,230,260,240,275};
 	
 	public static float getUnitValue(UnitType unit){
 		return unitValues[unit.getRank()];
@@ -130,6 +131,9 @@ public class TheQueen extends AI{
 			gameView.setSetup(setup);
 			return setup;
 		}
+	}
+	public int[] getWeights(){
+		return weights;
 	}
 
 }

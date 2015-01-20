@@ -310,7 +310,7 @@ public abstract class AI extends Player {
 		while (error > THRESHOLD) {
 			normalizeUnits(gameState);
 			if (failed) {
-				AIGameStateDebugger.debug(new AIGameState(gameState));
+//				AIGameStateDebugger.debug(new AIGameState(gameState));
 			}
 			error = 0;
 			for (int i = 3; i < UnitType.values().length; i++) {
@@ -341,8 +341,8 @@ public abstract class AI extends Player {
 			}
 			counter++;
 			if (counter > 1000) {
-				System.out.println("Stuck in normalization, "+error+" "+gameState);
-				AIGameStateDebugger.debug(new AIGameState(gameState));
+//				System.out.println("Stuck in normalization, "+error+" "+gameState);
+//				AIGameStateDebugger.debug(new AIGameState(gameState));
 				break;
 //				if (failed) {
 //					while (true) {
