@@ -19,6 +19,9 @@ import java.util.Random;
 	 * @created 19/01/15
 	 */
 	public class StateMoveEvalBluffingAI extends AI {
+		
+		int[] weights={175,191,188,178,164,155,111,185,179,191,87};
+		
 		double bluffingProb=0.1;
 		double bluffMinimum=100;
 		BluffingMoveEvaluation bluff= new BluffingMoveEvaluation();
@@ -123,7 +126,7 @@ import java.util.Random;
 
 		@Override
 		protected Setup setup() {
-			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+			return new SetupPlayerAI(gameView, weights).setup_directAccessOverwrite();
 		}
 	}
 

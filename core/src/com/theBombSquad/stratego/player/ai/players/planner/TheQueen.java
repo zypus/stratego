@@ -113,7 +113,7 @@ public class TheQueen extends AI{
 		boolean f = true;
 		
 		if(f){
-			return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+			return new SetupPlayerAI(gameView,weights).setup_directAccessOverwrite();
 		}
 		else{
 			Setup setup = new Setup(10,4);

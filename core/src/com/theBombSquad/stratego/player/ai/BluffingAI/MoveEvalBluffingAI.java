@@ -12,7 +12,9 @@ import java.util.List;
 
 
 public class MoveEvalBluffingAI extends AI {
-
+	
+	int[] weights={175,191,188,178,164,155,111,185,179,191,87};
+	
 	double bluffingProb=0.1;
 	double bluffMinimum=100;
 	MoveEvaluationFunction evaluationFunction = new MoveEvaluationFunction();
@@ -64,6 +66,6 @@ public class MoveEvalBluffingAI extends AI {
 
 	@Override
 	protected Setup setup() {
-		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+		return new SetupPlayerAI(gameView, weights).setup_directAccessOverwrite();
 	}
 }

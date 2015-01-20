@@ -113,4 +113,8 @@ public abstract class Player {
 		idle();
 	}
 
+	public int[] getWeights() {
+		return null;
+	}
+
 }

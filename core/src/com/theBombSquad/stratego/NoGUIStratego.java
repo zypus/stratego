@@ -3,6 +3,7 @@ package com.theBombSquad.stratego;
 import com.theBombSquad.stratego.gameMechanics.Game;
 import com.theBombSquad.stratego.player.Player;
 import com.theBombSquad.stratego.player.ai.BluffingAI.MoveEvalAI;
+import com.theBombSquad.stratego.player.ai.BluffingAI.StateMoveEvalAI;
 import com.theBombSquad.stratego.player.ai.players.HybridAI;
 import com.theBombSquad.stratego.player.ai.players.RandomAI;
 import com.theBombSquad.stratego.player.ai.players.planner.TheQueen;
@@ -49,10 +50,10 @@ public class NoGUIStratego implements Game.GameListener {
 
 		mover1 = new TheQueen(playerOneView);
 		player1 = new HybridAI(playerOneView).setMover(mover1)
-											 .setSetuper(new SetupPlayerAI(playerOneView));
-		mover2 = new MoveEvalAI(playerTwoView);
+											 .setSetuper(new SetupPlayerAI(playerOneView, mover1.getWeights()));
+		mover2 = new StateMoveEvalAI(playerTwoView);
 		player2 = new HybridAI(playerTwoView).setMover(mover2)
-											 .setSetuper(new SetupPlayerAI(playerTwoView));
+											 .setSetuper(new SetupPlayerAI(playerTwoView, mover2.getWeights()));
 		//		player1.setLearning(true);
 		//		player2.setLearning(true);
 

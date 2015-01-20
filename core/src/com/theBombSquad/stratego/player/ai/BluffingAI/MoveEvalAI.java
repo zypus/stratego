@@ -44,7 +44,7 @@ public class MoveEvalAI extends AI {
 
 	@Override
 	protected Setup setup() {
-		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+		return new SetupPlayerAI(gameView, weights).setup_directAccessOverwrite();
 	}
 	public int[] getWeights(){
 		return weights;

@@ -16,7 +16,9 @@ import java.util.List;
  * @created 19/01/15
  */
 public class StateEvalAI extends AI {
-
+	
+	
+	
 	StateEvaluationFunction evaluationFunction = new StateEvaluationFunction();
 
 	public StateEvalAI(Game.GameView gameView) {

@@ -55,7 +55,7 @@ public class OnePlyDeepAI extends AI{
 	}
 
 	@Override protected Setup setup() {
-		return new SetupPlayerAI(gameView).setup_directAccessOverwrite();
+		return new SetupPlayerAI(gameView, weights).setup_directAccessOverwrite();
 //		Setup setup = new Setup(10,4);
 //		List<Unit> availableUnits = new ArrayList<Unit>(gameView.getAvailableUnits());
 //		// shuffle the list containing all available units
