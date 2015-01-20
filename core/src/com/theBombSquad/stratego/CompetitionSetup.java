@@ -80,9 +80,9 @@ public class CompetitionSetup implements Game.GameListener {
 		mover2 = new MoveEvalAI(playerTwoView);
 
 		player1 = new HybridAI(playerOneView).setMover(mover1).setSetuper(
-				new SetupPlayerAI(playerOneView, i));
+				new SetupPlayerAI(playerOneView,i));
 		player2 = new HybridAI(playerTwoView).setMover(mover2).setSetuper(
-				new SetupPlayerAI(playerTwoView,j));
+				new SetupPlayerAI(playerTwoView, mover2.getWeights()));
 		// player1.setLearning(true);
 		// player2.setLearning(true);
 

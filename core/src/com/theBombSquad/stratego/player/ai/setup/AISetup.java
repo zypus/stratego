@@ -143,6 +143,7 @@ public class AISetup extends Setup {
 			if (random - weights[i] >= 0) {
 				random = random - weights[i];
 			} else {
+				System.out.println(i);
 				return flagTactics.get(i);
 			}
 		}

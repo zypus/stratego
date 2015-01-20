@@ -113,4 +113,9 @@ public abstract class Player {
 		idle();
 	}
 
+	public int[] getWeights() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
